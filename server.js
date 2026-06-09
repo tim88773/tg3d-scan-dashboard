@@ -440,6 +440,10 @@ app.get('/api/scan-members', async (req, res) => {
     const hasMeasureFilters = Object.keys(measureFilters).length > 0;
 
     // Fetch scan records from DB cache only
+    // Incremental sync: pull any newer scan records from API first
+    try { await syncScanRecords(); } catch (syncErr) {
+      console.error('[members] Sync error (non-fatal):', syncErr.message);
+    }
     let allRecords = [];
     let candidates = [];
     let totalChecked = 0;
