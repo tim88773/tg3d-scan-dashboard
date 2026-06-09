@@ -477,27 +477,24 @@ app.get('/api/scan-members', async (req, res) => {
       if (candidates.length >= MAX_API_RECORDS) break;
     }
 
-        // Fetch measurements from API + DB cache (pose=I for chest/underbust)
+        // Read measurements from DB cache only (fast, no API calls during request)
     const tids = candidates.map(function(r) { return r.tid; });
-    let measurementsMap = {};
-    // First read from DB cache
-    const dbMeas = db.getMeasurementsByTids(tids);
-    // Find which tids are missing from DB
-    var missingTids = tids.filter(function(t) { return !dbMeas[t]; });
+    const measurementsMap = db.getMeasurementsByTids(tids);
+    // Background fetch missing measurements and cache to DB for next time
+    var missingTids = tids.filter(function(t) { return !measurementsMap[t]; });
     if (missingTids.length > 0) {
-      // Fetch missing measurements from API with pose=I
-      var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 1);
-      // Save newly fetched measurements to DB cache
-      var toSave = {};
-      for (var i = 0; i < missingTids.length; i++) {
-        var tid = missingTids[i];
-        if (apiMeas[tid]) toSave[tid] = apiMeas[tid];
-      }
-      if (Object.keys(toSave).length > 0) db.saveMeasurements(toSave);
-      // Merge into map
-      Object.assign(dbMeas, apiMeas);
+      setImmediate(async function() {
+        try {
+          var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 1);
+          var toSave = {};
+          for (var i = 0; i < missingTids.length; i++) {
+            var tid = missingTids[i];
+            if (apiMeas[tid]) toSave[tid] = apiMeas[tid];
+          }
+          if (Object.keys(toSave).length > 0) db.saveMeasurements(toSave);
+        } catch(e) { console.error('[bg-meas] Error:', e.message); }
+      });
     }
-    measurementsMap = dbMeas;
         // Build results
     const results = [];
     for (const rec of candidates) {
