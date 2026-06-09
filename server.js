@@ -474,20 +474,9 @@ app.get('/api/scan-members', async (req, res) => {
       if (candidates.length >= MAX_API_RECORDS) break;
     }
 
-        // Fetch measurements from DB cache then API for missing ones
+        // Read measurements from DB cache only (no API calls during query)
     const tids = candidates.map(function(r) { return r.tid; });
     var measurementsMap = db.getMeasurementsByTids(tids);
-    var missingTids = tids.filter(function(t) { return !measurementsMap[t]; });
-    if (missingTids.length > 0) {
-      var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 1);
-      var toSave = {};
-      for (var i = 0; i < missingTids.length; i++) {
-        var tid = missingTids[i];
-        if (apiMeas[tid]) toSave[tid] = apiMeas[tid];
-      }
-      if (Object.keys(toSave).length > 0) db.saveMeasurements(toSave);
-      Object.assign(measurementsMap, apiMeas);
-    }
         // Build results
     const results = [];
     for (const rec of candidates) {
@@ -625,6 +614,25 @@ app.listen(PORT, function() {
         }
       }
       console.log("[warmup] Warmup complete");
+
+      // Background: pre-cache measurements for all tids (1 req/sec limit)
+      console.log("[warmup] Starting measurement pre-cache...");
+      setImmediate(async function preCacheMeas() {
+        var allRecs = db.getRecordsByDateRange('2000-01-01', '2099-12-31');
+        var allTids = allRecs.map(function(r) { return r.tid; });
+        var existing = db.getMeasurementsByTids(allTids);
+        var todo = allTids.filter(function(t) { return !existing[t]; });
+        console.log("[warmup] Need to cache", todo.length, "measurements");
+        for (var i = 0; i < todo.length; i++) {
+          var m = await fetchMergedMeasurements(todo[i]);
+          if (m) {
+            var save = {}; save[todo[i]] = m;
+            db.saveMeasurements(save);
+          }
+          if ((i + 1) % 50 === 0) console.log("[warmup] Cached", (i + 1), "/", todo.length, "measurements");
+        }
+        console.log("[warmup] Measurement pre-cache complete");
+      });
     } catch (err) {
       console.error("[warmup] Error:", err.message);
     }
