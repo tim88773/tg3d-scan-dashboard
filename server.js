@@ -215,6 +215,28 @@ const MEASURE_FILTERS = {
   thighR: 'Right Thigh Circumference',
 };
 
+// Chinese labels for measurement fields in export
+const MEASURE_LABELS = {
+  'Chest Circumference': '胸圍',
+  'F Under Bust Circumference B': '胸下圍',
+  'Left Breast Volume': '左右胸大小(左)',
+  'Right Breast Volume': '左右胸大小(右)',
+  'Left Upper Arm Circumference': '上臂圍(左)',
+  'Right Upper Arm Circumference': '上臂圍(右)',
+  'Belly Circumference': '中腰圍',
+  'Thinnest Waist Circumference': '最細腰圍',
+  'High Hip Circumference': '上臀圍',
+  'Low Hip Circumference': '下臀圍',
+  'Left Thigh Circumference': '大腿圍(左)',
+  'Right Thigh Circumference': '大腿圍(右)',
+  'Left Mid Thigh Circumference': '中大腿圍(左)',
+  'Right Mid Thigh Circumference': '中大腿圍(右)',
+  'Left Calf Circumference': '小腿圍(左)',
+  'Right Calf Circumference': '小腿圍(右)',
+  'C19 Left Shorts Circumference': '短褲腳寬(左)',
+  'C19 Right Shorts Circumference': '短褲腳寬(右)',
+};
+
 function matchMeasurementRanges(measurements, filters) {
   if (!measurements) return false;
   for (const [key, field] of Object.entries(MEASURE_FILTERS)) {
@@ -480,16 +502,16 @@ app.get('/api/scan-members/export', async (req, res) => {
 
     // Build column definitions matching the web table
     const colDefs = [
-      { header: 'userId', key: 'userId', width: 14 },
-      { header: 'name', key: 'nickName', width: 14 },
-      { header: 'store', key: 'store', width: 16 },
-      { header: 'scanDate', key: 'createdAt', width: 22 },
-      { header: 'accuracy', key: 'accuracyScore', width: 10 },
-      { header: 'scanner', key: 'scanner', width: 18 },
+      { header: '會員編號', key: 'userId', width: 14 },
+      { header: '姓名', key: 'nickName', width: 14 },
+      { header: '門市', key: 'store', width: 16 },
+      { header: '掃描日期', key: 'createdAt', width: 22 },
+      { header: '精準度', key: 'accuracyScore', width: 10 },
+      { header: '掃描器', key: 'scanner', width: 18 },
     ];
-    // Add measurement columns
+    // Add measurement columns with Chinese labels
     measureKeys.forEach(function(k) {
-      colDefs.push({ header: k, key: k, width: 16 });
+      colDefs.push({ header: MEASURE_LABELS[k] || k, key: k, width: 16 });
     });
 
     const ws = wb.addWorksheet('members');
@@ -558,5 +580,3 @@ app.listen(PORT, function() {
     }
   })();
 });
-
-
