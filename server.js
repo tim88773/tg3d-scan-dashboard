@@ -288,7 +288,9 @@ app.get('/api/scan-summary', async (req, res) => {
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.ts < CACHE_TTL) return res.json(cached.data);
 
-    const records = await scanRecordsByDateRange(startDate, endDate);
+    // Use DB cache only (API data loaded via sync)
+    var dbRecords = db.getRecordsByDateRange(req.query.start, req.query.end + 'T23:59:59.999Z');
+    var records = dbRecords.map(function(r) { return JSON.parse(r.raw_json); });
 
     const storeUserDays = {};
     for (const rec of records) {
@@ -429,6 +431,7 @@ app.get('/api/scan-members', async (req, res) => {
         scanner: rec.scanner?.name || '',
         accuracyScore: rec.accuracy_score,
         realName: rec.real_name || '',
+        tagList: rec.tag_list || [],
         measurements: measurements,
         hasMeasurements: !!measurements,
       });
@@ -531,12 +534,25 @@ app.listen(PORT, function() {
   console.log('Server running at http://localhost:' + PORT);
 
   // Background warmup: pre-cache recent 7 days so first user query is fast
-  // Warmup: sync latest records on startup
+  // Warmup: sync latest + backfill older records on startup
   (async function warmupCache() {
     try {
       console.log("[warmup] Running initial sync...");
-      const count = await syncScanRecords();
-      console.log("[warmup] Initial sync complete, added " + count + " records");
+      var count = await syncScanRecords();
+      console.log("[warmup] Initial sync: added " + count + " newer records");
+
+      // Backfill: fetch older records to fill historical gaps
+      var oldestRow = db.getLatestCreatedAt();
+      if (oldestRow) {
+        var oldestDate = new Date(oldestRow.created_at);
+        var oneYearAgo = new Date(); oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        if (oldestDate > oneYearAgo) {
+          console.log("[warmup] Backfilling records older than " + oldestDate.toISOString().slice(0,10) + "...");
+          var backfillCount = await syncRange(oneYearAgo, oldestDate, 50000);
+          console.log("[warmup] Backfill complete: added " + backfillCount + " older records");
+        }
+      }
+      console.log("[warmup] Warmup complete");
     } catch (err) {
       console.error("[warmup] Error:", err.message);
     }
