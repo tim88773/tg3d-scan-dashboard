@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0 }));
 
 const cache = new Map();
 const CACHE_TTL = 60_000;
-const MAX_API_RECORDS = 1000;
+const MAX_API_RECORDS = 50000;
 
 function tg3dRequest(url) {
   return new Promise((resolve, reject) => {
@@ -111,7 +111,7 @@ async function scanRecordsByDateRange(startDate, endDate, filters) {
   let matched = [];
   let done = false;
 
-  while (!done && matched.length < MAX_API_RECORDS) {
+  while (!done) {
     const data = await fetchScanRecordsPage(PAGE_SIZE, offset);
     const records = data.records || [];
     if (records.length === 0) break;
@@ -252,13 +252,63 @@ app.get('/api/scan-members', async (req, res) => {
     }
     const hasMeasureFilters = Object.keys(measureFilters).length > 0;
 
-    // Fetch scan records from DB cache only (fast, no API calls during query)
+    // Fetch scan records: try DB cache first, fall back to TG3D API
     let allRecords = [];
     let candidates = [];
     let totalChecked = 0;
     const dbRecords = db.getRecordsByDateRange(req.query.start, req.query.end + 'T23:59:59.999Z');
     if (dbRecords.length > 0) {
       allRecords = dbRecords.map(function(r) { return JSON.parse(r.raw_json); });
+      var oldestCached = allRecords[allRecords.length - 1].created_at || '';
+      if (req.query.start < oldestCached.slice(0, 10)) {
+        try {
+          const PAGE_SIZE = 100; let offset = 0; let freshRecords = []; let done = false;
+          while (!done && freshRecords.length < MAX_API_RECORDS) {
+            const data = await fetchScanRecordsPage(PAGE_SIZE, offset);
+            const records = data.records || [];
+            if (records.length === 0) break;
+            let pageDone = false;
+            for (const rec of records) {
+              const ca = new Date(rec.created_at).getTime();
+              if (ca > endMs) continue;
+              if (ca < startMs) { pageDone = true; break; }
+              freshRecords.push(rec);
+            }
+            offset += PAGE_SIZE;
+            if (pageDone || offset >= (data.total || 0)) done = true;
+          }
+          if (freshRecords.length > 0) {
+            db.saveScanRecords(freshRecords);
+            const seen = {};
+            for (const r of freshRecords) seen[r.tid] = r;
+            for (const r of allRecords) if (!seen[r.tid]) seen[r.tid] = r;
+            allRecords = Object.values(seen);
+          }
+        } catch (apiErr) {
+          console.error('[merge] API fetch failed, using cache only:', apiErr.message);
+        }
+      }
+    } else {
+      try {
+        const PAGE_SIZE = 100; let offset = 0; allRecords = []; let done = false;
+        while (!done && allRecords.length < MAX_API_RECORDS) {
+          const data = await fetchScanRecordsPage(PAGE_SIZE, offset);
+          const records = data.records || [];
+          if (records.length === 0) break;
+          let pageDone = false;
+          for (const rec of records) {
+            const ca = new Date(rec.created_at).getTime();
+            if (ca > endMs) continue;
+            if (ca < startMs) { pageDone = true; break; }
+            allRecords.push(rec);
+          }
+          offset += PAGE_SIZE;
+          if (pageDone || offset >= (data.total || 0)) done = true;
+        }
+        if (allRecords.length > 0) db.saveScanRecords(allRecords);
+      } catch (apiErr) {
+        console.error('[fetch] API fetch failed, no cache available:', apiErr.message);
+      }
     }
     // Apply basic filters
     for (const rec of allRecords) {
