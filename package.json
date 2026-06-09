@@ -1,0 +1,14 @@
+{
+  "name": "tg-scan-summary",
+  "version": "1.0.0",
+  "description": "TG3D Scan - 門市掃描人數查詢",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2"
+  }
+}

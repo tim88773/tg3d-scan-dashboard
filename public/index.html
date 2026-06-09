@@ -1,0 +1,710 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TG3D Scan 門市掃描查詢</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f1a;
+      --card: #1a1a2e;
+      --card-border: #2a2a44;
+      --accent: #6c5ce7;
+      --accent-light: #a29bfe;
+      --accent-glow: rgba(108, 92, 231, 0.3);
+      --green: #00b894;
+      --text: #e8e8f0;
+      --text-muted: #8888a0;
+      --radius: 16px;
+      --danger: #ff6b81;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 14px; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(108, 92, 231, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(0, 184, 148, 0.06) 0%, transparent 60%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem;
+    }
+    .container { width: 100%; max-width: 1200px; }
+
+    header { text-align: center; margin-bottom: 1.5rem; }
+    header h1 {
+      font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent-light), var(--green));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    header p { color: var(--text-muted); margin-top: 0.3rem; font-size: 0.85rem; }
+
+    .tabs { display: flex; gap: 0.25rem; margin-bottom: 1.5rem; }
+    .tab-btn {
+      padding: 0.6rem 1.5rem;
+      background: transparent;
+      border: 1px solid var(--card-border);
+      border-radius: 10px 10px 0 0;
+      color: var(--text-muted);
+      font-weight: 600; font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      font-family: inherit;
+    }
+    .tab-btn:hover { background: rgba(108, 92, 231, 0.08); color: var(--text); }
+    .tab-btn.active {
+      background: var(--card);
+      border-color: var(--card-border) var(--card-border) var(--card);
+      color: var(--accent-light);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .search-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 0.75rem;
+    }
+    .search-card .field { flex: 0 0 auto; min-width: 0; }
+    .search-card .field.wide { flex: 1 1 180px; }
+    .search-card .field.full { flex: 1 1 100%; }
+    .search-card label {
+      display: block;
+      font-size: 0.7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-muted); margin-bottom: 0.3rem;
+    }
+    .search-card input[type="date"],
+    .search-card input[type="text"],
+    .search-card select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      background: #12121f;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-card select { font-family: 'Inter', sans-serif; min-width: 120px; }
+    .search-card input:focus, .search-card select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .search-card input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+
+    .measure-range-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0.4rem 1rem;
+      padding: 0.5rem 0;
+    }
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .range-label {
+      font-size: 0.78rem;
+      color: var(--text);
+      font-weight: 500;
+      min-width: 6em;
+    }
+    .range-row input[type="number"] {
+      width: 80px;
+      padding: 0.35rem 0.5rem;
+      background: #12121f;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .range-row input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .range-sep {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .search-row-btn {
+      padding: 0.5rem 1.5rem;
+      background: linear-gradient(135deg, var(--accent), #5a4bd1);
+      border: none; border-radius: 8px;
+      color: #fff; font-weight: 700; font-size: 0.85rem;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s;
+      font-family: inherit; white-space: nowrap;
+    }
+    .search-row-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow); }
+    .search-row-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-export {
+      padding: 0.5rem 1.2rem;
+      background: transparent;
+      border: 1px solid var(--green); border-radius: 8px;
+      color: var(--green); font-weight: 600; font-size: 0.8rem;
+      cursor: pointer; transition: background 0.15s;
+      font-family: inherit;
+    }
+    .btn-export:hover { background: rgba(0, 184, 148, 0.1); }
+
+    .loading { display: none; text-align: center; padding: 2rem 0; }
+    .loading.active { display: block; }
+    .spinner {
+      width: 30px; height: 30px;
+      border: 3px solid var(--card-border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 0.6rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading p { color: var(--text-muted); font-size: 0.8rem; }
+
+    .error-msg {
+      display: none;
+      background: rgba(255, 71, 87, 0.12);
+      border: 1px solid rgba(255, 71, 87, 0.3);
+      border-radius: var(--radius);
+      padding: 0.8rem 1.2rem;
+      color: var(--danger);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .error-msg.active { display: block; }
+
+    .summary-bar {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .summary-bar.active { display: flex; }
+    .summary-bar .total { font-size: 1rem; font-weight: 700; }
+    .summary-bar .total span { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; }
+    .summary-bar .detail { color: var(--text-muted); font-size: 0.8rem; }
+
+    .results { display: none; gap: 0.6rem; }
+    .results.active { display: grid; }
+
+    .store-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: border-color 0.2s;
+    }
+    .store-card:hover { border-color: var(--accent); }
+    .store-card .rank {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem; font-weight: 700;
+      color: var(--text-muted);
+      min-width: 2ch; text-align: center;
+    }
+    .store-card .rank.top1 { color: #ffd700; }
+    .store-card .rank.top3 { color: var(--accent-light); }
+    .store-card .info { flex: 1; min-width: 0; }
+    .store-card .info .name { font-weight: 600; font-size: 0.95rem; }
+    .store-card .bar-wrap { flex: 0 0 35%; max-width: 240px; }
+    .store-card .bar-bg { height: 8px; background: #12121f; border-radius: 99px; overflow: hidden; }
+    .store-card .bar-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      transition: width 0.6s ease;
+    }
+    .store-card .count-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.2rem; font-weight: 700;
+      color: var(--green);
+      min-width: 3ch; text-align: right;
+    }
+
+    .empty-msg { display: none; text-align: center; padding: 2rem; color: var(--text-muted); }
+    .empty-msg.active { display: block; }
+
+    .table-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); }
+    .table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .table-wrap th {
+      background: rgba(108, 92, 231, 0.15);
+      color: var(--accent-light);
+      padding: 0.6rem 0.5rem;
+      text-align: left; font-weight: 600;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .table-wrap td {
+      padding: 0.5rem;
+      border-bottom: 1px solid rgba(42, 42, 68, 0.5);
+      white-space: nowrap;
+    }
+    .table-wrap tr:hover td { background: rgba(108, 92, 231, 0.04); }
+    .table-wrap .num { font-family: 'JetBrains Mono', monospace; text-align: right; }
+
+    .filter-hint { color: var(--text-muted); font-size: 0.75rem; padding: 0.3rem 0; }
+    .member-id-hint { color: var(--text-muted); font-size: 0.7rem; margin-top: 0.2rem; }
+
+    @media (max-width: 768px) {
+      body { padding: 0.75rem; }
+      header h1 { font-size: 1.3rem; }
+      .search-card { flex-direction: column; }
+      .search-card .field.wide { flex: 1 1 auto; width: 100%; }
+      .search-row-btn { width: 100%; text-align: center; }
+      .store-card { flex-wrap: wrap; gap: 0.5rem; }
+      .store-card .bar-wrap { flex: 1 1 100%; max-width: none; order: 10; }
+      .store-card .count-num { min-width: auto; }
+      .summary-bar { flex-direction: column; align-items: flex-start; }
+      .tabs { gap: 0; }
+      .tab-btn { flex: 1; text-align: center; padding: 0.5rem 0.75rem; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>TG3D Scan 門市掃描查詢</h1>
+      <p>TG3D Scan 門市掃描人數查詢 - 查詢各門市掃描數據與會員量測資訊</p>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab-summary">門市統計</button>
+      <button class="tab-btn" data-tab="tab-members">會員查詢</button>
+    </div>
+
+    <!-- ====== TAB 1 ====== -->
+    <div class="tab-content active" id="tab-summary">
+      <div class="search-card">
+        <div class="field"><label>開始</label><input type="date" id="s-start"></div>
+        <div class="field"><label>結束</label><input type="date" id="s-end"></div>
+        <button class="search-row-btn" id="s-search">查詢</button>
+        <button class="btn-export" id="s-export" style="display:none">匯出 Excel</button>
+      </div>
+      <div class="loading" id="s-loading"><div class="spinner"></div><p>搜尋中，請稍後</p></div>
+      <div class="error-msg" id="s-error"></div>
+      <div class="summary-bar" id="s-summary">
+        <div class="total">不重複人次&ensp;<span id="s-total">0</span></div>
+        <div class="detail" id="s-range"></div>
+      </div>
+      <div class="results" id="s-results"></div>
+      <div class="empty-msg" id="s-empty">此區間尚無掃描記錄</div>
+    </div>
+
+    <!-- ====== TAB 2 ====== -->
+    <div class="tab-content" id="tab-members">
+      <div class="search-card">
+        <div class="field"><label>開始</label><input type="date" id="m-start"></div>
+        <div class="field"><label>結束</label><input type="date" id="m-end"></div>
+        <div class="field wide">
+          <label>會員編號 / 姓名</label>
+          <input type="text" id="m-userId" placeholder="輸入 userId 或姓名">
+          <div class="member-id-hint">例如： TGD2W9JG 或部分姓名</div>
+        </div>
+        <div class="field wide">
+          <label>門市名稱</label>
+          <input type="text" id="m-store" placeholder="輸入門市關鍵字">
+        </div>
+        <div class="field full">
+          <label>量測範圍篩選（單位 cm，留空則不限制）</label>
+          <div class="measure-range-grid">
+            <div class="range-row"><span class="range-label">胸圍</span><input type="number" class="rmin" id="m-chestMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-chestMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">下胸圍</span><input type="number" class="rmin" id="m-underbustMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-underbustMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">腰圍</span><input type="number" class="rmin" id="m-thinWaistMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thinWaistMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">肚圍</span><input type="number" class="rmin" id="m-bellyMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-bellyMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">臀圍(高)</span><input type="number" class="rmin" id="m-highHipMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-highHipMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">臀圍(低)</span><input type="number" class="rmin" id="m-lowHipMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-lowHipMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">左大腿圍</span><input type="number" class="rmin" id="m-thighLMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thighLMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">右大腿圍</span><input type="number" class="rmin" id="m-thighRMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thighRMax" placeholder="最大值"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:flex-end">
+          <button class="search-row-btn" id="m-search">查詢</button>
+          <button class="btn-export" id="m-export" style="display:none">匯出 Excel</button>
+        </div>
+      </div>
+
+      <div class="loading" id="m-loading"><div class="spinner"></div><p id="m-loading-text">搜尋會員與量測資料中，請稍後</p></div>
+      <div class="error-msg" id="m-error"></div>
+      <div class="summary-bar" id="m-summary">
+        <div class="total">符合條件&ensp;<span id="m-total">0</span></div>
+        <div class="detail" id="m-range"></div>
+      </div>
+      <div class="empty-msg" id="m-empty">無符合條件的掃描記錄</div>
+      <div id="m-results" style="display:none">
+        <div class="table-wrap">
+          <table>
+            <thead id="m-thead"></thead>
+            <tbody id="m-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function setDefaults() {
+      const today = new Date();
+      const sevenAgo = new Date(today); sevenAgo.setDate(sevenAgo.getDate() - 6);
+      const fmt = d => d.toISOString().slice(0, 10);
+      ['s-start','m-start'].forEach(id => document.getElementById(id).value = fmt(sevenAgo));
+      ['s-end','m-end'].forEach(id => document.getElementById(id).value = fmt(today));
+    })();
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    function esc(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+    function hideAll(p) {
+      document.getElementById(p+'-loading').classList.remove('active');
+      document.getElementById(p+'-error').classList.remove('active');
+      document.getElementById(p+'-summary').classList.remove('active');
+      document.getElementById(p+'-empty').classList.remove('active');
+      if (p === 'm') {
+        document.getElementById('m-results').style.display = 'none';
+      } else {
+        const r = document.getElementById(p+'-results');
+        if (r) { r.classList.remove('active'); r.innerHTML = ''; }
+      }
+    }
+    function showError(p, msg) {
+      const el = document.getElementById(p+'-error');
+      el.textContent = msg; el.classList.add('active');
+    }
+
+    // ====== TAB 1: 門市統計 ======
+    let lastSummaryData = null;
+
+    async function doStoreSearch() {
+      const start = document.getElementById('s-start').value;
+      const end = document.getElementById('s-end').value;
+      if (!start || !end) { showError('s', '請選擇日期區間'); return; }
+      if (start > end) { showError('s', '開始日期不能晚於結束日期'); return; }
+
+      hideAll('s');
+      document.getElementById('s-loading').classList.add('active');
+      document.getElementById('s-search').disabled = true;
+      document.getElementById('s-export').style.display = 'none';
+
+      try {
+        const resp = await fetch(`/api/scan-summary?start=${start}&end=${end}`);
+        const data = await resp.json();
+        document.getElementById('s-loading').classList.remove('active');
+        document.getElementById('s-search').disabled = false;
+
+        if (!resp.ok) { showError('s', data.error || '查詢失敗'); return; }
+
+        lastSummaryData = data;
+        document.getElementById('s-summary').classList.add('active');
+        document.getElementById('s-total').textContent = data.uniqueVisits;
+        document.getElementById('s-range').textContent = `${start} ~ ${end}（共 ${data.totalScanRecords} 筆掃描記錄）`;
+
+        if (data.stores.length === 0) {
+          document.getElementById('s-empty').classList.add('active');
+          return;
+        }
+
+        const container = document.getElementById('s-results');
+        container.classList.add('active');
+        const maxCount = data.stores[0].count;
+
+        data.stores.forEach((s, i) => {
+          const card = document.createElement('div');
+          card.className = 'store-card';
+          const pct = maxCount > 0 ? (s.count / maxCount) * 100 : 0;
+          let rc = i === 0 ? 'top1' : i < 3 ? 'top3' : '';
+          card.innerHTML = `
+            <div class="rank ${rc}">${i+1}</div>
+            <div class="info"><div class="name">${esc(s.store)}</div></div>
+            <div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></div>
+            <div class="count-num">${s.count}</div>
+          `;
+          container.appendChild(card);
+        });
+
+        document.getElementById('s-export').style.display = 'inline-block';
+      } catch (err) {
+        document.getElementById('s-loading').classList.remove('active');
+        document.getElementById('s-search').disabled = false;
+        showError('s', '網路連線異常，請檢查伺服器狀態');
+      }
+    }
+
+    document.getElementById('s-search').addEventListener('click', doStoreSearch);
+
+    document.getElementById('s-export').addEventListener('click', () => {
+      if (!lastSummaryData) return;
+      const { start, end, stores } = lastSummaryData;
+      // Use fetch + blob download to avoid window.open navigation issues
+      fetch(`/api/scan-summary/export?start=${start}&end=${end}`)
+        .then(r => {
+          if (!r.ok) throw new Error('匯出失敗');
+          const disposition = r.headers.get('Content-Disposition') || '';
+          const match = disposition.match(/filename\*=UTF-8''(.+?)(?:$|;)/);
+          let filename = match ? decodeURIComponent(match[1]) : 'store_stats.xlsx';
+          return r.blob().then(blob => ({ blob, filename }));
+        })
+        .then(({ blob, filename }) => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(a.href);
+        })
+        .catch(err => showError('s', err.message));
+    });
+    ['s-start','s-end'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') doStoreSearch(); });
+    });
+
+    // ====== TAB 2: 會員查詢 ======
+    let lastMemberData = null;
+
+    const KEY_MEASURES = [
+      'Chest Circumference',
+      'F Under Bust Circumference B',
+      'Left Breast Volume',
+      'Right Breast Volume',
+      'Left Upper Arm Circumference',
+      'Right Upper Arm Circumference',
+      'Belly Circumference',
+      'Thinnest Waist Circumference',
+      'High Hip Circumference',
+      'Low Hip Circumference',
+      'Left Thigh Circumference',
+      'Right Thigh Circumference',
+      'Left Mid Thigh Circumference',
+      'Right Mid Thigh Circumference',
+      'Left Calf Circumference',
+      'Right Calf Circumference',
+      'C19 Left Shorts Circumference',
+      'C19 Right Shorts Circumference',
+    ];
+
+    const MEASURE_LABELS = {
+      'Chest Circumference': '胸圍',
+      'F Under Bust Circumference B': '下胸圍',
+      'Left Breast Volume': '左胸體積',
+      'Right Breast Volume': '右胸體積',
+      'Left Upper Arm Circumference': '左上臂圍',
+      'Right Upper Arm Circumference': '右上臂圍',
+      'Belly Circumference': '肚圍',
+      'Thinnest Waist Circumference': '腰圍',
+      'High Hip Circumference': '臀圍(高)',
+      'Low Hip Circumference': '臀圍(低)',
+      'Left Thigh Circumference': '左大腿圍',
+      'Right Thigh Circumference': '右大腿圍',
+      'Left Mid Thigh Circumference': '左大腿中圍',
+      'Right Mid Thigh Circumference': '右大腿中圍',
+      'Left Calf Circumference': '左小腿圍',
+      'Right Calf Circumference': '右小腿圍',
+      'C19 Left Shorts Circumference': '左褲管圍',
+      'C19 Right Shorts Circumference': '右褲管圍',
+    };
+
+    async function doMemberSearch() {
+      const start = document.getElementById('m-start').value;
+      const end = document.getElementById('m-end').value;
+      if (!start || !end) { showError('m', '請選擇日期區間'); return; }
+      if (start > end) { showError('m', '開始日期不能晚於結束日期'); return; }
+
+      const userId = document.getElementById('m-userId').value.trim();
+      const store = document.getElementById('m-store').value.trim();
+
+      hideAll('m');
+      document.getElementById('m-loading').classList.add('active');
+      document.getElementById('m-loading-text').textContent = '搜尋會員與量測資料中，請稍後';
+      document.getElementById('m-search').disabled = true;
+      document.getElementById('m-export').style.display = 'none';
+
+      try {
+        let url = `/api/scan-members?start=${start}&end=${end}`;
+        if (userId) url += `&userId=${encodeURIComponent(userId)}`;
+        if (store) url += `&store=${encodeURIComponent(store)}`;
+
+        // 量測範圍篩選
+        const rangeFields = ['chest','underbust','thinWaist','belly','highHip','lowHip','thighL','thighR'];
+        rangeFields.forEach(k => {
+          const min = document.getElementById('m-'+k+'Min').value;
+          const max = document.getElementById('m-'+k+'Max').value;
+          if (min) url += `&${k}Min=${min}`;
+          if (max) url += `&${k}Max=${max}`;
+        });
+
+        const resp = await fetch(url);
+        const data = await resp.json();
+        document.getElementById('m-loading').classList.remove('active');
+        document.getElementById('m-search').disabled = false;
+
+        if (!resp.ok) { showError('m', data.error || '查詢失敗'); return; }
+
+        lastMemberData = data;
+        const { records, includeMeasurements } = data;
+
+        document.getElementById('m-summary').classList.add('active');
+        document.getElementById('m-total').textContent = records.length;
+        document.getElementById('m-range').textContent = `${start} ~ ${end}`;
+
+        if (records.length === 0) {
+          document.getElementById('m-empty').classList.add('active');
+          return;
+        }
+
+        renderMemberTable(records, includeMeasurements);
+        document.getElementById('m-export').style.display = 'inline-block';
+      } catch (err) {
+        document.getElementById('m-loading').classList.remove('active');
+        document.getElementById('m-search').disabled = false;
+        console.error('Member search error:', err);
+        showError('m', '網路連線異常：' + (err.message || '未知錯誤') + '｜請檢查伺服器狀態');
+      }
+    }
+
+    function renderMemberTable(records, includeMeasurements) {
+      try {
+        const thead = document.getElementById('m-thead');
+        const tbody = document.getElementById('m-tbody');
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
+
+        const hasMeas = includeMeasurements && records.some(r => r.measurements);
+
+        const colDefs = [
+          { label: '會員編號', key: 'userId' },
+          { label: '姓名', key: 'nickName' },
+          { label: '門市', key: 'store' },
+          { label: '掃描日期', key: 'createdAt',
+            fn: v => v ? new Date(v).toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '' },
+          { label: '精準度', key: 'accuracyScore',
+            fn: v => v != null ? v + '%' : '' },
+        ];
+
+        if (hasMeas) {
+          KEY_MEASURES.forEach(k => {
+            colDefs.push({
+              label: MEASURE_LABELS[k] || k.replace(/_/g, ' '),
+              key: k, cls: 'num',
+              fn: (v, row) => {
+                const m = row.measurements;
+                if (!m || m[k] == null) return '-';
+                const val = typeof m[k] === 'number' ? m[k].toFixed(1) : m[k];
+                return esc(String(val));
+              }
+            });
+          });
+        }
+
+        const tr = document.createElement('tr');
+        colDefs.forEach(c => {
+          const th = document.createElement('th');
+          th.textContent = c.label;
+          tr.appendChild(th);
+        });
+        thead.appendChild(tr);
+
+        records.forEach(r => {
+          const row = document.createElement('tr');
+          colDefs.forEach(c => {
+            const td = document.createElement('td');
+            if (c.cls) td.className = c.cls;
+            if (c.fn) td.innerHTML = c.fn(r[c.key], r);
+            else td.textContent = r[c.key] != null ? r[c.key] : '';
+            row.appendChild(td);
+          });
+          tbody.appendChild(row);
+        });
+
+        document.getElementById('m-results').style.display = 'block';
+      } catch (err) {
+        console.error('Render error:', err);
+        showError('m', '表格渲染失敗：' + err.message);
+      }
+    }
+
+    document.getElementById('m-search').addEventListener('click', doMemberSearch);
+
+    document.getElementById('m-export').addEventListener('click', () => {
+      if (!lastMemberData) return;
+      const start = document.getElementById('m-start').value;
+      const end = document.getElementById('m-end').value;
+      const userId = document.getElementById('m-userId').value.trim();
+      const store = document.getElementById('m-store').value.trim();
+
+      let url = `/api/scan-members/export?start=${start}&end=${end}`;
+      if (userId) url += `&userId=${encodeURIComponent(userId)}`;
+      if (store) url += `&store=${encodeURIComponent(store)}`;
+
+      const rangeFields = ['chest','underbust','thinWaist','belly','highHip','lowHip','thighL','thighR'];
+      rangeFields.forEach(k => {
+        const min = document.getElementById('m-'+k+'Min').value;
+        const max = document.getElementById('m-'+k+'Max').value;
+        if (min) url += `&${k}Min=${min}`;
+        if (max) url += `&${k}Max=${max}`;
+      });
+
+      // Use fetch + blob download instead of window.open to avoid navigation issues
+      fetch(url)
+        .then(r => {
+          if (!r.ok) throw new Error('匯出失敗');
+          const disposition = r.headers.get('Content-Disposition') || '';
+          const match = disposition.match(/filename\*=UTF-8''(.+?)(?:$|;)/);
+          let filename = match ? decodeURIComponent(match[1]) : 'member_export.xlsx';
+          return r.blob().then(blob => ({ blob, filename }));
+        })
+        .then(({ blob, filename }) => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(a.href);
+        })
+        .catch(err => showError('m', err.message));
+    });
+
+    ['m-start','m-end','m-userId','m-store'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => {
+        if (e.key === 'Enter') doMemberSearch();
+      });
+    });
+
+    // Auto load on page load
+    setTimeout(() => doStoreSearch(), 500);
+  </script>
+</body>
+</html>

@@ -1,0 +1,1106 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>TG3D ScanAPI Documentation v1.0.7</title><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"><style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200');.hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}.right .hljs-comment{color:#969896}.right .css .hljs-class,.right .css .hljs-id,.right .css .hljs-pseudo,.right .hljs-attribute,.right .hljs-regexp,.right .hljs-tag,.right .hljs-variable,.right .html .hljs-doctype,.right .ruby .hljs-constant,.right .xml .hljs-doctype,.right .xml .hljs-pi,.right .xml .hljs-tag .hljs-title{color:#c66}.right .hljs-built_in,.right .hljs-constant,.right .hljs-literal,.right .hljs-number,.right .hljs-params,.right .hljs-pragma,.right .hljs-preprocessor{color:#de935f}.right .css .hljs-rule .hljs-attribute,.right .ruby .hljs-class .hljs-title{color:#f0c674}.right .hljs-header,.right .hljs-inheritance,.right .hljs-name,.right .hljs-string,.right .hljs-value,.right .ruby .hljs-symbol,.right .xml .hljs-cdata{color:#b5bd68}.right .css .hljs-hexcolor,.right .hljs-title{color:#8abeb7}.right .coffeescript .hljs-title,.right .hljs-function,.right .javascript .hljs-title,.right .perl .hljs-sub,.right .python .hljs-decorator,.right .python .hljs-title,.right .ruby .hljs-function .hljs-title,.right .ruby .hljs-title .hljs-keyword{color:#81a2be}.right .hljs-keyword,.right .javascript .hljs-function{color:#b294bb}.right .hljs{display:block;overflow-x:auto;background:#1d1f21;color:#c5c8c6;padding:.5em;-webkit-text-size-adjust:none}.right .coffeescript .javascript,.right .javascript .xml,.right .tex .hljs-formula,.right .xml .css,.right .xml .hljs-cdata,.right .xml .javascript,.right .xml .vbscript{opacity:.5}.hljs-comment,.hljs-quote{color:#9e8f9e}.hljs-attribute,.hljs-link,.hljs-name,.hljs-regexp,.hljs-selector-class,.hljs-selector-id,.hljs-tag,.hljs-template-variable,.hljs-variable{color:#ca402b}.hljs-built_in,.hljs-literal,.hljs-meta,.hljs-number,.hljs-params,.hljs-type{color:#a65926}.hljs-bullet,.hljs-string,.hljs-symbol{color:#918b3b}.hljs-section,.hljs-title{color:#516aec}.hljs-keyword,.hljs-selector-tag{color:#7b59c0}.hljs{display:block;overflow-x:auto;background:#1b181b;color:#ab9bab;padding:.5em}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}.right .hljs-comment,.right .hljs-quote{color:#776977}.right .hljs-attribute,.right .hljs-link,.right .hljs-name,.right .hljs-regexp,.right .hljs-selector-class,.right .hljs-selector-id,.right .hljs-tag,.right .hljs-template-variable,.right .hljs-variable{color:#ca402b}.right .hljs-built_in,.right .hljs-literal,.right .hljs-meta,.right .hljs-number,.right .hljs-params,.right .hljs-type{color:#a65926}.right .hljs-bullet,.right .hljs-string,.right .hljs-symbol{color:#918b3b}.right .hljs-section,.right .hljs-title{color:#516aec}.right .hljs-keyword,.right .hljs-selector-tag{color:#7b59c0}.right .hljs{display:block;overflow-x:auto;background:#f7f3f7;color:#695d69;padding:.5em}.right .hljs-emphasis{font-style:italic}.right .hljs-strong{font-weight:700}body{color:#c8c8c8;background:#272b30;font:400 14px / 1.42 'Roboto',Helvetica,sans-serif}header{border-bottom:1px solid #373d44;margin-bottom:12px}h1,h2,h3,h4,h5{color:#c8c8c8;margin:12px 0}h1 .permalink,h2 .permalink,h3 .permalink,h4 .permalink,h5 .permalink{margin-left:0;opacity:0;transition:opacity .25s ease}h1:hover .permalink,h2:hover .permalink,h3:hover .permalink,h4:hover .permalink,h5:hover .permalink{opacity:1}.triple h1 .permalink,.triple h2 .permalink,.triple h3 .permalink,.triple h4 .permalink,.triple h5 .permalink{opacity:.15}.triple h1:hover .permalink,.triple h2:hover .permalink,.triple h3:hover .permalink,.triple h4:hover .permalink,.triple h5:hover .permalink{opacity:.15}h1{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:36px}h2{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:30px}h3{font-size:100%;text-transform:uppercase}h5{font-size:100%;font-weight:normal}p{margin:0 0 10px}p.choices{line-height:1.6}a{color:white;text-decoration:none}li p{margin:0}hr.split{border:0;height:1px;width:100%;padding-left:6px;margin:12px auto;background-image:linear-gradient(to right, rgba(200,200,200,0) 20%, rgba(200,200,200,0.2) 51.4%, rgba(39,43,48,0.2) 51.4%, rgba(39,43,48,0) 80%)}dl dt{float:left;width:130px;clear:left;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}dl dd{margin-left:150px}blockquote{color:rgba(200,200,200,0.5);font-size:15.5px;padding:10px 20px;margin:12px 0;border-left:5px solid #2b3237}blockquote p:last-child{margin-bottom:0}pre{background-color:#202529;padding:12px;border:1px solid #424c54;border-radius:6px;overflow:auto}pre code{color:#c8c8c8;background-color:transparent;padding:0;border:none}code{color:#ddd;background-color:#373b40;font:'Inconsolata',monospace;padding:1px 4px;border:1px solid #424c54;border-radius:3px}ul,ol{padding-left:2em}table{border-collapse:collapse;border-spacing:0;margin-bottom:12px}table tr:nth-child(2n){background-color:#22262a}table th,table td{padding:6px 12px;border:1px solid #101214}.text-muted{opacity:.5}.note,.warning{padding:.3em 1em;margin:1em 0;border-radius:2px;font-size:90%}.note h1,.warning h1,.note h2,.warning h2,.note h3,.warning h3,.note h4,.warning h4,.note h5,.warning h5,.note h6,.warning h6{font-family:200 36px 'Raleway',Helvetica,sans-serif;font-size:135%;font-weight:500}.note p,.warning p{margin:.5em 0}.note{color:#c8c8c8;background-color:#2b373e;border-left:4px solid #5bc0de}.note h1,.note h2,.note h3,.note h4,.note h5,.note h6{color:#5bc0de}.warning{color:#c8c8c8;background-color:#352b30;border-left:4px solid #e9322d}.warning h1,.warning h2,.warning h3,.warning h4,.warning h5,.warning h6{color:#e9322d}header{margin-top:24px}nav{position:fixed;top:24px;bottom:0;overflow-y:auto}nav .resource-group{padding:0}nav .resource-group .heading{position:relative}nav .resource-group .heading .chevron{position:absolute;top:12px;right:12px;opacity:.5}nav .resource-group .heading a{display:block;color:#c8c8c8;opacity:.7;border-left:2px solid transparent;margin:0}nav .resource-group .heading a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid #c8c8c8}nav ul{list-style-type:none;padding-left:0}nav ul a{display:block;font-size:13px;color:rgba(200,200,200,0.7);padding:8px 12px;border-top:1px solid #202020;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}nav ul a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid #c8c8c8}nav ul>li{margin:0}nav ul>li:first-child{margin-top:-12px}nav ul>li:last-child{margin-bottom:-12px}nav ul ul a{padding-left:24px}nav ul ul li{margin:0}nav ul ul li:first-child{margin-top:0}nav ul ul li:last-child{margin-bottom:0}nav>div>div>ul>li:first-child>a{border-top:none}.preload *{transition:none !important}.pull-left{float:left}.pull-right{float:right}.badge{display:inline-block;float:right;min-width:10px;min-height:14px;padding:3px 7px;font-size:12px;color:#fff;background-color:#373d44;border-radius:10px;margin:-2px 0}.badge.get{color:white;background-color:#5bc0de}.badge.head{color:white;background-color:#5bc0de}.badge.options{color:white;background-color:#5bc0de}.badge.put{color:white;background-color:#f89406}.badge.patch{color:white;background-color:#f89406}.badge.post{color:white;background-color:#62c462}.badge.delete{color:white;background-color:#ee5f5b}.collapse-button{float:right}.collapse-button .close{display:none;color:white;cursor:pointer}.collapse-button .open{color:white;cursor:pointer}.collapse-button.show .close{display:inline}.collapse-button.show .open{display:none}.collapse-content{max-height:0;overflow:hidden;transition:max-height .3s ease-in-out}nav{width:220px}.container{max-width:940px;margin-left:auto;margin-right:auto}.container .row .content{margin-left:244px;width:696px}.container .row:after{content:'';display:block;clear:both}.container-fluid nav{width:22%}.container-fluid .row .content{margin-left:24%}.container-fluid.triple nav{width:16.5%;padding-right:1px}.container-fluid.triple .row .content{position:relative;margin-left:16.5%;padding-left:24px}.middle:before,.middle:after{content:'';display:table}.middle:after{clear:both}.middle{box-sizing:border-box;width:51.5%;padding-right:12px}.right{box-sizing:border-box;float:right;width:48.5%;padding-left:12px}.right a{color:#666}.right h1,.right h2,.right h3,.right h4,.right h5,.right p,.right div{color:#272b30}.right pre{background-color:#f7f6f5;border:1px solid #f7f6f5}.right pre code{color:#333}.right .description{margin-top:12px}.triple .resource-heading{font-size:125%}.definition{margin-top:12px;margin-bottom:12px}.definition .method{font-weight:bold}.definition .method.get{color:#2e98b8}.definition .method.head{color:#2e98b8}.definition .method.options{color:#2e98b8}.definition .method.post{color:#2eb82e}.definition .method.put{color:#b87f2e}.definition .method.patch{color:#b87f2e}.definition .method.delete{color:#b8322e}.definition .uri{word-break:break-all;word-wrap:break-word}.definition .hostname{opacity:.5}.example-names{background-color:#eee;padding:12px;border-radius:6px}.example-names .tab-button{cursor:pointer;color:#c8c8c8;border:1px solid #ddd;padding:6px;margin-left:12px}.example-names .tab-button.active{background-color:#d5d5d5}.right .example-names{background-color:#adaaa6}.right .example-names .tab-button{color:#272b30;border:1px solid #d8d4cf;border-radius:6px}.right .example-names .tab-button.active{background-color:#95918b}#nav-background{position:fixed;left:0;top:0;bottom:0;width:16.5%;padding-right:14.4px;background-color:#272b30;border-right:1px solid #272b30;z-index:-1}#right-panel-background{position:absolute;right:-12px;top:-12px;bottom:-12px;width:48.6%;background-color:#d8d4cf;z-index:-1}@media (max-width:1200px){nav{width:198px}.container{max-width:840px}.container .row .content{margin-left:224px;width:606px}}@media (max-width:992px){nav{width:169.4px}.container{max-width:720px}.container .row .content{margin-left:194px;width:526px}}@media (max-width:768px){nav{display:none}.container{width:95%;max-width:none}.container .row .content,.container-fluid .row .content,.container-fluid.triple .row .content{margin-left:auto;margin-right:auto;width:95%}#nav-background{display:none}#right-panel-background{width:48.6%}}.back-to-top{position:fixed;z-index:1;bottom:0;right:24px;padding:4px 8px;color:rgba(200,200,200,0.5);background-color:#373d44;text-decoration:none !important;border-top:1px solid #202020;border-left:1px solid #202020;border-right:1px solid #202020;border-top-left-radius:3px;border-top-right-radius:3px}.resource-group{padding:12px;margin-bottom:12px;background-color:#272b30;border:1px solid #202020;border-radius:6px}.resource-group h2.group-heading,.resource-group .heading a{padding:12px;margin:-12px -12px 12px -12px;background-color:#373d44;border-bottom:1px solid #202020;border-top-left-radius:6px;border-top-right-radius:6px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.triple .content .resource-group{padding:0;border:none}.triple .content .resource-group h2.group-heading,.triple .content .resource-group .heading a{margin:0 0 12px 0;border:1px solid #202020}nav .resource-group .heading a{padding:12px;margin-bottom:0}nav .resource-group .collapse-content{padding:0}.action{margin-bottom:12px;padding:12px 12px 0 12px;overflow:hidden;border:1px solid transparent;border-radius:6px}.action h4.action-heading{padding:6px 12px;margin:-12px -12px 12px -12px;border-bottom:1px solid transparent;border-top-left-radius:6px;border-top-right-radius:6px;overflow:hidden}.action h4.action-heading .name{float:right;font-weight:normal;padding:6px 0}.action h4.action-heading .method{padding:6px 12px;margin-right:12px;border-radius:3px;display:inline-block}.action h4.action-heading .method.get{color:#fff;background-color:#2390b0}.action h4.action-heading .method.head{color:#fff;background-color:#2390b0}.action h4.action-heading .method.options{color:#fff;background-color:#2390b0}.action h4.action-heading .method.put{color:#fff;background-color:#945904}.action h4.action-heading .method.patch{color:#fff;background-color:#945904}.action h4.action-heading .method.post{color:#fff;background-color:#348c34}.action h4.action-heading .method.delete{color:#fff;background-color:#ce1a15}.action h4.action-heading code{color:black;background-color:rgba(255,255,255,0.7);border-color:transparent;font-weight:normal;word-break:break-all;display:inline-block;margin-top:2px}.action dl.inner{padding-bottom:2px}.action .title{border-bottom:1px solid #272b30;margin:0 -12px -1px -12px;padding:12px}.action.get{border-color:#202020}.action.get h4.action-heading{color:#2390b0;background:#5bc0de;border-bottom-color:#202020}.action.head{border-color:#202020}.action.head h4.action-heading{color:#2390b0;background:#5bc0de;border-bottom-color:#202020}.action.options{border-color:#202020}.action.options h4.action-heading{color:#2390b0;background:#5bc0de;border-bottom-color:#202020}.action.post{border-color:#202020}.action.post h4.action-heading{color:#348c34;background:#62c462;border-bottom-color:#202020}.action.put{border-color:#202020}.action.put h4.action-heading{color:#945904;background:#f89406;border-bottom-color:#202020}.action.patch{border-color:#202020}.action.patch h4.action-heading{color:#945904;background:#f89406;border-bottom-color:#202020}.action.delete{border-color:#202020}.action.delete h4.action-heading{color:#ce1a15;background:#ee5f5b;border-bottom-color:#202020}</style><script type="text/javascript">
+
+
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82263316-1', {});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ga('send', 'pageview');
+
+
+</script></head><body class="preload"><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><nav><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#users">Users</a></div><div class="collapse-content"><ul><li><a href="#users-check-account-post"><span class="badge post"><i class="fa fa-plus"></i></span>Check account</a></li><li><a href="#users-register-by-email-post"><span class="badge post"><i class="fa fa-plus"></i></span>Register by email</a></li><li><a href="#users-request-confirmation-token-post"><span class="badge post"><i class="fa fa-plus"></i></span>Request confirmation token</a></li><li><a href="#users-confirm-phone-post"><span class="badge post"><i class="fa fa-plus"></i></span>Confirm phone</a></li><li><a href="#users-register-by-phone-post"><span class="badge post"><i class="fa fa-plus"></i></span>Register by phone</a></li><li><a href="#users-signin-post"><span class="badge post"><i class="fa fa-plus"></i></span>Signin</a></li><li><a href="#users-signin-by-sns-post"><span class="badge post"><i class="fa fa-plus"></i></span>Signin by SNS</a></li><li><a href="#users-register-by-member-id-post"><span class="badge post"><i class="fa fa-plus"></i></span>Register by member id</a></li><li><a href="#users-authorize-post"><span class="badge post"><i class="fa fa-plus"></i></span>Authorize</a></li><li><a href="#users-profile">Profile</a><ul><li><a href="#users-profile-post"><span class="badge post"><i class="fa fa-plus"></i></span>Set profile</a></li><li><a href="#users-profile-get"><span class="badge get"><i class="fa fa-arrow-down"></i></span>Get profile</a></li></ul></li><li><a href="#users-delete-account-delete"><span class="badge delete"><i class="fa fa-times"></i></span>Delete account</a></li></ul></div></div><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#scanning-for-client">Scanning for client</a></div><div class="collapse-content"><ul><li><a href="#scanning-for-client-initial-post"><span class="badge post"><i class="fa fa-plus"></i></span>Initial</a></li><li><a href="#scanning-for-client-confirm-post"><span class="badge post"><i class="fa fa-plus"></i></span>Confirm</a></li><li><a href="#scanning-for-client-start-post"><span class="badge post"><i class="fa fa-plus"></i></span>Start</a></li><li><a href="#scanning-for-client-start-for-step-2-post"><span class="badge post"><i class="fa fa-plus"></i></span>Start for step-2</a></li><li><a href="#scanning-for-client-cancel-post"><span class="badge post"><i class="fa fa-plus"></i></span>Cancel</a></li><li><a href="#scanning-for-client-wait-for-scanning-post"><span class="badge post"><i class="fa fa-plus"></i></span>Wait for scanning</a></li><li><a href="#scanning-for-client-wait-for-step-2-scanning-post"><span class="badge post"><i class="fa fa-plus"></i></span>Wait for step-2 scanning</a></li><li><a href="#scanning-for-client-wait-for-scanning-result-post"><span class="badge post"><i class="fa fa-plus"></i></span>Wait for scanning result</a></li><li><a href="#scanning-for-client-wait-for-snapshots-of-scanning-result-post"><span class="badge post"><i class="fa fa-plus"></i></span>Wait for snapshots of scanning result</a></li><li><a href="#scanning-for-client-wait-for-measurement-result-post"><span class="badge post"><i class="fa fa-plus"></i></span>Wait for measurement result</a></li><li><a href="#scanning-for-client-wait-for-snapshots-of-measurements-post"><span class="badge post"><i class="fa fa-plus"></i></span>Wait for snapshots of measurements</a></li><li><a href="#scanning-for-client-release-post"><span class="badge post"><i class="fa fa-plus"></i></span>Release</a></li></ul></div></div><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#scan-records">Scan Records</a></div><div class="collapse-content"><ul><li><a href="#scan-records-get-scan-records-get"><span class="badge get"><i class="fa fa-arrow-down"></i></span>Get scan records</a></li><li><a href="#scan-records-delete-scan-record-delete"><span class="badge delete"><i class="fa fa-times"></i></span>Delete scan record</a></li><li><a href="#scan-records-get-obj-get"><span class="badge get"><i class="fa fa-arrow-down"></i></span>Get OBJ</a></li><li><a href="#scan-records-auto-measurements-get"><span class="badge get"><i class="fa fa-arrow-down"></i></span>Auto measurements</a></li><li><a href="#scan-records-rotative-snapshots-get"><span class="badge get"><i class="fa fa-arrow-down"></i></span>Get rotative snapshots</a></li><li><a href="#scan-records-measurement-snapshots-get"><span class="badge get"><i class="fa fa-arrow-down"></i></span>Get measurement snapshots</a></li></ul></div></div><p style="text-align: center; word-wrap: break-word;"><a href="https://api.tg3ds.com">https://api.tg3ds.com</a></p></nav><div class="content"><header><h1 id="top">TG3D ScanAPI Documentation v1.0.7</h1> </header><section class="resource-group"><h3 style="margin: 0">Host</h3><li>https://api.tg3ds.com</li></section> <section class="resource-group"><h3 style="margin: 0">Rate Limiting</h3><li>Per IP: 90 reqs/min</li></section><section id="users" class="resource-group"><h2 class="group-heading">Users <a href="#users" class="permalink">&para;</a></h2><div id="users-check-account" class="resource"><h3 class="resource-heading">Check account <a href="#users-check-account" class="permalink">&nbsp;&para;</a></h3><div id="users-check-account-post" class="action post"><h4 class="action-heading"><div class="name">Check account</div><a href="#users-check-account-post" class="method post">POST</a><code class="uri">/api/v1/users/check_account?apikey={apikey}</code></h4><p>Check availability of the account</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/check_account?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"The account to check availability, email or mobile phone number"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for your app"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">username</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">available</span>": <span class="hljs-value"><span class="hljs-string">"true if the account is available"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">available</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"boolean"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-register-by-email" class="resource"><h3 class="resource-heading">Register by email <a href="#users-register-by-email" class="permalink">&nbsp;&para;</a></h3><div id="users-register-by-email-post" class="action post"><h4 class="action-heading"><div class="name">Register by email</div><a href="#users-register-by-email-post" class="method post">POST</a><code class="uri">/api/v1/users/register_email?apikey={apikey}</code></h4><p>Register a new account by email address</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/register_email?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">email</span>": <span class="hljs-value"><span class="hljs-string">"The email address"</span></span>,
+  "<span class="hljs-attribute">password</span>": <span class="hljs-value"><span class="hljs-string">"The password for this account"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for your app"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">email</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">password</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>201</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"The username of the created account"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-request-confirmation-token" class="resource"><h3 class="resource-heading">Request confirmation token <a href="#users-request-confirmation-token" class="permalink">&nbsp;&para;</a></h3><div id="users-request-confirmation-token-post" class="action post"><h4 class="action-heading"><div class="name">Request confirmation token</div><a href="#users-request-confirmation-token-post" class="method post">POST</a><code class="uri">/api/v1/users/req_confirmation_token?apikey={apikey}</code></h4><p>Request a confirmation token for the phone number, the confirmation token will be sent via SMS</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/req_confirmation_token?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value"><span class="hljs-string">"The phone number to be confirmed, ex: +886912345678"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for your app"</span></span>,
+  "<span class="hljs-attribute">locale</span>": <span class="hljs-value"><span class="hljs-string">"Locale for user, set different locale will receive SMS message with different language, currently only support 'en', 'zh-CN', and 'zh-TW'"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">locale</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>400</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">errno</span>": <span class="hljs-value"><span class="hljs-string">"40001: Bad phone number, 40004: Hit limitation of send frequency, please retry after specific interval"</span></span>,
+  "<span class="hljs-attribute">msg</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">code</span>": <span class="hljs-value"><span class="hljs-string">"-1: Bad phone number, -2: Retry after 30 seconds, -3: Retry after 5 minutes, -4: Retry after 1 hour"</span></span>,
+    "<span class="hljs-attribute">detail</span>": <span class="hljs-value"><span class="hljs-string">"Detail messages"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">errno</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">msg</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+      "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">code</span>": <span class="hljs-value">{
+          "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+        </span>}</span>,
+        "<span class="hljs-attribute">detail</span>": <span class="hljs-value">{
+          "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+        </span>}
+      </span>}
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-confirm-phone" class="resource"><h3 class="resource-heading">Confirm phone <a href="#users-confirm-phone" class="permalink">&nbsp;&para;</a></h3><div id="users-confirm-phone-post" class="action post"><h4 class="action-heading"><div class="name">Confirm phone</div><a href="#users-confirm-phone-post" class="method post">POST</a><code class="uri">/api/v1/users/confirm_phone?apikey={apikey}</code></h4><p>Confirm the token which sent by SMS</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/confirm_phone?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value"><span class="hljs-string">"The phone number to be confirmed, ex: +886912345678"</span></span>,
+  "<span class="hljs-attribute">confirm_token</span>": <span class="hljs-value"><span class="hljs-string">"The token which received from SMS, ex: 1111"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for your app"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">confirm_token</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-register-by-phone" class="resource"><h3 class="resource-heading">Register by phone <a href="#users-register-by-phone" class="permalink">&nbsp;&para;</a></h3><div id="users-register-by-phone-post" class="action post"><h4 class="action-heading"><div class="name">Register by phone</div><a href="#users-register-by-phone-post" class="method post">POST</a><code class="uri">/api/v1/users/register_phone?apikey={apikey}</code></h4><p>Register a new account by mobile phone number</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/register_phone?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value"><span class="hljs-string">"The mobile phone number, ex: +886912345678"</span></span>,
+  "<span class="hljs-attribute">password</span>": <span class="hljs-value"><span class="hljs-string">"The password for this account"</span></span>,
+  "<span class="hljs-attribute">confirm_token</span>": <span class="hljs-value"><span class="hljs-string">"The token which received from SMS, ex: 1111"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for your app"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">password</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">confirm_token</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>201</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"The username of the created account"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-signin" class="resource"><h3 class="resource-heading">Signin <a href="#users-signin" class="permalink">&nbsp;&para;</a></h3><div id="users-signin-post" class="action post"><h4 class="action-heading"><div class="name">Signin</div><a href="#users-signin-post" class="method post">POST</a><code class="uri">/api/v1/users/signin?apikey={apikey}</code></h4><p>Signin the account to get auth token</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/signin?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"The username which is returned by register APIs"</span></span>,
+  "<span class="hljs-attribute">password</span>": <span class="hljs-value"><span class="hljs-string">"The password for this account"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for your app"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">username</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">password</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"The username of the account"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider of the account"</span></span>,
+  "<span class="hljs-attribute">auth_token</span>": <span class="hljs-value"><span class="hljs-string">"The auth token for the account, please keep it safely"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">username</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">auth_token</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-signin-by-sns" class="resource"><h3 class="resource-heading">Signin by SNS <a href="#users-signin-by-sns" class="permalink">&nbsp;&para;</a></h3><div id="users-signin-by-sns-post" class="action post"><h4 class="action-heading"><div class="name">Signin by SNS</div><a href="#users-signin-by-sns-post" class="method post">POST</a><code class="uri">/api/v1/users/signin_sns?apikey={apikey}</code></h4><p>Signin the account by SNS token and to get auth token</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/signin_sns?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">token</span>": <span class="hljs-value"><span class="hljs-string">"The access token for the social network, can be omitted if provide js_code"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for this account, 1: Facebook, 2: Google, 3: Wechat, 4: Weibo, 5: Apple (Currently, only support Facebook, Wechat and Apple)"</span></span>,
+  "<span class="hljs-attribute">uid</span>": <span class="hljs-value"><span class="hljs-string">"(Optional) ID on the social network, only needed if provider is Wechat, can be omitted if provide js_code"</span></span>,
+  "<span class="hljs-attribute">js_code</span>": <span class="hljs-value"><span class="hljs-string">"(Optional) The authorization code that get from Wechat small app"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">token</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">uid</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">js_code</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"The username of the account"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider of the account"</span></span>,
+  "<span class="hljs-attribute">auth_token</span>": <span class="hljs-value"><span class="hljs-string">"The auth token for the account, please keep it safely"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">username</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">auth_token</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-register-by-member-id" class="resource"><h3 class="resource-heading">Register by member id <a href="#users-register-by-member-id" class="permalink">&nbsp;&para;</a></h3><div id="users-register-by-member-id-post" class="action post"><h4 class="action-heading"><div class="name">Register by member id</div><a href="#users-register-by-member-id-post" class="method post">POST</a><code class="uri">/api/v1/mtm_users/users/register_member?apikey={apikey}</code></h4><p>Register a new user account by member id</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/mtm_users/users/register_member?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">member_number</span>": <span class="hljs-value"><span class="hljs-string">"The member number"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for your app, omit this value or set to 0 if you want to login this account in Cloudzet Store"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">member_number</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>201</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"The username of the created account"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for your app"</span></span>,
+  "<span class="hljs-attribute">auth_token</span>": <span class="hljs-value"><span class="hljs-string">"The auth token for the account, please keep it safely"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">username</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">auth_token</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-authorize" class="resource"><h3 class="resource-heading">Authorize <a href="#users-authorize" class="permalink">&nbsp;&para;</a></h3><div id="users-authorize-post" class="action post"><h4 class="action-heading"><div class="name">Authorize</div><a href="#users-authorize-post" class="method post">POST</a><code class="uri">/api/v1/users/auth?apikey={apikey}</code></h4><p>Authorize the caller to access the other APIs, will return a access token which is expirable</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/auth?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">username</span>": <span class="hljs-value"><span class="hljs-string">"The username of the account"</span></span>,
+  "<span class="hljs-attribute">provider</span>": <span class="hljs-value"><span class="hljs-string">"The provider for this account, which is returned after signin"</span></span>,
+  "<span class="hljs-attribute">auth_token</span>": <span class="hljs-value"><span class="hljs-string">"The auth_token which is returned by signin APIs"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">username</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">provider</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">auth_token</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">access_token</span>": <span class="hljs-value"><span class="hljs-string">"The access token for using access other APIs"</span></span>,
+  "<span class="hljs-attribute">expired_in</span>": <span class="hljs-value"><span class="hljs-string">"The expiry time in seconds, current is 12 hours"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">access_token</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">expired_in</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-profile" class="resource"><h3 class="resource-heading">Profile <a href="#users-profile" class="permalink">&nbsp;&para;</a></h3><div id="users-profile-post" class="action post"><h4 class="action-heading"><div class="name">Set profile</div><a href="#users-profile-post" class="method post">POST</a><code class="uri">/api/v1/users/profile?apikey={apikey}</code></h4><p>Set the user’s profile</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/profile?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">nick_name</span>": <span class="hljs-value"><span class="hljs-string">"The nick name for the user"</span></span>,
+  "<span class="hljs-attribute">gender</span>": <span class="hljs-value"><span class="hljs-string">"The gender for the user, 0: Unknown, 1: Male, 2: Female"</span></span>,
+  "<span class="hljs-attribute">birthday</span>": <span class="hljs-value"><span class="hljs-string">"The birthday for the user with format 'YYYY-MM-DD', ex: 2015-01-01"</span></span>,
+  "<span class="hljs-attribute">height</span>": <span class="hljs-value"><span class="hljs-string">"The height for the user"</span></span>,
+  "<span class="hljs-attribute">weight</span>": <span class="hljs-value"><span class="hljs-string">"The weight for the user"</span></span>,
+  "<span class="hljs-attribute">telephone</span>": <span class="hljs-value"><span class="hljs-string">"The telephone for the user, ex: +8862345678"</span></span>,
+  "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value"><span class="hljs-string">"The mobile phone for the user (Could not be changed if register by phone), ex: +886912345678"</span></span>,
+  "<span class="hljs-attribute">email</span>": <span class="hljs-value"><span class="hljs-string">"The email address for the user (Could not be changed if register by email), ex: user@tg3ds.com"</span></span>,
+  "<span class="hljs-attribute">address</span>": <span class="hljs-value"><span class="hljs-string">"The address for the user"</span></span>,
+}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">nick_name</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">gender</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">birthday</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">height</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"float"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">weight</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"float"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">telephone</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">email</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">address</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">multipart/form-data</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>avatar: image <span class="hljs-keyword">of</span> the avatar, maximum size is <span class="hljs-number">1</span>MB</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div><div id="users-profile-get" class="action get"><h4 class="action-heading"><div class="name">Get profile</div><a href="#users-profile-get" class="method get">GET</a><code class="uri">/api/v1/users/profile?apikey={apikey}</code></h4><p>Get the user’s profile</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/profile?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">nick_name</span>": <span class="hljs-value"><span class="hljs-string">"The nick name for the user"</span></span>,
+  "<span class="hljs-attribute">gender</span>": <span class="hljs-value"><span class="hljs-string">"The gender for the user, 0: Unknown, 1: Male, 2: Female"</span></span>,
+  "<span class="hljs-attribute">birthday</span>": <span class="hljs-value"><span class="hljs-string">"The birthday for the user with format 'YYYY-MM-DD', ex: 2015-01-01"</span></span>,
+  "<span class="hljs-attribute">height</span>": <span class="hljs-value"><span class="hljs-string">"The height for the user"</span></span>,
+  "<span class="hljs-attribute">weight</span>": <span class="hljs-value"><span class="hljs-string">"The weight for the user"</span></span>,
+  "<span class="hljs-attribute">telephone</span>": <span class="hljs-value"><span class="hljs-string">"The telephone for the user"</span></span>,
+  "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value"><span class="hljs-string">"The mobile phone for the user"</span></span>,
+  "<span class="hljs-attribute">email</span>": <span class="hljs-value"><span class="hljs-string">"The email address for the user"</span></span>,
+  "<span class="hljs-attribute">address</span>": <span class="hljs-value"><span class="hljs-string">"The address for the user"</span></span>,
+  "<span class="hljs-attribute">avatar_url</span>": <span class="hljs-value"><span class="hljs-string">"The URL of user's avatar (300x300)"</span></span>,
+  "<span class="hljs-attribute">avatar_thumb_url</span>": <span class="hljs-value"><span class="hljs-string">"The URL of user's thumb avatar (100x100)"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">nick_name</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">gender</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">birthday</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">height</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"float"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">weight</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"float"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">telephone</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">mobile_phone</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">email</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">address</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">avatar_url</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">avatar_thumb_url</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="users-delete-account" class="resource"><h3 class="resource-heading">Delete account <a href="#users-delete-account" class="permalink">&nbsp;&para;</a></h3><div id="users-delete-account-delete" class="action delete"><h4 class="action-heading"><div class="name">Delete account</div><a href="#users-delete-account-delete" class="method delete">DELETE</a><code class="uri">/api/v1/users/me?apikey={apikey}</code></h4><p>Delete this account</p>
+<h4>Example URI</h4><div class="definition"><span class="method delete">DELETE</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/users/me?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>204</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div></section><section id="scanning-for-client" class="resource-group"><h2 class="group-heading">Scanning for client <a href="#scanning-for-client" class="permalink">&para;</a></h2><div id="scanning-for-client-initial" class="resource"><h3 class="resource-heading">Initial <a href="#scanning-for-client-initial" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-initial-post" class="action post"><h4 class="action-heading"><div class="name">Initial</div><a href="#scanning-for-client-initial-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/?apikey={apikey}</code></h4><p>Initial a scanning transaction</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">protocol_ver</span>": <span class="hljs-value"><span class="hljs-string">"The newest protocol version for scanning transaction that client supported, currently should be 3"</span></span>,
+  "<span class="hljs-attribute">scan_ver</span>": <span class="hljs-value"><span class="hljs-string">"The version of scan process that the client supports or wants, 1 for single scan, 2 for two-step scan"</span></span>,
+  "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"(Deprecated) Please use protocol_ver instead of version"</span></span>,
+  "<span class="hljs-attribute">session_key</span>": <span class="hljs-value"><span class="hljs-string">"The session key which get from BLE beacon"</span></span>,
+  "<span class="hljs-attribute">snapshots</span>": <span class="hljs-value"><span class="hljs-string">"(Optional) Set true if you need model snapshots for this scan"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">protocol_ver</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">scan_ver</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">version</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">session_key</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">snapshots</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"boolean"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>201</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">tid</span>": <span class="hljs-value"><span class="hljs-string">"The transaction id"</span></span>,
+  "<span class="hljs-attribute">scan_ver</span>": <span class="hljs-value"><span class="hljs-string">"The version of scan process that client should use, 1: single scan, 2: two-steps scan"</span></span>,
+  "<span class="hljs-attribute">protocol_ver</span>": <span class="hljs-value"><span class="hljs-string">"Protocol version for scanning transaction that client should use, 2: normal scanning flow, 3: start should be called 3.9 seconds in advance"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">tid</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">scan_ver</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">protocol_ver</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-confirm" class="resource"><h3 class="resource-heading">Confirm <a href="#scanning-for-client-confirm" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-confirm-post" class="action post"><h4 class="action-heading"><div class="name">Confirm</div><a href="#scanning-for-client-confirm-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/confirm?apikey={apikey}</code></h4><p>Confirm the scanning transaction is received, if transaction is not confirmed, transaction will be canceled after 10 seconds</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/confirm?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-start" class="resource"><h3 class="resource-heading">Start <a href="#scanning-for-client-start" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-start-post" class="action post"><h4 class="action-heading"><div class="name">Start</div><a href="#scanning-for-client-start-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/start?apikey={apikey}</code></h4><p>Start the scanning transaction</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/start?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-start-for-step-2" class="resource"><h3 class="resource-heading">Start for step-2 <a href="#scanning-for-client-start-for-step-2" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-start-for-step-2-post" class="action post"><h4 class="action-heading"><div class="name">Start for step-2</div><a href="#scanning-for-client-start-for-step-2-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/start_s2?apikey={apikey}</code></h4><p>Start step 2 of the scanning transaction</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/start_s2?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-cancel" class="resource"><h3 class="resource-heading">Cancel <a href="#scanning-for-client-cancel" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-cancel-post" class="action post"><h4 class="action-heading"><div class="name">Cancel</div><a href="#scanning-for-client-cancel-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/cancel?apikey={apikey}</code></h4><p>Cancel the scanning transaction</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/cancel?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-wait-for-scanning" class="resource"><h3 class="resource-heading">Wait for scanning <a href="#scanning-for-client-wait-for-scanning" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-wait-for-scanning-post" class="action post"><h4 class="action-heading"><div class="name">Wait for scanning</div><a href="#scanning-for-client-wait-for-scanning-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/wait_scan?apikey={apikey}</code></h4><p>Wait for scanning</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/wait_scan?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-wait-for-step-2-scanning" class="resource"><h3 class="resource-heading">Wait for step-2 scanning <a href="#scanning-for-client-wait-for-step-2-scanning" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-wait-for-step-2-scanning-post" class="action post"><h4 class="action-heading"><div class="name">Wait for step-2 scanning</div><a href="#scanning-for-client-wait-for-step-2-scanning-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/wait_scan_s2?apikey={apikey}</code></h4><p>Wait for step-2 scanning</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/wait_scan_s2?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-wait-for-scanning-result" class="resource"><h3 class="resource-heading">Wait for scanning result <a href="#scanning-for-client-wait-for-scanning-result" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-wait-for-scanning-result-post" class="action post"><h4 class="action-heading"><div class="name">Wait for scanning result</div><a href="#scanning-for-client-wait-for-scanning-result-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/wait_finish?apikey={apikey}</code></h4><p>Wait for scanning result</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/wait_finish?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-wait-for-snapshots-of-scanning-result" class="resource"><h3 class="resource-heading">Wait for snapshots of scanning result <a href="#scanning-for-client-wait-for-snapshots-of-scanning-result" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-wait-for-snapshots-of-scanning-result-post" class="action post"><h4 class="action-heading"><div class="name">Wait for snapshots of scanning result</div><a href="#scanning-for-client-wait-for-snapshots-of-scanning-result-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/wait_snaps?apikey={apikey}</code></h4><p>Wait for snapshots of scanning result, the scan transaction MUST be inited with snapshots = true</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/wait_snaps?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>[
+  <span class="hljs-string">"The url for downloading the 1/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 2/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 3/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 4/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 5/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 6/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 7/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 8/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 9/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 10/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 11/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 12/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 13/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 14/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 15/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 16/16 snapshot with png format (The url only valid for 15 minutes)"</span>
+]</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"array"</span></span>,
+  "<span class="hljs-attribute">items</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-wait-for-measurement-result" class="resource"><h3 class="resource-heading">Wait for measurement result <a href="#scanning-for-client-wait-for-measurement-result" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-wait-for-measurement-result-post" class="action post"><h4 class="action-heading"><div class="name">Wait for measurement result</div><a href="#scanning-for-client-wait-for-measurement-result-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/wait_measurement?apikey={apikey}</code></h4><p>Wait for auto measurement result</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/wait_measurement?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"3.0"</span></span>,
+  "<span class="hljs-attribute">measurement</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">Chest Circumference</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"line"</span></span>,
+      "<span class="hljs-attribute">line_points</span>": <span class="hljs-value">[
+        [
+          <span class="hljs-string">"-435.91"</span>,
+          <span class="hljs-string">"167.54"</span>,
+          <span class="hljs-string">"-3.80"</span>
+        ],
+        [
+          <span class="hljs-string">"-432.08"</span>,
+          <span class="hljs-string">"167.54"</span>,
+          <span class="hljs-string">"49.30"</span>
+        ],
+        [
+          <span class="hljs-string">"-425.34"</span>,
+          <span class="hljs-string">"167.54"</span>,
+          <span class="hljs-string">"68.61"</span>
+        ],
+        [
+          <span class="hljs-string">"-421.45"</span>,
+          <span class="hljs-string">"167.54"</span>,
+          <span class="hljs-string">"77.72"</span>
+        ]
+      ]</span>,
+      "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-string">"12.40"</span></span>,
+      "<span class="hljs-attribute">chull</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+      "<span class="hljs-attribute">part</span>": <span class="hljs-value">[
+        <span class="hljs-string">"3.0"</span>
+      ]</span>,
+      "<span class="hljs-attribute">curved</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+      "<span class="hljs-attribute">closed</span>": <span class="hljs-value"><span class="hljs-literal">true</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">Upper Front Chest Width Length</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"line"</span></span>,
+      "<span class="hljs-attribute">line_points</span>": <span class="hljs-value">[
+        [
+          <span class="hljs-string">"-258.27"</span>,
+          <span class="hljs-string">"-42.63"</span>,
+          <span class="hljs-string">"165.71"</span>
+        ],
+        [
+          <span class="hljs-string">"-258.27"</span>,
+          <span class="hljs-string">"-48.30"</span>,
+          <span class="hljs-string">"165.46"</span>
+        ],
+        [
+          <span class="hljs-string">"-258.27"</span>,
+          <span class="hljs-string">"-53.97"</span>,
+          <span class="hljs-string">"165.20"</span>
+        ]
+      ]</span>,
+      "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-string">"34.12"</span></span>,
+      "<span class="hljs-attribute">curved</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+      "<span class="hljs-attribute">closed</span>": <span class="hljs-value"><span class="hljs-literal">false</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">Neck Shoulder Points Width</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"line"</span></span>,
+      "<span class="hljs-attribute">line_points</span>": <span class="hljs-value">[
+        [
+          <span class="hljs-string">"-251.27"</span>,
+          <span class="hljs-string">"-42.63"</span>,
+          <span class="hljs-string">"165.71"</span>
+        ],
+        [
+          <span class="hljs-string">"-254.27"</span>,
+          <span class="hljs-string">"-48.30"</span>,
+          <span class="hljs-string">"165.46"</span>
+        ],
+        [
+          <span class="hljs-string">"-258.27"</span>,
+          <span class="hljs-string">"-53.97"</span>,
+          <span class="hljs-string">"165.20"</span>
+        ]
+      ]</span>,
+      "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-string">"14.12"</span></span>,
+      "<span class="hljs-attribute">curved</span>": <span class="hljs-value"><span class="hljs-literal">false</span></span>,
+      "<span class="hljs-attribute">closed</span>": <span class="hljs-value"><span class="hljs-literal">false</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">Left Shoulder Drop Degree</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"angle"</span></span>,
+      "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-string">"18.2"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">SK Right Knee</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"point"</span></span>,
+      "<span class="hljs-attribute">point</span>": <span class="hljs-value">[
+        <span class="hljs-string">"-402.83"</span>,
+        <span class="hljs-string">"-622.02"</span>,
+        <span class="hljs-string">"30.72"</span>
+      ]
+    </span>}
+  </span>}</span>,
+  "<span class="hljs-attribute">error</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">10002</span>": <span class="hljs-value"><span class="hljs-string">"Unable to measure acromion"</span></span>,
+    "<span class="hljs-attribute">10017</span>": <span class="hljs-value"><span class="hljs-string">"Unable to measure left arm"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+    "<span class="hljs-attribute">measurement</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+    "<span class="hljs-attribute">error</span>": <span class="hljs-value"><span class="hljs-string">"object"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-wait-for-snapshots-of-measurements" class="resource"><h3 class="resource-heading">Wait for snapshots of measurements <a href="#scanning-for-client-wait-for-snapshots-of-measurements" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-wait-for-snapshots-of-measurements-post" class="action post"><h4 class="action-heading"><div class="name">Wait for snapshots of measurements</div><a href="#scanning-for-client-wait-for-snapshots-of-measurements-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/wait_measurement_snaps?apikey={apikey}</code></h4><p>Wait for snapshots of measurements, the scan transaction MUST be inited with snapshots = true</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/wait_measurement_snaps?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">Back_Cross_Shoulder_Width</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Back_Cross_Shoulder_Width with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Center_Back_Neck_to_Crotch_Length</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Center_Back_Neck_to_Crotch_Length with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Chest_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Chest_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Collar_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Collar_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">F_Bust_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of F_Bust_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Left_Arm_Length</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Left_Arm_Length with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Left_Inseam_Length</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Left_Inseam_Length with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Left_Thigh_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Left_Thigh_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Left_Upper_Arm_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Left_Upper_Arm_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Low_Hip_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Low_Hip_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Narrow_Waist_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Narrow_Waist_Circumference with png format (The url only valid for 15 minutes)"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "type": "object",
+  "properties": {
+    "Back_Cross_Shoulder_Width": "string",
+    "Center_Back_Neck_to_Crotch_Length": "string",
+    "Chest_Circumference": "string",
+    "Collar_Circumference": "string",
+    "F_Bust_Circumference": "string",
+    "Left_Arm_Length": "string",
+    "Left_Inseam_Length": "string",
+    "Left_Thigh_Circumference": "string",
+    "Left_Upper_Arm_Circumference": "string
+    "Low_Hip_Circumference": "string",
+    "Narrow_Waist_Circumference": "string"
+  }
+}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scanning-for-client-release" class="resource"><h3 class="resource-heading">Release <a href="#scanning-for-client-release" class="permalink">&nbsp;&para;</a></h3><div id="scanning-for-client-release-post" class="action post"><h4 class="action-heading"><div class="name">Release</div><a href="#scanning-for-client-release-post" class="method post">POST</a><code class="uri">/api/v1/scanners/{scanner_id}/{transaction_id}/release?apikey={apikey}</code></h4><p>Release occupied scanner after scan finished, if the API does not be called, scanner will be released after 30 seconds</p>
+<h4>Example URI</h4><div class="definition"><span class="method post">POST</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scanners/<span class="hljs-attribute" title="scanner_id">abcdefg</span>/<span class="hljs-attribute" title="transaction_id">xxxx-xxx-xxxx-xxxx</span>/release?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scanner_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>abcdefg</span></span><p>ID of the scanner</p>
+</dd><dt>transaction_id</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxx-xxx-xxxx-xxxx</span></span><p>The transaction id</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div></div></div></div></div></section><section id="scan-records" class="resource-group"><h2 class="group-heading">Scan Records <a href="#scan-records" class="permalink">&para;</a></h2><div id="scan-records-get-scan-records" class="resource"><h3 class="resource-heading">Get scan records <a href="#scan-records-get-scan-records" class="permalink">&nbsp;&para;</a></h3><div id="scan-records-get-scan-records-get" class="action get"><h4 class="action-heading"><div class="name">Get scan records</div><a href="#scan-records-get-scan-records-get" class="method get">GET</a><code class="uri">/api/v1/scan_records?apikey={apikey}&amp;limit={limit}&amp;offset={offset}</code></h4><p>Get the scan records, will return the scan records for this user</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scan_records?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span>&limit=<span class="hljs-attribute" title="limit">20</span>&offset=<span class="hljs-attribute" title="offset">0</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>20</span></span><p>The number of records to return, default value is 20, and maximum value is 100</p>
+</dd><dt>offset</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>0</span></span><p>The offset of records to return, default value is 0, use for doing pagination</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">total</span>": <span class="hljs-value"><span class="hljs-string">"Number of scan records"</span></span>,
+  "<span class="hljs-attribute">limit</span>": <span class="hljs-value"><span class="hljs-string">"Current limit setting"</span></span>,
+  "<span class="hljs-attribute">offset</span>": <span class="hljs-value"><span class="hljs-string">"Current offset setting"</span></span>,
+  "<span class="hljs-attribute">records</span>": <span class="hljs-value">[
+    {
+      "<span class="hljs-attribute">tid</span>": <span class="hljs-value"><span class="hljs-string">"Transaction id for the record"</span></span>,
+      "<span class="hljs-attribute">icon_url</span>": <span class="hljs-value"><span class="hljs-string">"The thumbnail for the scan record"</span></span>,
+      "<span class="hljs-attribute">created_at</span>": <span class="hljs-value"><span class="hljs-string">"The create time of the record"</span></span>,
+      "<span class="hljs-attribute">updated_at</span>": <span class="hljs-value"><span class="hljs-string">"The update time of the record"</span></span>,
+      "<span class="hljs-attribute">scanner</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"Name of the scanner"</span>
+      </span>}
+    </span>}
+  ]
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">total</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">limit</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">offset</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"int"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">records</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"array"</span></span>,
+      "<span class="hljs-attribute">items</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+        "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+          "<span class="hljs-attribute">tid</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">icon_url</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">created_at</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"datetime"</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">updated_at</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"datetime"</span>
+          </span>}</span>,
+          "<span class="hljs-attribute">scanner</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+            "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+              "<span class="hljs-attribute">name</span>": <span class="hljs-value">{
+                "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+              </span>}
+            </span>}
+          </span>}
+        </span>}
+      </span>}
+    </span>}
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scan-records-delete-scan-record" class="resource"><h3 class="resource-heading">Delete scan record <a href="#scan-records-delete-scan-record" class="permalink">&nbsp;&para;</a></h3><div id="scan-records-delete-scan-record-delete" class="action delete"><h4 class="action-heading"><div class="name">Delete scan record</div><a href="#scan-records-delete-scan-record-delete" class="method delete">DELETE</a><code class="uri">/api/v1/scan_records/{scan_record_tid}?apikey={apikey}</code></h4><p>Delete the scan record</p>
+<h4>Example URI</h4><div class="definition"><span class="method delete">DELETE</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scan_records/<span class="hljs-attribute" title="scan_record_tid">58314B08-9585-401F-94C3-696C67842449</span>?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scan_record_tid</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>58314B08-9585-401F-94C3-696C67842449</span></span><p>Transaction id of the scan record</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong></div></div></div><div id="scan-records-get-obj" class="resource"><h3 class="resource-heading">Get OBJ <a href="#scan-records-get-obj" class="permalink">&nbsp;&para;</a></h3><div id="scan-records-get-obj-get" class="action get"><h4 class="action-heading"><div class="name">Get OBJ</div><a href="#scan-records-get-obj-get" class="method get">GET</a><code class="uri">/api/v1/scan_records/{scan_record_tid}/obj?apikey={apikey}&amp;pose={pose}</code></h4><p>Get the OBJ for the scan record (zip format)</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scan_records/<span class="hljs-attribute" title="scan_record_tid">58314B08-9585-401F-94C3-696C67842449</span>/obj?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span>&pose=<span class="hljs-attribute" title="pose">A</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scan_record_tid</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>58314B08-9585-401F-94C3-696C67842449</span></span><p>Transaction id of the scan record</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd><dt>pose</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>A</span></span><p>The pose of model, A or I, default is A</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/octet-stream</span></code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scan-records-auto-measurements" class="resource"><h3 class="resource-heading">Auto measurements <a href="#scan-records-auto-measurements" class="permalink">&nbsp;&para;</a></h3><div id="scan-records-auto-measurements-get" class="action get"><h4 class="action-heading"><div class="name">Auto measurements</div><a href="#scan-records-auto-measurements-get" class="method get">GET</a><code class="uri">/api/v1/scan_records/{scan_record_tid}/size_xt?apikey={apikey}&amp;pose={pose}</code></h4><p>Get the auto measurements for the scan record</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scan_records/<span class="hljs-attribute" title="scan_record_tid">58314B08-9585-401F-94C3-696C67842449</span>/size_xt?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span>&pose=<span class="hljs-attribute" title="pose">A</span></span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scan_record_tid</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>58314B08-9585-401F-94C3-696C67842449</span></span><p>Transaction id of the scan record</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd><dt>pose</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>A</span></span><p>The pose of model, A or I, default is A</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"2.0"</span></span>,
+  "<span class="hljs-attribute">alg_ver</span>": <span class="hljs-value"><span class="hljs-string">"1000"</span></span>,
+  "<span class="hljs-attribute">measurement</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">Chest Circumference</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"line"</span></span>,
+      "<span class="hljs-attribute">line_points</span>": <span class="hljs-value">[
+        [
+          <span class="hljs-string">"-435.91"</span>,
+          <span class="hljs-string">"167.54"</span>,
+          <span class="hljs-string">"-3.80"</span>
+        ],
+        [
+          <span class="hljs-string">"-432.08"</span>,
+          <span class="hljs-string">"167.54"</span>,
+          <span class="hljs-string">"49.30"</span>
+        ],
+        [
+          <span class="hljs-string">"-425.34"</span>,
+          <span class="hljs-string">"167.54"</span>,
+          <span class="hljs-string">"68.61"</span>
+        ],
+        [
+          <span class="hljs-string">"-421.45"</span>,
+          <span class="hljs-string">"167.54"</span>,
+          <span class="hljs-string">"77.72"</span>
+        ]
+      ]</span>,
+      "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-string">"12.40"</span></span>,
+      "<span class="hljs-attribute">chull</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+      "<span class="hljs-attribute">part</span>": <span class="hljs-value">[
+        <span class="hljs-string">"3.0"</span>
+      ]</span>,
+      "<span class="hljs-attribute">curved</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+      "<span class="hljs-attribute">closed</span>": <span class="hljs-value"><span class="hljs-literal">true</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">Upper Front Chest Width Length</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"line"</span></span>,
+      "<span class="hljs-attribute">line_points</span>": <span class="hljs-value">[
+        [
+          <span class="hljs-string">"-258.27"</span>,
+          <span class="hljs-string">"-42.63"</span>,
+          <span class="hljs-string">"165.71"</span>
+        ],
+        [
+          <span class="hljs-string">"-258.27"</span>,
+          <span class="hljs-string">"-48.30"</span>,
+          <span class="hljs-string">"165.46"</span>
+        ],
+        [
+          <span class="hljs-string">"-258.27"</span>,
+          <span class="hljs-string">"-53.97"</span>,
+          <span class="hljs-string">"165.20"</span>
+        ]
+      ]</span>,
+      "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-string">"34.12"</span></span>,
+      "<span class="hljs-attribute">curved</span>": <span class="hljs-value"><span class="hljs-literal">true</span></span>,
+      "<span class="hljs-attribute">closed</span>": <span class="hljs-value"><span class="hljs-literal">false</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">Neck Shoulder Points Width</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"line"</span></span>,
+      "<span class="hljs-attribute">line_points</span>": <span class="hljs-value">[
+        [
+          <span class="hljs-string">"-251.27"</span>,
+          <span class="hljs-string">"-42.63"</span>,
+          <span class="hljs-string">"165.71"</span>
+        ],
+        [
+          <span class="hljs-string">"-254.27"</span>,
+          <span class="hljs-string">"-48.30"</span>,
+          <span class="hljs-string">"165.46"</span>
+        ],
+        [
+          <span class="hljs-string">"-258.27"</span>,
+          <span class="hljs-string">"-53.97"</span>,
+          <span class="hljs-string">"165.20"</span>
+        ]
+      ]</span>,
+      "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-string">"14.12"</span></span>,
+      "<span class="hljs-attribute">curved</span>": <span class="hljs-value"><span class="hljs-literal">false</span></span>,
+      "<span class="hljs-attribute">closed</span>": <span class="hljs-value"><span class="hljs-literal">false</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">Left Shoulder Drop Degree</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"angle"</span></span>,
+      "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-string">"18.2"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">SK Right Knee</span>": <span class="hljs-value">{
+      "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"point"</span></span>,
+      "<span class="hljs-attribute">point</span>": <span class="hljs-value">[
+        <span class="hljs-string">"-402.83"</span>,
+        <span class="hljs-string">"-622.02"</span>,
+        <span class="hljs-string">"30.72"</span>
+      ]
+    </span>}
+  </span>}</span>,
+  "<span class="hljs-attribute">error</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">10002</span>": <span class="hljs-value"><span class="hljs-string">"Unable to measure acromion"</span></span>,
+    "<span class="hljs-attribute">10017</span>": <span class="hljs-value"><span class="hljs-string">"Unable to measure left arm"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+  "<span class="hljs-attribute">properties</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">version</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+    "<span class="hljs-attribute">alg_ver</span>": <span class="hljs-value"><span class="hljs-string">"string"</span></span>,
+    "<span class="hljs-attribute">measurement</span>": <span class="hljs-value"><span class="hljs-string">"object"</span></span>,
+    "<span class="hljs-attribute">error</span>": <span class="hljs-value"><span class="hljs-string">"object"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scan-records-rotative-snapshots" class="resource"><h3 class="resource-heading">Rotative Snapshots <a href="#scan-records-rotative-snapshots" class="permalink">&nbsp;&para;</a></h3><div id="scan-records-rotative-snapshots-get" class="action get"><h4 class="action-heading"><div class="name">Get rotative snapshots</div><a href="#scan-records-rotative-snapshots-get" class="method get">GET</a><code class="uri">/api/v1/scan_records/{scan_record_tid}/snapshots?apikey={apikey}&amp;type=model</code></h4><p>Get rotative snapshots for 3D model</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scan_records/<span class="hljs-attribute" title="scan_record_tid">58314B08-9585-401F-94C3-696C67842449</span>/snapshots?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span>&type=model</span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scan_record_tid</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>58314B08-9585-401F-94C3-696C67842449</span></span><p>Transaction id of the scan record</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>[
+  <span class="hljs-string">"The url for downloading the 1/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 2/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 3/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 4/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 5/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 6/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 7/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 8/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 9/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 10/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 11/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 12/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 13/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 14/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 15/16 snapshot with png format (The url only valid for 15 minutes)"</span>,
+  <span class="hljs-string">"The url for downloading the 16/16 snapshot with png format (The url only valid for 15 minutes)"</span>
+]</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"array"</span></span>,
+  "<span class="hljs-attribute">items</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"string"</span>
+  </span>}
+</span>}</code></pre><div style="height: 1px;"></div></div></div></div></div><div id="scan-records-measurement-snapshots" class="resource"><h3 class="resource-heading">Measurement Snapshots <a href="#scan-records-measurement-snapshots" class="permalink">&nbsp;&para;</a></h3><div id="scan-records-measurement-snapshots-get" class="action get"><h4 class="action-heading"><div class="name">Get measurement snapshots</div><a href="#scan-records-measurement-snapshots-get" class="method get">GET</a><code class="uri">/api/v1/scan_records/{scan_record_tid}/snapshots?apikey={apikey}&amp;type=measurements</code></h4><p>Get measurement snapshots for 3D model</p>
+<h4>Example URI</h4><div class="definition"><span class="method get">GET</span>&nbsp;<span class="uri"><span class="hostname">https://api.tg3ds.com</span>/api/v1/scan_records/<span class="hljs-attribute" title="scan_record_tid">58314B08-9585-401F-94C3-696C67842449</span>/snapshots?apikey=<span class="hljs-attribute" title="apikey">xxxxxxxx</span>&type=measurements</span></div><div class="title"><strong>URI Parameters</strong><div class="collapse-button show"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><dl class="inner"><dt>scan_record_tid</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>58314B08-9585-401F-94C3-696C67842449</span></span><p>Transaction id of the scan record</p>
+</dd><dt>apikey</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>xxxxxxxx</span></span><p>The api key for your app</p>
+</dd></dl></div><div class="title"><strong>Request</strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-User-Access-Token</span>: <span class="hljs-string">The token which is returned by auth API</span></code></pre><div style="height: 1px;"></div></div></div><div class="title"><strong>Response&nbsp;&nbsp;<code>200</code></strong><div class="collapse-button"><span class="close">Hide</span><span class="open">Show</span></div></div><div class="collapse-content"><div class="inner"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span></code></pre><div style="height: 1px;"></div><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">Back_Cross_Shoulder_Width</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Back_Cross_Shoulder_Width with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Center_Back_Neck_to_Crotch_Length</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Center_Back_Neck_to_Crotch_Length with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Chest_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Chest_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Collar_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Collar_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">F_Bust_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of F_Bust_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Left_Arm_Length</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Left_Arm_Length with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Left_Inseam_Length</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Left_Inseam_Length with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Left_Thigh_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Left_Thigh_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Left_Upper_Arm_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Left_Upper_Arm_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Low_Hip_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Low_Hip_Circumference with png format (The url only valid for 15 minutes)"</span></span>,
+  "<span class="hljs-attribute">Narrow_Waist_Circumference</span>": <span class="hljs-value"><span class="hljs-string">"The url for downloading screenshot of Narrow_Waist_Circumference with png format (The url only valid for 15 minutes)"</span>
+</span>}</code></pre><div style="height: 1px;"></div><h5>Schema</h5><pre><code>{
+  "type": "object",
+  "properties": {
+    "Back_Cross_Shoulder_Width": "string",
+    "Center_Back_Neck_to_Crotch_Length": "string",
+    "Chest_Circumference": "string",
+    "Collar_Circumference": "string",
+    "F_Bust_Circumference": "string",
+    "Left_Arm_Length": "string",
+    "Left_Inseam_Length": "string",
+    "Left_Thigh_Circumference": "string",
+    "Left_Upper_Arm_Circumference": "string
+    "Low_Hip_Circumference": "string",
+    "Narrow_Waist_Circumference": "string"
+  }
+}</code></pre><div style="height: 1px;"></div></div></div></div></div></section></div></div></div><p style="text-align: center;" class="text-muted">Copyright © 2023 <a href="http://www.tg3ds.com">TG3D Studio</a>. All Rights Reserved. 06 Dec 2023</p><script>/* eslint-env browser */
+/* eslint quotes: [2, "single"] */
+'use strict';
+
+/*
+  Determine if a string ends with another string.
+*/
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+/*
+  Get a list of direct child elements by class name.
+*/
+function childrenByClass(element, name) {
+  var filtered = [];
+
+  for (var i = 0; i < element.children.length; i++) {
+    var child = element.children[i];
+    var classNames = child.className.split(' ');
+    if (classNames.indexOf(name) !== -1) {
+      filtered.push(child);
+    }
+  }
+
+  return filtered;
+}
+
+/*
+  Get an array [width, height] of the window.
+*/
+function getWindowDimensions() {
+  var w = window,
+      d = document,
+      e = d.documentElement,
+      g = d.body,
+      x = w.innerWidth || e.clientWidth || g.clientWidth,
+      y = w.innerHeight || e.clientHeight || g.clientHeight;
+
+  return [x, y];
+}
+
+/*
+  Collapse or show a request/response example.
+*/
+function toggleCollapseButton(event) {
+    var button = event.target.parentNode;
+    var content = button.parentNode.nextSibling;
+    var inner = content.children[0];
+
+    if (button.className.indexOf('collapse-button') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+        // Currently showing, so let's hide it
+        button.className = 'collapse-button';
+        content.style.maxHeight = '0px';
+    } else {
+        // Currently hidden, so let's show it
+        button.className = 'collapse-button show';
+        content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+function toggleTabButton(event) {
+    var i, index;
+    var button = event.target;
+
+    // Get index of the current button.
+    var buttons = childrenByClass(button.parentNode, 'tab-button');
+    for (i = 0; i < buttons.length; i++) {
+        if (buttons[i] === button) {
+            index = i;
+            button.className = 'tab-button active';
+        } else {
+            buttons[i].className = 'tab-button';
+        }
+    }
+
+    // Hide other tabs and show this one.
+    var tabs = childrenByClass(button.parentNode.parentNode, 'tab');
+    for (i = 0; i < tabs.length; i++) {
+        if (i === index) {
+            tabs[i].style.display = 'block';
+        } else {
+            tabs[i].style.display = 'none';
+        }
+    }
+}
+
+/*
+  Collapse or show a navigation menu. It will not be hidden unless it
+  is currently selected or `force` has been passed.
+*/
+function toggleCollapseNav(event, force) {
+    var heading = event.target.parentNode;
+    var content = heading.nextSibling;
+    var inner = content.children[0];
+
+    if (heading.className.indexOf('heading') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+      // Currently showing, so let's hide it, but only if this nav item
+      // is already selected. This prevents newly selected items from
+      // collapsing in an annoying fashion.
+      if (force || window.location.hash && endsWith(event.target.href, window.location.hash)) {
+        content.style.maxHeight = '0px';
+      }
+    } else {
+      // Currently hidden, so let's show it
+      content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+/*
+  Refresh the page after a live update from the server. This only
+  works in live preview mode (using the `--server` parameter).
+*/
+function refresh(body) {
+    document.querySelector('body').className = 'preload';
+    document.body.innerHTML = body;
+
+    // Re-initialize the page
+    init();
+    autoCollapse();
+
+    document.querySelector('body').className = '';
+}
+
+/*
+  Determine which navigation items should be auto-collapsed to show as many
+  as possible on the screen, based on the current window height. This also
+  collapses them.
+*/
+function autoCollapse() {
+  var windowHeight = getWindowDimensions()[1];
+  var itemsHeight = 64; /* Account for some padding */
+  var itemsArray = Array.prototype.slice.call(
+    document.querySelectorAll('nav .resource-group .heading'));
+
+  // Get the total height of the navigation items
+  itemsArray.forEach(function (item) {
+    itemsHeight += item.parentNode.offsetHeight;
+  });
+
+  // Should we auto-collapse any nav items? Try to find the smallest item
+  // that can be collapsed to show all items on the screen. If not possible,
+  // then collapse the largest item and do it again. First, sort the items
+  // by height from smallest to largest.
+  var sortedItems = itemsArray.sort(function (a, b) {
+    return a.parentNode.offsetHeight - b.parentNode.offsetHeight;
+  });
+
+  while (sortedItems.length && itemsHeight > windowHeight) {
+    for (var i = 0; i < sortedItems.length; i++) {
+      // Will collapsing this item help?
+      var itemHeight = sortedItems[i].nextSibling.offsetHeight;
+      if ((itemsHeight - itemHeight <= windowHeight) || i === sortedItems.length - 1) {
+        // It will, so let's collapse it, remove its content height from
+        // our total and then remove it from our list of candidates
+        // that can be collapsed.
+        itemsHeight -= itemHeight;
+        toggleCollapseNav({target: sortedItems[i].children[0]}, true);
+        sortedItems.splice(i, 1);
+        break;
+      }
+    }
+  }
+}
+
+/*
+  Initialize the interactive functionality of the page.
+*/
+function init() {
+    var i, j;
+
+    // Make collapse buttons clickable
+    var buttons = document.querySelectorAll('.collapse-button');
+    for (i = 0; i < buttons.length; i++) {
+        buttons[i].onclick = toggleCollapseButton;
+
+        // Show by default? Then toggle now.
+        if (buttons[i].className.indexOf('show') !== -1) {
+            toggleCollapseButton({target: buttons[i].children[0]});
+        }
+    }
+
+    var responseCodes = document.querySelectorAll('.example-names');
+    for (i = 0; i < responseCodes.length; i++) {
+        var tabButtons = childrenByClass(responseCodes[i], 'tab-button');
+        for (j = 0; j < tabButtons.length; j++) {
+            tabButtons[j].onclick = toggleTabButton;
+
+            // Show by default?
+            if (j === 0) {
+                toggleTabButton({target: tabButtons[j]});
+            }
+        }
+    }
+
+    // Make nav items clickable to collapse/expand their content.
+    var navItems = document.querySelectorAll('nav .resource-group .heading');
+    for (i = 0; i < navItems.length; i++) {
+        navItems[i].onclick = toggleCollapseNav;
+
+        // Show all by default
+        toggleCollapseNav({target: navItems[i].children[0]});
+    }
+}
+
+// Initial call to set up buttons
+init();
+
+window.onload = function () {
+    autoCollapse();
+    // Remove the `preload` class to enable animations
+    document.querySelector('body').className = '';
+};
+</script></body></html>
