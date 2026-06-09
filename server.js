@@ -61,7 +61,7 @@ async function fetchMeasurements(tid, pose) {
       if (status !== 200) return null;
       return body.measurement || null;
     } catch {
-      await new Promise(function(r) { setTimeout(r, 2000); });
+      await new Promise(function(r) { setTimeout(r, 1000); });
     }
   }
   return null;
@@ -74,7 +74,7 @@ const CHEST_UNDERBUST_FIELDS = ['Chest Circumference', 'F Under Bust Circumferen
 async function fetchMergedMeasurements(tid) {
   // Sequential: pose=A first, wait 2s (API limit 1 req/sec), then pose=I
   const poseA = await fetchMeasurements(tid, 'A');
-  await new Promise(function(r) { setTimeout(r, 2000); });
+  await new Promise(function(r) { setTimeout(r, 1000); });
   const poseI = await fetchMeasurements(tid, 'I');
 
   if (!poseA && !poseI) return null;
@@ -448,11 +448,8 @@ app.get('/api/scan-members', async (req, res) => {
     }
     const hasMeasureFilters = Object.keys(measureFilters).length > 0;
 
-    // Fetch scan records from DB cache only
-    // Incremental sync: pull any newer scan records from API first
-    try { await syncScanRecords(); } catch (syncErr) {
-      console.error('[members] Sync error (non-fatal):', syncErr.message);
-    }
+    // Fire incremental sync in background so new records eventually appear
+    setImmediate(function() { syncScanRecords().catch(function(e) {}); });
     let allRecords = [];
     let candidates = [];
     let totalChecked = 0;
@@ -477,23 +474,19 @@ app.get('/api/scan-members', async (req, res) => {
       if (candidates.length >= MAX_API_RECORDS) break;
     }
 
-        // Read measurements from DB cache only (fast, no API calls during request)
+        // Fetch measurements from DB cache then API for missing ones
     const tids = candidates.map(function(r) { return r.tid; });
-    const measurementsMap = db.getMeasurementsByTids(tids);
-    // Background fetch missing measurements and cache to DB for next time
+    var measurementsMap = db.getMeasurementsByTids(tids);
     var missingTids = tids.filter(function(t) { return !measurementsMap[t]; });
     if (missingTids.length > 0) {
-      setImmediate(async function() {
-        try {
-          var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 1);
-          var toSave = {};
-          for (var i = 0; i < missingTids.length; i++) {
-            var tid = missingTids[i];
-            if (apiMeas[tid]) toSave[tid] = apiMeas[tid];
-          }
-          if (Object.keys(toSave).length > 0) db.saveMeasurements(toSave);
-        } catch(e) { console.error('[bg-meas] Error:', e.message); }
-      });
+      var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 1);
+      var toSave = {};
+      for (var i = 0; i < missingTids.length; i++) {
+        var tid = missingTids[i];
+        if (apiMeas[tid]) toSave[tid] = apiMeas[tid];
+      }
+      if (Object.keys(toSave).length > 0) db.saveMeasurements(toSave);
+      Object.assign(measurementsMap, apiMeas);
     }
         // Build results
     const results = [];
