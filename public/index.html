@@ -611,8 +611,6 @@
             fn: v => v ? new Date(v).toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '' },
           { label: '精準度', key: 'accuracyScore',
             fn: v => v != null ? v + '%' : '' },
-          { label: '標籤', key: 'tagList',
-            fn: (v, row) => { const t = row.tagList; return Array.isArray(t) ? esc(t.join(', ')) : (t || '') } },
         ];
 
         if (hasMeas) {
