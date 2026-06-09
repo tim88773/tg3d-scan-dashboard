@@ -1,7 +1,7 @@
 {
   "name": "tg-scan-summary",
   "version": "1.0.0",
-  "description": "TG3D Scan - 門市掃描人數查詢",
+  "description": "TG3D Scan - 門市掃描儀表板",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
