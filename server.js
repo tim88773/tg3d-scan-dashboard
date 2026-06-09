@@ -477,19 +477,19 @@ app.get('/api/scan-members/export', async (req, res) => {
 
     // Build column definitions matching the web table
     const colDefs = [
-      { header: '\u6703\u54e1\u7de8\u865f', key: 'userId', width: 14 },
-      { header: '\u59d3\u540d', key: 'nickName', width: 14 },
-      { header: '\u9580\u5e02', key: 'store', width: 16 },
-      { header: '\u6383\u63cf\u65e5\u671f', key: 'createdAt', width: 22 },
-      { header: '\u7cbe\u6e96\u5ea6', key: 'accuracyScore', width: 10 },
-      { header: '\u6383\u63cf\u5668', key: 'scanner', width: 18 },
+      { header: 'userId', key: 'userId', width: 14 },
+      { header: 'name', key: 'nickName', width: 14 },
+      { header: 'store', key: 'store', width: 16 },
+      { header: 'scanDate', key: 'createdAt', width: 22 },
+      { header: 'accuracy', key: 'accuracyScore', width: 10 },
+      { header: 'scanner', key: 'scanner', width: 18 },
     ];
     // Add measurement columns
     measureKeys.forEach(function(k) {
       colDefs.push({ header: k, key: k, width: 16 });
     });
 
-    const ws = wb.addWorksheet("記�?");
+    const ws = wb.addWorksheet('members');
     ws.columns = colDefs;
 
     const hRow = ws.getRow(1);
