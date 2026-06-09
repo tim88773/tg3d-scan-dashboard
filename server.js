@@ -24,7 +24,15 @@ function tg3dRequest(url) {
       res.on('data', (chunk) => data += chunk);
       res.on('end', () => {
         try { resolve({ status: res.statusCode, body: JSON.parse(data) }); }
-        catch (e) { reject(new Error('Parse error: ' + data.slice(0, 200))); }
+        catch (e) {
+            // Handle non-JSON responses like rate-limit 'Retry later'
+            const text = data.trim();
+            if (text === 'Retry later') {
+              resolve({ status: 429, body: { error: 'Retry later' } });
+            } else {
+              reject(new Error('Parse error: ' + text.slice(0, 200)));
+            }
+          }
       });
     });
     req.on('timeout', () => { req.destroy(); reject(new Error('API request timeout after ' + REQ_TIMEOUT + 'ms')); });
@@ -35,6 +43,7 @@ function tg3dRequest(url) {
 async function fetchScanRecordsPage(limit, offset) {
   const url = TG3D_BASE + '/api/v1/scan_records?apikey=' + APIKEY + '&limit=' + limit + '&offset=' + offset;
   const { status, body } = await tg3dRequest(url);
+  if (status === 429) throw new Error('Retry later');
   if (status !== 200) throw new Error('API error ' + status + ': ' + JSON.stringify(body));
   return body;
 }
@@ -231,32 +240,38 @@ async function scanRecordsByDateRange(startDate, endDate, filters) {
   let done = false;
 
   while (!done) {
-    const data = await fetchScanRecordsPage(PAGE_SIZE, offset);
-    const records = data.records || [];
-    if (records.length === 0) break;
+    try {
+      const data = await fetchScanRecordsPage(PAGE_SIZE, offset);
+      const records = data.records || [];
+      if (records.length === 0) break;
 
-    for (const rec of records) {
-      const ca = new Date(rec.created_at).getTime();
-      if (ca > endMs) continue;
-      if (ca < startMs) { done = true; break; }
+      for (const rec of records) {
+        const ca = new Date(rec.created_at).getTime();
+        if (ca > endMs) continue;
+        if (ca < startMs) { done = true; break; }
 
-      if (filters.userId) {
-        const q = filters.userId.toLowerCase();
-        const matchId = (rec.user_id || '').toLowerCase().includes(q);
-        const matchName = (rec.user?.nick_name || '').toLowerCase().includes(q);
-        const matchReal = (rec.real_name || '').toLowerCase().includes(q);
-        if (!matchId && !matchName && !matchReal) continue;
+        if (filters.userId) {
+          const q = filters.userId.toLowerCase();
+          const matchId = (rec.user_id || '').toLowerCase().includes(q);
+          const matchName = (rec.user?.nick_name || '').toLowerCase().includes(q);
+          const matchReal = (rec.real_name || '').toLowerCase().includes(q);
+          if (!matchId && !matchName && !matchReal) continue;
+        }
+        if (filters.store) {
+          const sn = (rec.scanner?.store?.name || '').toLowerCase();
+          if (!sn.includes(filters.store.toLowerCase())) continue;
+        }
+
+        matched.push(rec);
       }
-      if (filters.store) {
-        const sn = (rec.scanner?.store?.name || '').toLowerCase();
-        if (!sn.includes(filters.store.toLowerCase())) continue;
-      }
-
-      matched.push(rec);
+      offset += PAGE_SIZE;
+      if (offset >= (data.total || 0)) done = true;
+    } catch (apiErr) {
+      console.error('[summary] API fetch failed, partial results:', apiErr.message);
+      break;
     }
-    offset += PAGE_SIZE;
-    if (offset >= (data.total || 0)) done = true;
   }
+  return matched;
   return matched;
 }
 
