@@ -598,25 +598,13 @@ app.listen(PORT, function() {
   // Warmup: sync latest + backfill older records on startup
   (async function warmupCache() {
     try {
-      console.log("[warmup] Running initial sync...");
+      console.log("[warmup] Running sync (records + measurements)...");
+      // syncScanRecords handles full/incr sync automatically
       var count = await syncScanRecords();
-      console.log("[warmup] Initial sync: added " + count + " newer records");
-
-      // Backfill: fetch older records to fill historical gaps
-      var oldestRow = db.getLatestCreatedAt();
-      if (oldestRow) {
-        var oldestDate = new Date(oldestRow.created_at);
-        var oneYearAgo = new Date(); oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-        if (oldestDate > oneYearAgo) {
-          console.log("[warmup] Backfilling records older than " + oldestDate.toISOString().slice(0,10) + "...");
-          var backfillCount = await syncRange(oneYearAgo, oldestDate, 50000);
-          console.log("[warmup] Backfill complete: added " + backfillCount + " older records");
-        }
-      }
-      console.log("[warmup] Warmup complete");
-
-      // Background: pre-cache measurements for all tids (1 req/sec limit)
+      console.log("[warmup] Scan records cached:", count, "new records");
       console.log("[warmup] Starting measurement pre-cache...");
+
+      // Background: pre-cache measurements slowly (1 req/sec limit)
       setImmediate(async function preCacheMeas() {
         var allRecs = db.getRecordsByDateRange('2000-01-01', '2099-12-31');
         var allTids = allRecs.map(function(r) { return r.tid; });
