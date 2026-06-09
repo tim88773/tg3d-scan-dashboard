@@ -58,19 +58,42 @@ async function fetchMeasurements(tid, pose) {
   } catch { return null; }
 }
 
-// measurement cache to avoid repeated fetches
+// Fields that should use pose=I (chest/underbust) with pose=A fallback
+const CHEST_UNDERBUST_FIELDS = ['Chest Circumference', 'F Under Bust Circumference B'];
+
+// Fetch measurements: other fields use pose=A, chest/underbust use pose=I (fallback to A)
+async function fetchMergedMeasurements(tid) {
+  const [poseA, poseI] = await Promise.all([
+    fetchMeasurements(tid, 'A'),
+    fetchMeasurements(tid, 'I')
+  ]);
+
+  if (!poseA && !poseI) return null;
+  if (!poseA) return poseI;
+  if (!poseI) return poseA;
+
+  // Start with pose=A as base (most fields come from here)
+  const merged = { ...poseA };
+  // Override chest/underbust with pose=I, fallback to pose=A
+  for (const field of CHEST_UNDERBUST_FIELDS) {
+    merged[field] = poseI[field] != null ? poseI[field] : (poseA[field] != null ? poseA[field] : null);
+  }
+  return merged;
+}
+
+// In-memory cache for merged measurements
 const measureCache = new Map();
 const MEASURE_CACHE_TTL = 300_000;
-async function fetchMeasurementsCached(tid) {
+async function fetchMergedMeasurementsCached(tid) {
   const cached = measureCache.get(tid);
   if (cached && Date.now() - cached.ts < MEASURE_CACHE_TTL) return cached.data;
-  const data = await fetchMeasurements(tid);
+  const data = await fetchMergedMeasurements(tid);
   measureCache.set(tid, { ts: Date.now(), data });
   return data;
 }
 
-// batch-fetch measurements concurrently with a limit
-async function fetchMeasurementsBatch(tids, concurrency) {
+// batch-fetch merged measurements concurrently
+async function fetchMergedMeasurementsBatch(tids, concurrency) {
   concurrency = concurrency || 10;
   const results = {};
   let idx = 0;
@@ -84,7 +107,7 @@ async function fetchMeasurementsBatch(tids, concurrency) {
         results[tid] = existing[tid];
         continue;
       }
-      results[tid] = await fetchMeasurementsCached(tid);
+      results[tid] = await fetchMergedMeasurementsCached(tid);
     }
   }
   const workers = Array.from({ length: Math.min(concurrency, tids.length) }, () => worker());
@@ -450,7 +473,7 @@ app.get('/api/scan-members', async (req, res) => {
     var missingTids = tids.filter(function(t) { return !dbMeas[t]; });
     if (missingTids.length > 0) {
       // Fetch missing measurements from API with pose=I
-      var apiMeas = await fetchMeasurementsBatch(missingTids, 10);
+      var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 10);
       // Save newly fetched measurements to DB cache
       var toSave = {};
       for (var i = 0; i < missingTids.length; i++) {
