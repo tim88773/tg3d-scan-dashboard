@@ -76,6 +76,125 @@ async function fetchMeasurementsBatch(tids, concurrency) {
   return results;
 }
 
+
+// ---- Incremental sync: fetch only records newer than latest in DB ----
+async function syncScanRecords(targetMaxRecords) {
+  targetMaxRecords = targetMaxRecords || 50000;
+  const latestFetchedAt = db.getLatestFetchedAt();
+  if (latestFetchedAt === 0) {
+    console.log('[sync] No cache found, fetching recent records...');
+    const end = new Date();
+    const start = new Date(end); start.setFullYear(start.getFullYear() - 1);
+    return syncRange(start, end, targetMaxRecords);
+  }
+
+  // We have cache - only fetch records newer than latest cached
+  const latestRow = db.getLatestCreatedAt();
+  if (!latestRow) {
+    console.log('[sync] No records in cache, fetching recent...');
+    const end = new Date();
+    const start = new Date(end); start.setFullYear(start.getFullYear() - 1);
+    return syncRange(start, end, targetMaxRecords);
+  }
+
+  const latestDate = new Date(latestRow.created_at);
+  const now = new Date();
+  console.log('[sync] Latest cached record:', latestRow.created_at);
+  console.log('[sync] Fetching newer records...');
+
+  let added = 0;
+  let offset = 0;
+  let done = false;
+
+  while (!done && added < targetMaxRecords) {
+    let data;
+    try {
+      data = await fetchScanRecordsPage(100, offset);
+    } catch (err) {
+      if (err.message && err.message.includes('Retry later')) {
+        console.log('[sync] Rate limited, waiting 5s...');
+        await new Promise(r => setTimeout(r, 5000));
+        try { data = await fetchScanRecordsPage(100, offset); }
+        catch (e2) { console.error('[sync] Retry failed:', e2.message); break; }
+      } else {
+        console.error('[sync] Fetch failed:', err.message);
+        break;
+      }
+    }
+
+    const records = data.records || [];
+    if (records.length === 0) break;
+
+    let newRecords = [];
+    let oldestInPage = null;
+
+    for (const rec of records) {
+      const recDate = new Date(rec.created_at);
+      if (!oldestInPage || recDate < oldestInPage) oldestInPage = recDate;
+      if (recDate <= latestDate) { done = true; break; }
+      newRecords.push(rec);
+    }
+
+    if (newRecords.length > 0) {
+      db.saveScanRecords(newRecords);
+      added += newRecords.length;
+      console.log('[sync] Added ' + newRecords.length + ' (total: ' + added + ')');
+    }
+
+    offset += 100;
+    if (offset >= (data.total || 0)) done = true;
+    if (oldestInPage && oldestInPage <= latestDate) done = true;
+    await new Promise(r => setTimeout(r, 200));
+  }
+
+  console.log('[sync] Complete. Added ' + added + ' new records.');
+  return added;
+}
+
+async function syncRange(startDate, endDate, maxRecords) {
+  const startMs = startDate.getTime();
+  const endMs = endDate.getTime();
+  let offset = 0;
+  let allRecords = [];
+  let done = false;
+
+  while (!done && allRecords.length < maxRecords) {
+    let data;
+    try {
+      data = await fetchScanRecordsPage(100, offset);
+    } catch (err) {
+      if (err.message && err.message.includes('Retry later')) {
+        console.log('[sync-range] Rate limited, waiting 5s...');
+        await new Promise(r => setTimeout(r, 5000));
+        try { data = await fetchScanRecordsPage(100, offset); }
+        catch (e2) { console.error('[sync-range] Retry failed:', e2.message); break; }
+      } else {
+        console.error('[sync-range] Fetch failed:', err.message);
+        break;
+      }
+    }
+
+    const records = data.records || [];
+    if (records.length === 0) break;
+
+    for (const rec of records) {
+      const ca = new Date(rec.created_at).getTime();
+      if (ca > endMs) continue;
+      if (ca < startMs) { done = true; break; }
+      allRecords.push(rec);
+    }
+
+    offset += 100;
+    if (offset >= (data.total || 0)) done = true;
+    await new Promise(r => setTimeout(r, 200));
+  }
+
+  if (allRecords.length > 0) {
+    db.saveScanRecords(allRecords);
+    console.log('[sync-range] Cached ' + allRecords.length + ' records');
+  }
+  return allRecords.length;
+}
 const MEASURE_FILTERS = {
   chest: 'Chest Circumference',
   underbust: 'F Under Bust Circumference B',
@@ -252,63 +371,13 @@ app.get('/api/scan-members', async (req, res) => {
     }
     const hasMeasureFilters = Object.keys(measureFilters).length > 0;
 
-    // Fetch scan records: try DB cache first, fall back to TG3D API
+    // Fetch scan records from DB cache only
     let allRecords = [];
     let candidates = [];
     let totalChecked = 0;
     const dbRecords = db.getRecordsByDateRange(req.query.start, req.query.end + 'T23:59:59.999Z');
     if (dbRecords.length > 0) {
       allRecords = dbRecords.map(function(r) { return JSON.parse(r.raw_json); });
-      var oldestCached = allRecords[allRecords.length - 1].created_at || '';
-      if (req.query.start < oldestCached.slice(0, 10)) {
-        try {
-          const PAGE_SIZE = 100; let offset = 0; let freshRecords = []; let done = false;
-          while (!done && freshRecords.length < MAX_API_RECORDS) {
-            const data = await fetchScanRecordsPage(PAGE_SIZE, offset);
-            const records = data.records || [];
-            if (records.length === 0) break;
-            let pageDone = false;
-            for (const rec of records) {
-              const ca = new Date(rec.created_at).getTime();
-              if (ca > endMs) continue;
-              if (ca < startMs) { pageDone = true; break; }
-              freshRecords.push(rec);
-            }
-            offset += PAGE_SIZE;
-            if (pageDone || offset >= (data.total || 0)) done = true;
-          }
-          if (freshRecords.length > 0) {
-            db.saveScanRecords(freshRecords);
-            const seen = {};
-            for (const r of freshRecords) seen[r.tid] = r;
-            for (const r of allRecords) if (!seen[r.tid]) seen[r.tid] = r;
-            allRecords = Object.values(seen);
-          }
-        } catch (apiErr) {
-          console.error('[merge] API fetch failed, using cache only:', apiErr.message);
-        }
-      }
-    } else {
-      try {
-        const PAGE_SIZE = 100; let offset = 0; allRecords = []; let done = false;
-        while (!done && allRecords.length < MAX_API_RECORDS) {
-          const data = await fetchScanRecordsPage(PAGE_SIZE, offset);
-          const records = data.records || [];
-          if (records.length === 0) break;
-          let pageDone = false;
-          for (const rec of records) {
-            const ca = new Date(rec.created_at).getTime();
-            if (ca > endMs) continue;
-            if (ca < startMs) { pageDone = true; break; }
-            allRecords.push(rec);
-          }
-          offset += PAGE_SIZE;
-          if (pageDone || offset >= (data.total || 0)) done = true;
-        }
-        if (allRecords.length > 0) db.saveScanRecords(allRecords);
-      } catch (apiErr) {
-        console.error('[fetch] API fetch failed, no cache available:', apiErr.message);
-      }
     }
     // Apply basic filters
     for (const rec of allRecords) {
@@ -452,47 +521,31 @@ app.get('/api/scan-members/export', async (req, res) => {
   }
 });
 
+
+// ---- API 5: Manual sync trigger ----
+app.get("/api/sync", async (req, res) => {
+  try {
+    const maxRecords = parseInt(req.query.max) || 50000;
+    res.json({ status: "syncing", maxRecords: maxRecords });
+    const count = await syncScanRecords(maxRecords);
+    console.log("[api/sync] Sync completed: " + count + " records added");
+  } catch (err) {
+    console.error("[api/sync] Error:", err.message);
+    if (!res.headersSent) res.status(500).json({ error: err.message });
+  }
+});
 app.listen(PORT, function() {
   console.log('Server running at http://localhost:' + PORT);
 
   // Background warmup: pre-cache recent 7 days so first user query is fast
+  // Warmup: sync latest records on startup
   (async function warmupCache() {
     try {
-      const end = new Date();
-      const start = new Date(end); start.setDate(start.getDate() - 7);
-      const startStr = start.toISOString().slice(0, 10);
-      const endStr = end.toISOString().slice(0, 10);
-      console.log('[warmup] Pre-caching ' + startStr + ' ~ ' + endStr);
-
-    // Check what we already have
-      const existingRecords = db.getRecordsByDateRange(startStr, endStr + 'T23:59:59.999Z');
-      if (existingRecords.length > 0) {
-        console.log('[warmup] DB already has ' + existingRecords.length + ' records, skipping scan fetch');
-        console.log('[warmup] Complete');
-        return;
-      }
-
-      // Fetch scan records from API
-      const startMs = start.getTime();
-      const endMs = end.getTime(); end.setHours(23, 59, 59, 999);
-      let offset = 0; let allRecords = []; let done = false;
-      while (!done && allRecords.length < MAX_API_RECORDS) {
-        const data = await fetchScanRecordsPage(100, offset);
-        const records = data.records || [];
-        if (records.length === 0) break;
-        for (const rec of records) {
-          const ca = new Date(rec.created_at).getTime();
-          if (ca > endMs) continue;
-          if (ca < startMs) { done = true; break; }
-          allRecords.push(rec);
-        }
-        offset += 100;
-        if (offset >= (data.total || 0)) done = true;
-      }
-      db.saveScanRecords(allRecords);
-      console.log('[warmup] Cached ' + allRecords.length + ' scan records');
+      console.log("[warmup] Running initial sync...");
+      const count = await syncScanRecords();
+      console.log("[warmup] Initial sync complete, added " + count + " records");
     } catch (err) {
-      console.error('[warmup] Error:', err.message);
+      console.error("[warmup] Error:", err.message);
     }
   })();
 });

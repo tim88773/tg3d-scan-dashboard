@@ -80,6 +80,11 @@ function getLatestFetchedAt() {
   return row ? row.max : 0;
 }
 
+function getLatestCreatedAt() {
+  const row = db.prepare(`SELECT MAX(created_at) as created_at FROM scan_records`).get();
+  return row || null;
+}
+
 // ---- Measurements ----
 
 const insertMeasurement = db.prepare(`
@@ -120,7 +125,10 @@ module.exports = {
   saveScanRecords,
   getRecordsByDateRange,
   getLatestFetchedAt,
+  getLatestCreatedAt,
   saveMeasurements,
   getMeasurementsByTids,
   close,
 };
+
+
