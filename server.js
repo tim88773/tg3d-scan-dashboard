@@ -51,11 +51,22 @@ async function fetchScanRecordsPage(limit, offset) {
 async function fetchMeasurements(tid, pose) {
   const p = pose || 'I';
   const url = TG3D_BASE + '/api/v1/scan_records/' + tid + '/size_xt?apikey=' + APIKEY + '&pose=' + p;
-  try {
-    const { status, body } = await tg3dRequest(url);
-    if (status !== 200) return null;
-    return body.measurement || null;
-  } catch { return null; }
+  for (var retry = 0; retry < 3; retry++) {
+    try {
+      const { status, body } = await tg3dRequest(url);
+      if (status === 429) {
+        console.log('[meas] Rate limited for', tid, 'pose', p, '- retry', retry+1);
+        await new Promise(function(r) { setTimeout(r, 3000 * (retry + 1)); });
+        continue;
+      }
+      if (status !== 200) return null;
+      return body.measurement || null;
+    } catch {
+      console.log('[meas] Error for', tid, 'pose', p, '- retry', retry+1);
+      await new Promise(function(r) { setTimeout(r, 2000); });
+    }
+  }
+  return null;
 }
 
 // Fields that should use pose=I (chest/underbust) with pose=A fallback
@@ -477,7 +488,7 @@ app.get('/api/scan-members', async (req, res) => {
     var missingTids = tids.filter(function(t) { return !dbMeas[t]; });
     if (missingTids.length > 0) {
       // Fetch missing measurements from API with pose=I
-      var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 10);
+      var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 5);
       // Save newly fetched measurements to DB cache
       var toSave = {};
       for (var i = 0; i < missingTids.length; i++) {
