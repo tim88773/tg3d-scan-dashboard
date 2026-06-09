@@ -55,14 +55,12 @@ async function fetchMeasurements(tid, pose) {
     try {
       const { status, body } = await tg3dRequest(url);
       if (status === 429) {
-        console.log('[meas] Rate limited for', tid, 'pose', p, '- retry', retry+1);
         await new Promise(function(r) { setTimeout(r, 3000 * (retry + 1)); });
         continue;
       }
       if (status !== 200) return null;
       return body.measurement || null;
     } catch {
-      console.log('[meas] Error for', tid, 'pose', p, '- retry', retry+1);
       await new Promise(function(r) { setTimeout(r, 2000); });
     }
   }
@@ -74,10 +72,10 @@ const CHEST_UNDERBUST_FIELDS = ['Chest Circumference', 'F Under Bust Circumferen
 
 // Fetch measurements: other fields use pose=A, chest/underbust use pose=I (fallback to A)
 async function fetchMergedMeasurements(tid) {
-  const [poseA, poseI] = await Promise.all([
-    fetchMeasurements(tid, 'A'),
-    fetchMeasurements(tid, 'I')
-  ]);
+  // Sequential: pose=A first, wait 2s (API limit 1 req/sec), then pose=I
+  const poseA = await fetchMeasurements(tid, 'A');
+  await new Promise(function(r) { setTimeout(r, 2000); });
+  const poseI = await fetchMeasurements(tid, 'I');
 
   if (!poseA && !poseI) return null;
   if (!poseA) return poseI;
@@ -105,7 +103,7 @@ async function fetchMergedMeasurementsCached(tid) {
 
 // batch-fetch merged measurements concurrently
 async function fetchMergedMeasurementsBatch(tids, concurrency) {
-  concurrency = concurrency || 10;
+  concurrency = concurrency || 1;
   const results = {};
   let idx = 0;
   async function worker() {
@@ -488,7 +486,7 @@ app.get('/api/scan-members', async (req, res) => {
     var missingTids = tids.filter(function(t) { return !dbMeas[t]; });
     if (missingTids.length > 0) {
       // Fetch missing measurements from API with pose=I
-      var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 5);
+      var apiMeas = await fetchMergedMeasurementsBatch(missingTids, 1);
       // Save newly fetched measurements to DB cache
       var toSave = {};
       for (var i = 0; i < missingTids.length; i++) {
