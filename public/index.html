@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TG3D Scan 門市掃描查詢</title>
+  <title>TG3D Scan �������y�d��</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <style>
@@ -289,73 +289,73 @@
 <body>
   <div class="container">
     <header>
-      <h1>TG3D Scan 門市掃描查詢</h1>
-      <p>TG3D Scan 門市掃描人數查詢 - 查詢各門市掃描數據與會員量測資訊</p>
+      <h1>TG3D Scan �������y�d��</h1>
+      <p>TG3D Scan �������y�H�Ƭd�� - �d�ߦU�������y�ƾڻP�|���q����T</p>
     </header>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="tab-summary">門市統計</button>
-      <button class="tab-btn" data-tab="tab-members">會員查詢</button>
+      <button class="tab-btn active" data-tab="tab-summary">�����έp</button>
+      <button class="tab-btn" data-tab="tab-members">�|���d��</button>
     </div>
 
     <!-- ====== TAB 1 ====== -->
     <div class="tab-content active" id="tab-summary">
       <div class="search-card">
-        <div class="field"><label>開始</label><input type="date" id="s-start"></div>
-        <div class="field"><label>結束</label><input type="date" id="s-end"></div>
-        <button class="search-row-btn" id="s-search">查詢</button>
-        <button class="btn-export" id="s-export" style="display:none">匯出 Excel</button>
+        <div class="field"><label>�}�l</label><input type="date" id="s-start"></div>
+        <div class="field"><label>����</label><input type="date" id="s-end"></div>
+        <button class="search-row-btn" id="s-search">�d��</button>
+        <button class="btn-export" id="s-export" style="display:none">�ץX Excel</button>
       </div>
-      <div class="loading" id="s-loading"><div class="spinner"></div><p>搜尋中，請稍後</p></div>
+      <div class="loading" id="s-loading"><div class="spinner"></div><p>�j�M���A�еy��</p></div>
       <div class="error-msg" id="s-error"></div>
       <div class="summary-bar" id="s-summary">
-        <div class="total">不重複人次&ensp;<span id="s-total">0</span></div>
+        <div class="total">�����ƤH��&ensp;<span id="s-total">0</span></div>
         <div class="detail" id="s-range"></div>
       </div>
       <div class="results" id="s-results"></div>
-      <div class="empty-msg" id="s-empty">此區間尚無掃描記錄</div>
+      <div class="empty-msg" id="s-empty">���϶��|�L���y�O��</div>
     </div>
 
     <!-- ====== TAB 2 ====== -->
     <div class="tab-content" id="tab-members">
       <div class="search-card">
-        <div class="field"><label>開始</label><input type="date" id="m-start"></div>
-        <div class="field"><label>結束</label><input type="date" id="m-end"></div>
+        <div class="field"><label>�}�l</label><input type="date" id="m-start"></div>
+        <div class="field"><label>����</label><input type="date" id="m-end"></div>
         <div class="field wide">
-          <label>會員編號 / 姓名</label>
-          <input type="text" id="m-userId" placeholder="輸入 userId 或姓名">
-          <div class="member-id-hint">例如： TGD2W9JG 或部分姓名</div>
+          <label>�|���s�� / �m�W</label>
+          <input type="text" id="m-userId" placeholder="��J userId �Ωm�W">
+          <div class="member-id-hint">�Ҧp�G TGD2W9JG �γ����m�W</div>
         </div>
         <div class="field wide">
-          <label>門市名稱</label>
-          <input type="text" id="m-store" placeholder="輸入門市關鍵字">
+          <label>�����W��</label>
+          <input type="text" id="m-store" placeholder="��J��������r">
         </div>
         <div class="field full">
-          <label>量測範圍篩選（單位 cm，留空則不限制）</label>
+          <label>�q���d��z��]��� cm�A�d�ūh������^</label>
           <div class="measure-range-grid">
-            <div class="range-row"><span class="range-label">胸圍</span><input type="number" class="rmin" id="m-chestMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-chestMax" placeholder="最大值"></div>
-            <div class="range-row"><span class="range-label">下胸圍</span><input type="number" class="rmin" id="m-underbustMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-underbustMax" placeholder="最大值"></div>
-            <div class="range-row"><span class="range-label">腰圍</span><input type="number" class="rmin" id="m-thinWaistMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thinWaistMax" placeholder="最大值"></div>
-            <div class="range-row"><span class="range-label">肚圍</span><input type="number" class="rmin" id="m-bellyMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-bellyMax" placeholder="最大值"></div>
-            <div class="range-row"><span class="range-label">臀圍(高)</span><input type="number" class="rmin" id="m-highHipMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-highHipMax" placeholder="最大值"></div>
-            <div class="range-row"><span class="range-label">臀圍(低)</span><input type="number" class="rmin" id="m-lowHipMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-lowHipMax" placeholder="最大值"></div>
-            <div class="range-row"><span class="range-label">左大腿圍</span><input type="number" class="rmin" id="m-thighLMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thighLMax" placeholder="最大值"></div>
-            <div class="range-row"><span class="range-label">右大腿圍</span><input type="number" class="rmin" id="m-thighRMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thighRMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">�ݳ�</span><input type="number" class="rmin" id="m-chestMin" placeholder="�̤p��"><span class="range-sep">~</span><input type="number" class="rmax" id="m-chestMax" placeholder="�̤j��"></div>
+            <div class="range-row"><span class="range-label">�U�ݳ�</span><input type="number" class="rmin" id="m-underbustMin" placeholder="�̤p��"><span class="range-sep">~</span><input type="number" class="rmax" id="m-underbustMax" placeholder="�̤j��"></div>
+            <div class="range-row"><span class="range-label">�y��</span><input type="number" class="rmin" id="m-thinWaistMin" placeholder="�̤p��"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thinWaistMax" placeholder="�̤j��"></div>
+            <div class="range-row"><span class="range-label">�{��</span><input type="number" class="rmin" id="m-bellyMin" placeholder="�̤p��"><span class="range-sep">~</span><input type="number" class="rmax" id="m-bellyMax" placeholder="�̤j��"></div>
+            <div class="range-row"><span class="range-label">�v��(��)</span><input type="number" class="rmin" id="m-highHipMin" placeholder="�̤p��"><span class="range-sep">~</span><input type="number" class="rmax" id="m-highHipMax" placeholder="�̤j��"></div>
+            <div class="range-row"><span class="range-label">�v��(�C)</span><input type="number" class="rmin" id="m-lowHipMin" placeholder="�̤p��"><span class="range-sep">~</span><input type="number" class="rmax" id="m-lowHipMax" placeholder="�̤j��"></div>
+            <div class="range-row"><span class="range-label">���j�L��</span><input type="number" class="rmin" id="m-thighLMin" placeholder="�̤p��"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thighLMax" placeholder="�̤j��"></div>
+            <div class="range-row"><span class="range-label">�k�j�L��</span><input type="number" class="rmin" id="m-thighRMin" placeholder="�̤p��"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thighRMax" placeholder="�̤j��"></div>
           </div>
         </div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:flex-end">
-          <button class="search-row-btn" id="m-search">查詢</button>
-          <button class="btn-export" id="m-export" style="display:none">匯出 Excel</button>
+          <button class="search-row-btn" id="m-search">�d��</button>
+          <button class="btn-export" id="m-export" style="display:none">�ץX Excel</button>
         </div>
       </div>
 
-      <div class="loading" id="m-loading"><div class="spinner"></div><p id="m-loading-text">搜尋會員與量測資料中，請稍後</p></div>
+      <div class="loading" id="m-loading"><div class="spinner"></div><p id="m-loading-text">�j�M�|���P�q����Ƥ��A�еy��</p></div>
       <div class="error-msg" id="m-error"></div>
       <div class="summary-bar" id="m-summary">
-        <div class="total">符合條件&ensp;<span id="m-total">0</span></div>
+        <div class="total">�ŦX����&ensp;<span id="m-total">0</span></div>
         <div class="detail" id="m-range"></div>
       </div>
-      <div class="empty-msg" id="m-empty">無符合條件的掃描記錄</div>
+      <div class="empty-msg" id="m-empty">�L�ŦX���󪺱��y�O��</div>
       <div id="m-results" style="display:none">
         <div class="table-wrap">
           <table>
@@ -404,14 +404,14 @@
       el.textContent = msg; el.classList.add('active');
     }
 
-    // ====== TAB 1: 門市統計 ======
+    // ====== TAB 1: �����έp ======
     let lastSummaryData = null;
 
     async function doStoreSearch() {
       const start = document.getElementById('s-start').value;
       const end = document.getElementById('s-end').value;
-      if (!start || !end) { showError('s', '請選擇日期區間'); return; }
-      if (start > end) { showError('s', '開始日期不能晚於結束日期'); return; }
+      if (!start || !end) { showError('s', '�п�ܤ���϶�'); return; }
+      if (start > end) { showError('s', '�}�l�������ߩ󵲧����'); return; }
 
       hideAll('s');
       document.getElementById('s-loading').classList.add('active');
@@ -424,12 +424,12 @@
         document.getElementById('s-loading').classList.remove('active');
         document.getElementById('s-search').disabled = false;
 
-        if (!resp.ok) { showError('s', data.error || '查詢失敗'); return; }
+        if (!resp.ok) { showError('s', data.error || '�d�ߥ���'); return; }
 
         lastSummaryData = data;
         document.getElementById('s-summary').classList.add('active');
         document.getElementById('s-total').textContent = data.uniqueVisits;
-        document.getElementById('s-range').textContent = `${start} ~ ${end}（共 ${data.totalScanRecords} 筆掃描記錄）`;
+        document.getElementById('s-range').textContent = `${start} ~ ${end}�]�@ ${data.totalScanRecords} �����y�O���^`;
 
         if (data.stores.length === 0) {
           document.getElementById('s-empty').classList.add('active');
@@ -458,7 +458,7 @@
       } catch (err) {
         document.getElementById('s-loading').classList.remove('active');
         document.getElementById('s-search').disabled = false;
-        showError('s', '網路連線異常，請檢查伺服器狀態');
+        showError('s', '�����s�u���`�A���ˬd���A�����A');
       }
     }
 
@@ -470,7 +470,7 @@
       // Use fetch + blob download to avoid window.open navigation issues
       fetch(`/api/scan-summary/export?start=${start}&end=${end}`)
         .then(r => {
-          if (!r.ok) throw new Error('匯出失敗');
+          if (!r.ok) throw new Error('�ץX����');
           const disposition = r.headers.get('Content-Disposition') || '';
           const match = disposition.match(/filename\*=UTF-8''(.+?)(?:$|;)/);
           let filename = match ? decodeURIComponent(match[1]) : 'store_stats.xlsx';
@@ -491,7 +491,7 @@
       document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') doStoreSearch(); });
     });
 
-    // ====== TAB 2: 會員查詢 ======
+    // ====== TAB 2: �|���d�� ======
     let lastMemberData = null;
 
     const KEY_MEASURES = [
@@ -516,38 +516,38 @@
     ];
 
     const MEASURE_LABELS = {
-      'Chest Circumference': '胸圍',
-      'F Under Bust Circumference B': '下胸圍',
-      'Left Breast Volume': '左胸體積',
-      'Right Breast Volume': '右胸體積',
-      'Left Upper Arm Circumference': '左上臂圍',
-      'Right Upper Arm Circumference': '右上臂圍',
-      'Belly Circumference': '肚圍',
-      'Thinnest Waist Circumference': '腰圍',
-      'High Hip Circumference': '臀圍(高)',
-      'Low Hip Circumference': '臀圍(低)',
-      'Left Thigh Circumference': '左大腿圍',
-      'Right Thigh Circumference': '右大腿圍',
-      'Left Mid Thigh Circumference': '左大腿中圍',
-      'Right Mid Thigh Circumference': '右大腿中圍',
-      'Left Calf Circumference': '左小腿圍',
-      'Right Calf Circumference': '右小腿圍',
-      'C19 Left Shorts Circumference': '左褲管圍',
-      'C19 Right Shorts Circumference': '右褲管圍',
+      'Chest Circumference': '\u80f8\u570d',
+      'F Under Bust Circumference B': '\u80f8\u4e0b\u570d',
+      'Left Breast Volume': '\u5de6\u53f3\u80f8\u5927\u5c0f(\u5de6)',
+      'Right Breast Volume': '\u5de6\u53f3\u80f8\u5927\u5c0f(\u53f3)',
+      'Left Upper Arm Circumference': '\u4e0a\u81c2\u570d(\u5de6)',
+      'Right Upper Arm Circumference': '\u4e0a\u81c2\u570d(\u53f3)',
+      'Belly Circumference': '\u4e2d\u8170\u570d',
+      'Thinnest Waist Circumference': '\u6700\u7d30\u8170\u570d',
+      'High Hip Circumference': '\u4e0a\u81c0\u570d',
+      'Low Hip Circumference': '\u4e0b\u81c0\u570d',
+      'Left Thigh Circumference': '\u5927\u817f\u570d(\u5de6)',
+      'Right Thigh Circumference': '\u5927\u817f\u570d(\u53f3)',
+      'Left Mid Thigh Circumference': '\u4e2d\u5927\u817f\u570d(\u5de6)',
+      'Right Mid Thigh Circumference': '\u4e2d\u5927\u817f\u570d(\u53f3)',
+      'Left Calf Circumference': '\u5c0f\u817f\u570d(\u5de6)',
+      'Right Calf Circumference': '\u5c0f\u817f\u570d(\u53f3)',
+      'C19 Left Shorts Circumference': '\u77ed\u891a\u8173\u5bec(\u5de6)',
+      'C19 Right Shorts Circumference': '\u77ed\u891a\u8173\u5bec(\u53f3)',
     };
 
     async function doMemberSearch() {
       const start = document.getElementById('m-start').value;
       const end = document.getElementById('m-end').value;
-      if (!start || !end) { showError('m', '請選擇日期區間'); return; }
-      if (start > end) { showError('m', '開始日期不能晚於結束日期'); return; }
+      if (!start || !end) { showError('m', '�п�ܤ���϶�'); return; }
+      if (start > end) { showError('m', '�}�l�������ߩ󵲧����'); return; }
 
       const userId = document.getElementById('m-userId').value.trim();
       const store = document.getElementById('m-store').value.trim();
 
       hideAll('m');
       document.getElementById('m-loading').classList.add('active');
-      document.getElementById('m-loading-text').textContent = '搜尋會員與量測資料中，請稍後';
+      document.getElementById('m-loading-text').textContent = '�j�M�|���P�q����Ƥ��A�еy��';
       document.getElementById('m-search').disabled = true;
       document.getElementById('m-export').style.display = 'none';
 
@@ -556,7 +556,7 @@
         if (userId) url += `&userId=${encodeURIComponent(userId)}`;
         if (store) url += `&store=${encodeURIComponent(store)}`;
 
-        // 量測範圍篩選
+        // �q���d��z��
         const rangeFields = ['chest','underbust','thinWaist','belly','highHip','lowHip','thighL','thighR'];
         rangeFields.forEach(k => {
           const min = document.getElementById('m-'+k+'Min').value;
@@ -570,7 +570,7 @@
         document.getElementById('m-loading').classList.remove('active');
         document.getElementById('m-search').disabled = false;
 
-        if (!resp.ok) { showError('m', data.error || '查詢失敗'); return; }
+        if (!resp.ok) { showError('m', data.error || '�d�ߥ���'); return; }
 
         lastMemberData = data;
         const { records, includeMeasurements } = data;
@@ -590,7 +590,7 @@
         document.getElementById('m-loading').classList.remove('active');
         document.getElementById('m-search').disabled = false;
         console.error('Member search error:', err);
-        showError('m', '網路連線異常：' + (err.message || '未知錯誤') + '｜請檢查伺服器狀態');
+        showError('m', '�����s�u���`�G' + (err.message || '�������~') + '�U���ˬd���A�����A');
       }
     }
 
@@ -604,13 +604,15 @@
         const hasMeas = includeMeasurements && records.some(r => r.measurements);
 
         const colDefs = [
-          { label: '會員編號', key: 'userId' },
-          { label: '姓名', key: 'nickName' },
-          { label: '門市', key: 'store' },
-          { label: '掃描日期', key: 'createdAt',
+          { label: '�|���s��', key: 'userId' },
+          { label: '�m�W', key: 'nickName' },
+          { label: '����', key: 'store' },
+          { label: '���y���', key: 'createdAt',
             fn: v => v ? new Date(v).toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '' },
-          { label: '精準度', key: 'accuracyScore',
+          { label: '��ǫ�', key: 'accuracyScore',
             fn: v => v != null ? v + '%' : '' },
+          { label: '體態標籤', key: 'tagList',
+            fn: (v, row) => { const t = row.tagList; return Array.isArray(t) ? esc(t.join(', ')) : (t || '') } },
         ];
 
         if (hasMeas) {
@@ -651,7 +653,7 @@
         document.getElementById('m-results').style.display = 'block';
       } catch (err) {
         console.error('Render error:', err);
-        showError('m', '表格渲染失敗：' + err.message);
+        showError('m', '�����V���ѡG' + err.message);
       }
     }
 
@@ -679,7 +681,7 @@
       // Use fetch + blob download instead of window.open to avoid navigation issues
       fetch(url)
         .then(r => {
-          if (!r.ok) throw new Error('匯出失敗');
+          if (!r.ok) throw new Error('�ץX����');
           const disposition = r.headers.get('Content-Disposition') || '';
           const match = disposition.match(/filename\*=UTF-8''(.+?)(?:$|;)/);
           let filename = match ? decodeURIComponent(match[1]) : 'member_export.xlsx';
@@ -708,3 +710,6 @@
   </script>
 </body>
 </html>
+
+
+
