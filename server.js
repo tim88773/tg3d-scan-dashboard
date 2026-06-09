@@ -272,7 +272,6 @@ async function scanRecordsByDateRange(startDate, endDate, filters) {
     }
   }
   return matched;
-  return matched;
 }
 
 // ---- API 1: Store summary (dedup) ----
@@ -411,20 +410,11 @@ app.get('/api/scan-members', async (req, res) => {
       if (candidates.length >= MAX_API_RECORDS) break;
     }
 
-    // Fetch measurements (check DB first, API for missing)
+        // Fetch measurements from cache only (no API calls during query)
     const tids = candidates.map(function(r) { return r.tid; });
     let measurementsMap = {};
-    if (hasMeasureFilters || candidates.length <= 100) {
-      measurementsMap = db.getMeasurementsByTids(tids);
-      const missingTids = tids.filter(function(t) { return !(t in measurementsMap); });
-      if (missingTids.length > 0) {
-        const freshMeas = await fetchMeasurementsBatch(missingTids, 10);
-        db.saveMeasurements(freshMeas);
-        Object.assign(measurementsMap, freshMeas);
-      }
-    }
-
-    // Build results
+    measurementsMap = db.getMeasurementsByTids(tids);
+        // Build results
     const results = [];
     for (const rec of candidates) {
       const measurements = measurementsMap[rec.tid] || null;
@@ -481,51 +471,52 @@ app.get('/api/scan-members/export', async (req, res) => {
     const wb = new ExcelJS.Workbook();
     wb.creator = 'TG Scan Dashboard';
 
-    const ws1 = wb.addWorksheet('records');
-    ws1.columns = [
-      { header: 'userId', key: 'userId', width: 14 },
-      { header: 'name', key: 'nickName', width: 14 },
-      { header: 'store', key: 'store', width: 16 },
-      { header: 'date', key: 'createdAt', width: 20 },
-      { header: 'accuracy', key: 'accuracyScore', width: 10 },
-      { header: 'scanner', key: 'scanner', width: 18 },
-];
-    const h1 = ws1.getRow(1);
-    h1.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
-    h1.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF6C5CE7' } };
-    records.forEach(function(r) {
-      ws1.addRow({
-        userId: r.userId, nickName: r.nickName, store: r.store,
-        createdAt: r.createdAt, accuracyScore: r.accuracyScore,
-        scanner: r.scanner
-      });
+    // Determine measurement columns from first record with measurements
+    const firstWithMeas = records.find(function(r) { return r.measurements; });
+    const measureKeys = firstWithMeas ? Object.keys(firstWithMeas.measurements).sort() : [];
+
+    // Build column definitions matching the web table
+    const colDefs = [
+      { header: '\u6703\u54e1\u7de8\u865f', key: 'userId', width: 14 },
+      { header: '\u59d3\u540d', key: 'nickName', width: 14 },
+      { header: '\u9580\u5e02', key: 'store', width: 16 },
+      { header: '\u6383\u63cf\u65e5\u671f', key: 'createdAt', width: 22 },
+      { header: '\u7cbe\u6e96\u5ea6', key: 'accuracyScore', width: 10 },
+      { header: '\u6383\u63cf\u5668', key: 'scanner', width: 18 },
+    ];
+    // Add measurement columns
+    measureKeys.forEach(function(k) {
+      colDefs.push({ header: k, key: k, width: 16 });
     });
 
-    if (records.some(function(r) { return r.measurements; })) {
-      const ws2 = wb.addWorksheet('measurements');
-      const m = records.find(function(r) { return r.measurements; })?.measurements || {};
-      const measureKeys = Object.keys(m).sort();
-      ws2.columns = [
-        { header: 'userId', key: 'userId', width: 14 },
-        { header: 'name', key: 'nickName', width: 14 },
-      ].concat(measureKeys.map(function(k) { return { header: k, key: k, width: 14 }; }));
-      const h2 = ws2.getRow(1);
-      h2.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
-      h2.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B894' } };
-      ws2.views = [{ state: 'frozen', xSplit: 2 }];
+    const ws = wb.addWorksheet("記�?");
+    ws.columns = colDefs;
 
-      records.forEach(function(r) {
-        if (!r.measurements) return;
-        const row = { userId: r.userId, nickName: r.nickName };
-        for (const k of measureKeys) {
-          const v = r.measurements[k];
-          row[k] = v != null ? (typeof v === 'number' ? +v.toFixed(2) : v) : '';
-        }
-        ws2.addRow(row);
-      });
-    }
+    const hRow = ws.getRow(1);
+    hRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 };
+    hRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF6C5CE7' } };
+    hRow.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
 
-    var fn = encodeURIComponent('member_data_' + req.query.start + '_' + req.query.end + '.xlsx');
+    records.forEach(function(r) {
+      var row = {
+        userId: r.userId,
+        nickName: r.nickName,
+        store: r.store,
+        createdAt: r.createdAt ? new Date(r.createdAt).toLocaleString('zh-TW') : '',
+        accuracyScore: r.accuracyScore != null ? r.accuracyScore + '%' : '',
+        scanner: r.scanner,
+      };
+      // Add measurement values
+      if (r.measurements) {
+        measureKeys.forEach(function(k) {
+          var v = r.measurements[k];
+          row[k] = v != null ? (typeof v === 'number' ? +v.toFixed(1) : v) : '';
+        });
+      }
+      ws.addRow(row);
+    });
+
+    var fn = encodeURIComponent('member_export_' + req.query.start + '_' + req.query.end + '.xlsx');
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + fn);
     await wb.xlsx.write(res);
@@ -536,19 +527,6 @@ app.get('/api/scan-members/export', async (req, res) => {
   }
 });
 
-
-// ---- API 5: Manual sync trigger ----
-app.get("/api/sync", async (req, res) => {
-  try {
-    const maxRecords = parseInt(req.query.max) || 50000;
-    res.json({ status: "syncing", maxRecords: maxRecords });
-    const count = await syncScanRecords(maxRecords);
-    console.log("[api/sync] Sync completed: " + count + " records added");
-  } catch (err) {
-    console.error("[api/sync] Error:", err.message);
-    if (!res.headersSent) res.status(500).json({ error: err.message });
-  }
-});
 app.listen(PORT, function() {
   console.log('Server running at http://localhost:' + PORT);
 
@@ -564,3 +542,5 @@ app.listen(PORT, function() {
     }
   })();
 });
+
+
