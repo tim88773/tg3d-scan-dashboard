@@ -341,6 +341,12 @@
             <div class="range-row"><span class="range-label">臀圍(下)</span><input type="number" class="rmin" id="m-lowHipMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-lowHipMax" placeholder="最大值"></div>
             <div class="range-row"><span class="range-label">大腿圍(左)</span><input type="number" class="rmin" id="m-thighLMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thighLMax" placeholder="最大值"></div>
             <div class="range-row"><span class="range-label">大腿圍(右)</span><input type="number" class="rmin" id="m-thighRMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-thighRMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">手臂圍(左)</span><input type="number" class="rmin" id="m-armLMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-armLMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">手臂圍(右)</span><input type="number" class="rmin" id="m-armRMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-armRMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">小腿圍(左)</span><input type="number" class="rmin" id="m-calfLMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-calfLMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">小腿圍(右)</span><input type="number" class="rmin" id="m-calfRMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-calfRMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">頸肩至乳尖(左)</span><input type="number" class="rmin" id="m-nspLMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-nspLMax" placeholder="最大值"></div>
+            <div class="range-row"><span class="range-label">頸肩至乳尖(右)</span><input type="number" class="rmin" id="m-nspRMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-nspRMax" placeholder="最大值"></div>
           </div>
         </div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:flex-end">
@@ -513,6 +519,8 @@
       'Right Calf Circumference',
       'C19 Left Shorts Circumference',
       'C19 Right Shorts Circumference',
+      'Left NSP to Apex Length',
+      'Right NSP to Apex Length',
     ];
 
     const MEASURE_LABELS = {
@@ -534,6 +542,8 @@
       'Right Calf Circumference': '\u5c0f\u817f\u570d(\u53f3)',
       'C19 Left Shorts Circumference': '\u77ed\u891a\u8173\u5bec(\u5de6)',
       'C19 Right Shorts Circumference': '\u77ed\u891a\u8173\u5bec(\u53f3)',
+      'Left NSP to Apex Length': '\u9838\u80a9\u81f3\u4e73\u5c16(\u5de6)',
+      'Right NSP to Apex Length': '\u9838\u80a9\u81f3\u4e73\u5c16(\u53f3)',
     };
 
     async function doMemberSearch() {
@@ -557,7 +567,7 @@
         if (store) url += `&store=${encodeURIComponent(store)}`;
 
         // 體圍過濾
-        const rangeFields = ['chest','underbust','thinWaist','belly','highHip','lowHip','thighL','thighR'];
+        const rangeFields = ['chest','underbust','thinWaist','belly','highHip','lowHip','thighL','thighR','armL','armR','calfL','calfR','nspL','nspR'];
         rangeFields.forEach(k => {
           const min = document.getElementById('m-'+k+'Min').value;
           const max = document.getElementById('m-'+k+'Max').value;
@@ -668,7 +678,7 @@
       if (userId) url += `&userId=${encodeURIComponent(userId)}`;
       if (store) url += `&store=${encodeURIComponent(store)}`;
 
-      const rangeFields = ['chest','underbust','thinWaist','belly','highHip','lowHip','thighL','thighR'];
+      const rangeFields = ['chest','underbust','thinWaist','belly','highHip','lowHip','thighL','thighR','armL','armR','calfL','calfR','nspL','nspR'];
       rangeFields.forEach(k => {
         const min = document.getElementById('m-'+k+'Min').value;
         const max = document.getElementById('m-'+k+'Max').value;

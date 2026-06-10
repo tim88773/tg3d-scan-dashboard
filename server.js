@@ -252,6 +252,12 @@ const MEASURE_FILTERS = {
   lowHip: 'Low Hip Circumference',
   thighL: 'Left Thigh Circumference',
   thighR: 'Right Thigh Circumference',
+  armL: 'Left Upper Arm Circumference',
+  armR: 'Right Upper Arm Circumference',
+  calfL: 'Left Calf Circumference',
+  calfR: 'Right Calf Circumference',
+  nspL: 'Left NSP to Apex Length',
+  nspR: 'Right NSP to Apex Length',
 };
 
 // Chinese labels for measurement fields in export
@@ -274,6 +280,8 @@ const MEASURE_LABELS = {
   'Right Calf Circumference': '小腿圍(右)',
   'C19 Left Shorts Circumference': '短褲腳寬(左)',
   'C19 Right Shorts Circumference': '短褲腳寬(右)',
+  'Left NSP to Apex Length': '頸肩至乳尖(左)',
+  'Right NSP to Apex Length': '頸肩至乳尖(右)',
 };
 
 function matchMeasurementRanges(measurements, filters) {
@@ -448,8 +456,8 @@ app.get('/api/scan-members', async (req, res) => {
     }
     const hasMeasureFilters = Object.keys(measureFilters).length > 0;
 
-    // Fire incremental sync in background so new records eventually appear
-    setImmediate(function() { syncScanRecords().catch(function(e) {}); });
+    // Sync newer scan records first so queries always see latest data
+    try { await syncScanRecords(); } catch(e) {}
     let allRecords = [];
     let candidates = [];
     let totalChecked = 0;
@@ -604,20 +612,41 @@ app.listen(PORT, function() {
       console.log("[warmup] Scan records cached:", count, "new records");
       console.log("[warmup] Starting measurement pre-cache...");
 
-      // Background: pre-cache measurements slowly (1 req/sec limit)
+      // Background: pre-cache measurements (no memory cache, saves to DB directly)
       setImmediate(async function preCacheMeas() {
         var allRecs = db.getRecordsByDateRange('2000-01-01', '2099-12-31');
         var allTids = allRecs.map(function(r) { return r.tid; });
         var existing = db.getMeasurementsByTids(allTids);
         var todo = allTids.filter(function(t) { return !existing[t]; });
         console.log("[warmup] Need to cache", todo.length, "measurements");
+
+        // Free memory before starting
+        if (global.gc) global.gc();
+
         for (var i = 0; i < todo.length; i++) {
-          var m = await fetchMergedMeasurements(todo[i]);
-          if (m) {
-            var save = {}; save[todo[i]] = m;
+          // Fetch without memory cache - use raw fetchMergedMeasurements directly
+          var pid = todo[i];
+          var poseA = await fetchMeasurements(pid, 'A');
+          await new Promise(function(r) { setTimeout(r, 1000); });
+          var poseI = await fetchMeasurements(pid, 'I');
+
+          if (poseA || poseI) {
+            var merged = poseA ? { ...poseA } : {};
+            if (poseI) {
+              for (var fi = 0; fi < CHEST_UNDERBUST_FIELDS.length; fi++) {
+                var f = CHEST_UNDERBUST_FIELDS[fi];
+                merged[f] = poseI[f] != null ? poseI[f] : (merged[f] != null ? merged[f] : null);
+              }
+            }
+            var save = {}; save[pid] = merged;
             db.saveMeasurements(save);
           }
-          if ((i + 1) % 50 === 0) console.log("[warmup] Cached", (i + 1), "/", todo.length, "measurements");
+
+          // Free memory every 50 records
+          if ((i + 1) % 50 === 0) {
+            if (global.gc) global.gc();
+            console.log("[warmup] Cached", (i + 1), "/", todo.length, "measurements");
+          }
         }
         console.log("[warmup] Measurement pre-cache complete");
       });
