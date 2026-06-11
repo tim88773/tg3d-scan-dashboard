@@ -2,7 +2,7 @@ const express = require('express');
 const https = require('https');
 const path = require('path');
 const ExcelJS = require('exceljs');
-var db = require('./db_cache');
+const db = require('./db_cache');
 var __syncCanceled = false;
 var __syncTotal = 0;
 
@@ -638,30 +638,29 @@ app.get('/api/sync-status', function(req, res) {
 
 app.listen(PORT, function() {
   console.log('Server running at http://localhost:' + PORT);
-  // Restore DB from seed if Volume is empty
-  (function restoreSeed() {
-    var fs = require("fs");
-    var seedPath = path.join(__dirname, 'seed.db');
-    var dbPath = path.join(__dirname, 'data', 'scan_cache.db');
-    if (fs.existsSync(seedPath)) {
-      var count = db.prepare('SELECT COUNT(*) as c FROM scan_records').get();
-      if (!count || count.c === 0) {
-        console.log('[startup] DB empty, restoring from seed.db...');
-        try { db.close(); } catch(e) {}
-        var src = fs.readFileSync(seedPath);
-        fs.writeFileSync(dbPath, src);
-        delete require.cache[require.resolve('./db_cache')];
-        db = require('./db_cache');
-        console.log('[startup] Seed restored (' + fs.statSync(seedPath).size + ' bytes)');
+  // Restore seed data if DB is empty, then wait for manual sync
+  try {
+    var seedPath = path.join(__dirname, "seed.db");
+    if (require('fs').existsSync(seedPath)) {
+      var cnt = db.prepare('SELECT COUNT(*) as c FROM scan_records').get();
+      if (cnt && cnt.c === 0) {
+        console.log('[startup] DB empty, importing from seed.db...');
+        var sdb = new (require('better-sqlite3'))(seedPath, { readonly: true });
+        var rows = sdb.prepare('SELECT * FROM scan_records').all();
+        var meas = sdb.prepare('SELECT * FROM measurements').all();
+        sdb.close();
+        var insRec = db.prepare('INSERT OR IGNORE INTO scan_records (tid, user_id, nick_name, real_name, created_at, updated_at, store_name, scanner_name, accuracy_score, tag_list, raw_json, fetched_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
+        rows.forEach(function(r) { insRec.run(r.tid, r.user_id, r.nick_name, r.real_name, r.created_at, r.updated_at, r.store_name, r.scanner_name, r.accuracy_score, r.tag_list, r.raw_json, r.fetched_at); });
+        var insMeas = db.prepare('INSERT OR IGNORE INTO measurements (tid, data_json, fetched_at) VALUES (?,?,?)');
+        meas.forEach(function(m) { insMeas.run(m.tid, m.data_json, m.fetched_at); });
+        console.log('[startup] Seed imported: ' + rows.length + ' records, ' + meas.length + ' measurements');
       }
     }
-  })();
-
-  // Warmup disabled by default - use sync button to trigger API calls
-  // Only restore from seed if Volume is empty (handled above)
-  console.log("[startup] Warmup disabled. Click sync button to fetch data from API.");
-  //
-  // Original warmup code preserved below for reference:
+  } catch (e) {
+    console.log('[startup] Seed restore skipped:', e.message);
+  }
+  console.log('[startup] Server ready. Click sync button to fetch data from API.');
+  // Original warmup code (commented out):
   /*
   (async function warmupCache() {
     try {
