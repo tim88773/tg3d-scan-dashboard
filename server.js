@@ -645,9 +645,12 @@ app.get('/api/debug', function(req, res) {
   if (info.seedExists) {
     info.seedSize = require('fs').statSync(seedPath).size;
   }
+  info.recordCount = 0;
   try {
-    var cnt = db.prepare('SELECT COUNT(*) as c FROM scan_records').get();
+    var mdb = new (require('better-sqlite3'))(path.join(__dirname, 'data', 'scan_cache.db'));
+    var cnt = mdb.prepare('SELECT COUNT(*) as c FROM scan_records').get();
     info.recordCount = cnt ? cnt.c : -1;
+    mdb.close();
   } catch(e) { info.recordError = e.message; }
   res.json(info);
 });
@@ -656,20 +659,29 @@ app.listen(PORT, function() {
   console.log('Server running at http://localhost:' + PORT);
   // Restore seed data if DB is empty, then wait for manual sync
   try {
+    var Database = require('better-sqlite3');
     var seedPath = path.join(__dirname, "seed.db");
     if (require('fs').existsSync(seedPath)) {
-      var cnt = db.prepare('SELECT COUNT(*) as c FROM scan_records').get();
+      var mdb = new Database(path.join(__dirname, 'data', 'scan_cache.db'));
+      var cnt = mdb.prepare('SELECT COUNT(*) as c FROM scan_records').get();
       if (cnt && cnt.c === 0) {
         console.log('[startup] DB empty, importing from seed.db...');
-        var sdb = new (require('better-sqlite3'))(seedPath, { readonly: true });
+        var sdb = new Database(seedPath, { readonly: true });
         var rows = sdb.prepare('SELECT * FROM scan_records').all();
         var meas = sdb.prepare('SELECT * FROM measurements').all();
         sdb.close();
-        var insRec = db.prepare('INSERT OR IGNORE INTO scan_records (tid, user_id, nick_name, real_name, created_at, updated_at, store_name, scanner_name, accuracy_score, tag_list, raw_json, fetched_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
-        rows.forEach(function(r) { insRec.run(r.tid, r.user_id, r.nick_name, r.real_name, r.created_at, r.updated_at, r.store_name, r.scanner_name, r.accuracy_score, r.tag_list, r.raw_json, r.fetched_at); });
-        var insMeas = db.prepare('INSERT OR IGNORE INTO measurements (tid, data_json, fetched_at) VALUES (?,?,?)');
-        meas.forEach(function(m) { insMeas.run(m.tid, m.data_json, m.fetched_at); });
+        var insRec = mdb.prepare('INSERT OR IGNORE INTO scan_records (tid, user_id, nick_name, real_name, created_at, updated_at, store_name, scanner_name, accuracy_score, tag_list, raw_json, fetched_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)');
+        var txnRec = mdb.transaction(function(rows) { for (var i = 0; i < rows.length; i++) { var r = rows[i]; insRec.run(r.tid, r.user_id, r.nick_name, r.real_name, r.created_at, r.updated_at, r.store_name, r.scanner_name, r.accuracy_score, r.tag_list, r.raw_json, r.fetched_at); } });
+        txnRec(rows);
+        var insMeas = mdb.prepare('INSERT OR IGNORE INTO measurements (tid, data_json, fetched_at) VALUES (?,?,?)');
+        var txnMeas = mdb.transaction(function(rows) { for (var i = 0; i < rows.length; i++) { var m = rows[i]; insMeas.run(m.tid, m.data_json, m.fetched_at); } });
+        txnMeas(meas);
+        mdb.close();
+        mdb.close();
+        db.reopen();
         console.log('[startup] Seed imported: ' + rows.length + ' records, ' + meas.length + ' measurements');
+      } else {
+        mdb.close();
       }
     }
   } catch (e) {

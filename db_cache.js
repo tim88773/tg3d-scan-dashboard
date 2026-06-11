@@ -5,7 +5,7 @@ const dbPath = path.join(__dirname, 'data', 'scan_cache.db');
 const fs = require('fs');
 const dataDir = path.dirname(dbPath);
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-const db = new Database(dbPath);
+var db = new Database(dbPath);
 
 // WAL mode for faster concurrent reads
 db.pragma('journal_mode = WAL');
@@ -121,6 +121,12 @@ function close() {
   db.close();
 }
 
+function reopen() {
+  db.close();
+  db = new Database(dbPath);
+  return db;
+}
+
 module.exports = {
   saveScanRecords,
   getRecordsByDateRange,
@@ -129,6 +135,7 @@ module.exports = {
   saveMeasurements,
   getMeasurementsByTids,
   close,
+  reopen,
 };
 
 
