@@ -56,7 +56,17 @@
     .sync-section .sync-progress { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.5rem; min-height: 1.5em; }
     .sync-section .sync-progress .highlight { color: var(--green); font-weight: 600; }
     .sync-section .stat-row { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-    .sync-section .stat-row span { color: var(--text); font-weight: 600; }    .tab-btn {
+    .sync-section .stat-row span { color: var(--text); font-weight: 600; }
+    .sync-lock { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 1rem; background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); }
+    .sync-lock input[type=password] { padding: 0.6rem 1rem; background: #12121f; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text); font-size: 1rem; text-align: center; outline: none; width: 200px; font-family: monospace; }
+    .sync-lock input[type=password]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .sync-lock .lock-icon { font-size: 2rem; margin-bottom: 1rem; color: var(--text-muted); }
+    .sync-lock .lock-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .sync-lock .lock-error { color: var(--danger); font-size: 0.78rem; margin-top: 0.5rem; min-height: 1.2em; }
+    .sync-lock .unlock-btn { margin-top: 0.75rem; padding: 0.5rem 2rem; background: linear-gradient(135deg, var(--accent), #5a4bd1); border: none; border-radius: 8px; color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; }
+    .sync-lock .unlock-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow); }
+    .sync-content { display: none; }
+    .sync-content.unlocked { display: block; }    .tab-btn {
       padding: 0.6rem 1.5rem;
       background: transparent;
       border: 1px solid var(--card-border);
@@ -387,6 +397,15 @@
     <!-- ====== TAB 3: SYNC ====== -->
     <div class="tab-content" id="tab-sync">
 
+      <div class="sync-lock" id="sync-lock">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-label">輸入密碼以啟用同步功能</div>
+        <input type="password" id="sync-password" placeholder="请輸入密碼" maxlength="20">
+        <div class="lock-error" id="sync-lock-error"></div>
+        <button class="unlock-btn" id="sync-unlock-btn">確認</button>
+      </div>
+
+      <div class="sync-content" id="sync-content">
       <div class="sync-section">
         <h3>掃描紀錄同步</h3>
         <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem">從 API 拉取指定日期範圍的掃描紀錄，每次 100 筆</p>
@@ -407,7 +426,7 @@
         <button class="search-row-btn" id="sync-meas-btn" style="font-size:0.78rem;padding:0.4rem 1rem">開始補充量測</button>
         <div class="sync-progress" id="sync-meas-progress"></div>
       </div>
-
+    </div>
     </div>
   </div>
 
@@ -753,6 +772,21 @@
 
     // Auto load on page load
     setTimeout(() => doStoreSearch(), 500);
+
+    function unlockSync() {
+      var pwd = document.getElementById("sync-password").value;
+      if (pwd === "88773") {
+        document.getElementById("sync-lock").style.display = "none";
+        document.querySelector("#tab-sync .sync-content").classList.add("unlocked");
+      } else {
+        document.getElementById("sync-lock-error").textContent = "密碼錯誤，請重新輸入";
+      }
+    }
+
+    // Unlock handler
+
+    document.getElementById("sync-unlock-btn").addEventListener("click", unlockSync);
+    document.getElementById("sync-password").addEventListener("keydown", function(e) { if (e.key === "Enter") unlockSync(); });
 
     // ====== TAB 3: SYNC ======
     document.getElementById('sync-rec-btn').addEventListener('click', async function() {
