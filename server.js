@@ -2,7 +2,7 @@ const express = require('express');
 const https = require('https');
 const path = require('path');
 const ExcelJS = require('exceljs');
-const db = require('./db_cache');
+var db = require('./db_cache');
 var __syncCanceled = false;
 var __syncTotal = 0;
 
@@ -644,14 +644,14 @@ app.listen(PORT, function() {
     var seedPath = path.join(__dirname, 'seed.db');
     var dbPath = path.join(__dirname, 'data', 'scan_cache.db');
     if (fs.existsSync(seedPath)) {
-      var latest = db.getLatestCreatedAt();
-      if (!latest) {
+      var count = db.prepare('SELECT COUNT(*) as c FROM scan_records').get();
+      if (!count || count.c === 0) {
         console.log('[startup] DB empty, restoring from seed.db...');
         try { db.close(); } catch(e) {}
         var src = fs.readFileSync(seedPath);
         fs.writeFileSync(dbPath, src);
-        var Database = require("better-sqlite3");
-        db = new Database(dbPath);
+        delete require.cache[require.resolve('./db_cache')];
+        db = require('./db_cache');
         console.log('[startup] Seed restored (' + fs.statSync(seedPath).size + ' bytes)');
       }
     }
