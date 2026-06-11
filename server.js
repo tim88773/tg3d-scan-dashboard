@@ -5,6 +5,7 @@ const ExcelJS = require('exceljs');
 const db = require('./db_cache');
 var __syncCanceled = false;
 var __syncTotal = 0;
+var __measSyncState = { running: false, cancel: false, total: 0, done: 0 };
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -637,6 +638,66 @@ app.get('/api/sync-status', function(req, res) {
 });
 
 
+
+// Measurement cache sync
+app.get('/api/sync-measurements', async function(req, res) {
+  if (__measSyncState.running) return res.json({ success: false, error: 'Already running' });
+  __measSyncState = { running: true, cancel: false, total: 0, done: 0 };
+  try {
+    var allRecs = db.getRecordsByDateRange('2000-01-01', '2099-12-31');
+    var allTids = allRecs.map(function(r) { return r.tid; });
+    var existing = db.getMeasurementsByTids(allTids);
+    var todo = allTids.filter(function(t) { return !existing[t]; });
+    __measSyncState.total = todo.length;
+    if (todo.length === 0) {
+      __measSyncState.running = false;
+      return res.json({ success: true, total: 0, completed: 0, message: 'All measurements already cached' });
+    }
+    res.json({ success: true, total: todo.length, started: true });
+    // Background sync
+    setImmediate(async function() {
+      for (var i = 0; i < todo.length; i++) {
+        if (__measSyncState.cancel) { break; }
+        var pid = todo[i];
+        var poseA = await fetchMeasurements(pid, 'A');
+        await new Promise(function(r) { setTimeout(r, 1000); });
+        var poseI = await fetchMeasurements(pid, 'I');
+        if (poseA || poseI) {
+          var merged = poseA ? { ...poseA } : {};
+          if (poseI) {
+            for (var fi = 0; fi < CHEST_UNDERBUST_FIELDS.length; fi++) {
+              var f = CHEST_UNDERBUST_FIELDS[fi];
+              merged[f] = poseI[f] != null ? poseI[f] : (merged[f] != null ? merged[f] : null);
+            }
+          }
+          var save = {}; save[pid] = merged;
+          db.saveMeasurements(save);
+        }
+        __measSyncState.done = i + 1;
+        if ((i + 1) % 20 === 0 && global.gc) global.gc();
+      }
+      __measSyncState.running = false;
+      console.log('[meas-sync] Complete: ' + __measSyncState.done + '/' + __measSyncState.total);
+    });
+  } catch (err) {
+    __measSyncState.running = false;
+    console.error('[meas-sync] Error:', err.message);
+  }
+});
+
+app.get('/api/sync-measurements-cancel', function(req, res) {
+  __measSyncState.cancel = true;
+  res.json({ success: true });
+});
+
+app.get('/api/sync-measurements-status', function(req, res) {
+  res.json({
+    running: __measSyncState.running,
+    total: __measSyncState.total,
+    done: __measSyncState.done,
+    pct: __measSyncState.total > 0 ? Math.round(__measSyncState.done / __measSyncState.total * 100) : 0
+  });
+});
 // Debug: check seed.db status
 app.get('/api/debug', function(req, res) {
   var info = {}

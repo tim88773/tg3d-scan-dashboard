@@ -56,6 +56,16 @@
     .btn-sync:hover { background: rgba(0,184,148,0.2); border-color: var(--green); }
     .btn-sync:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-sync .spinner-sm { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(0,184,148,0.3); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 0.3rem; }
+    .sync-section { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
+    .sync-section h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--accent-light); }
+    .sync-section .field-row { display: flex; gap: 0.5rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .sync-section .field-row label { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.2rem; text-transform: uppercase; }
+    .sync-section input[type=date] { padding: 0.4rem 0.6rem; background: #12121f; border: 1px solid var(--card-border); border-radius: 6px; color: var(--text); font-size: 0.8rem; outline: none; }
+    .sync-section input[type=date]:focus { border-color: var(--accent); }
+    .sync-section .sync-progress { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.5rem; min-height: 1.5em; }
+    .sync-section .sync-progress .highlight { color: var(--green); font-weight: 600; }
+    .sync-section .stat-row { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+    .sync-section .stat-row span { color: var(--text); font-weight: 600; }
     .sync-msg { font-size: 0.72rem; color: var(--text-muted); text-align: center; margin-top: 0.3rem; min-height: 1.2em; }
     .tab-btn {
       padding: 0.6rem 1.5rem;
@@ -317,6 +327,7 @@
     <div class="tabs">
       <button class="tab-btn active" data-tab="tab-summary">門市統計</button>
       <button class="tab-btn" data-tab="tab-members">會員查詢</button>
+      <button class="tab-btn" data-tab="tab-sync">同步資料</button>
     </div>
 
     <!-- ====== TAB 1 ====== -->
@@ -391,6 +402,30 @@
           </table>
         </div>
       </div>
+    <!-- ====== TAB 3: SYNC ====== -->
+    <div class="tab-content" id="tab-sync">
+
+      <div class="sync-section">
+        <h3>掃描紀錄同步</h3>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem">從 API 拉取指定日期範圍的掃描紀錄，每次 100 筆</p>
+        <div class="field-row">
+          <div><label>起始日期</label><input type="date" id="sync-rec-start"></div>
+          <div><label>結束日期</label><input type="date" id="sync-rec-end"></div>
+          <button class="search-row-btn" id="sync-rec-btn" style="font-size:0.78rem;padding:0.4rem 1rem">開始同步</button>
+        </div>
+        <div class="sync-progress" id="sync-rec-progress"></div>
+      </div>
+
+      <div class="sync-section">
+        <h3>量測快取</h3>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem">為已同步但缺少量測數據的記錄補充體圍資料，每筆需要 2 次 API 呼叫</p>
+        <div class="stat-row" id="meas-stats">
+          已緩存: <span id="meas-cached">-</span> 筆  |  待補: <span id="meas-pending">-</span> 筆
+        </div>
+        <button class="search-row-btn" id="sync-meas-btn" style="font-size:0.78rem;padding:0.4rem 1rem">開始補充量測</button>
+        <div class="sync-progress" id="sync-meas-progress"></div>
+      </div>
+
     </div>
   </div>
 
@@ -791,6 +826,141 @@
 
     // Auto load on page load
     setTimeout(() => doStoreSearch(), 500);
+
+    // ====== TAB 3: SYNC ======
+    document.getElementById('sync-rec-btn').addEventListener('click', async function() {
+      var btn = this;
+      var prog = document.getElementById('sync-rec-progress');
+      var start = document.getElementById('sync-rec-start').value;
+      var end = document.getElementById('sync-rec-end').value;
+      if (!start || !end) { prog.textContent = '請選擇日期範圍'; return; }
+      
+      if (btn.dataset.running === 'true') {
+        try { await fetch('/api/sync-cancel'); } catch(e) {}
+        btn.dataset.running = 'false';
+        btn.textContent = '開始同步';
+        prog.textContent = '已停止同步';
+        return;
+      }
+      
+      btn.dataset.running = 'true';
+      btn.textContent = '停止同步';
+      prog.innerHTML = '正在同步 <span class="highlight">' + start + '</span> ~ <span class="highlight">' + end + '</span> 的掃描紀錄...';
+      
+      var pollTimer = setInterval(async function() {
+        try {
+          var r = await fetch('/api/sync-status');
+          var s = await r.json();
+          if (s.totalFetched > 0) prog.innerHTML = '已同步 <span class="highlight">' + s.totalFetched + '</span> 筆記錄...';
+        } catch(e) {}
+      }, 1500);
+      
+      try {
+        var url = '/api/sync?start=' + start + '&end=' + end;
+        var resp = await fetch(url);
+        var data = await resp.json();
+        clearInterval(pollTimer);
+        btn.dataset.running = 'false';
+        btn.textContent = '開始同步';
+        if (data.success) {
+          prog.innerHTML = data.newRecords > 0 ? '同步完成，新增 <span class="highlight">' + data.newRecords + '</span> 筆記錄' : '同步完成，沒有新資料';
+        } else {
+          prog.textContent = '同步失敗：' + (data.error || '未知錯誤');
+        }
+      } catch (err) {
+        clearInterval(pollTimer);
+        btn.dataset.running = 'false';
+        btn.textContent = '開始同步';
+        prog.textContent = '同步失敗：無法連接伺服器';
+      }
+    });
+    
+    // Measurement sync
+    (async function loadMeasStats() {
+      try {
+        var r = await fetch('/api/scan-members?start=2000-01-01&end=2099-12-31');
+        var d = await r.json();
+        if (d && d.records) {
+          var total = d.records.length;
+          var cached = d.records.filter(function(r) { return r.hasMeasurements; }).length;
+          document.getElementById('meas-cached').textContent = cached;
+          document.getElementById('meas-pending').textContent = total - cached;
+        }
+      } catch(e) {}
+    })();
+    
+    document.getElementById('sync-meas-btn').addEventListener('click', async function() {
+      var btn = this;
+      var prog = document.getElementById('sync-meas-progress');
+      
+      if (btn.dataset.running === 'true') {
+        try { await fetch('/api/sync-measurements-cancel'); } catch(e) {}
+        btn.dataset.running = 'false';
+        btn.textContent = '開始補充量測';
+        prog.textContent = '已停止';
+        return;
+      }
+      
+      btn.dataset.running = 'true';
+      btn.textContent = '停止補充';
+      prog.textContent = '正在起動同步...';
+      
+      // Start sync (background on server, just trigger it)
+      try {
+        var resp = await fetch('/api/sync-measurements');
+        var data = await resp.json();
+        if (data.started) {
+          prog.innerHTML = '正在補充量測... 總共 <span class="highlight">' + data.total + '</span> 筆';
+          // Poll progress
+          var pollMeas = setInterval(async function() {
+            try {
+              var r = await fetch('/api/sync-measurements-status');
+              var s = await r.json();
+              if (s.total > 0) {
+                prog.innerHTML = '已補充 <span class="highlight">' + s.done + '</span> / ' + s.total + ' 筆' + (s.pct > 0 ? ' (' + s.pct + '%)' : '');
+              }
+              if (!s.running) {
+                clearInterval(pollMeas);
+                btn.dataset.running = 'false';
+                btn.textContent = '開始補充量測';
+                if (s.done >= s.total) {
+                  prog.innerHTML = '量測補充完成！共更新 <span class="highlight">' + s.done + '</span> 筆';
+                } else if (s.total === 0) {
+                  prog.textContent = data.message || '已全部緩存';
+                }
+                // Refresh stats
+                try {
+                  var r2 = await fetch('/api/scan-members?start=2000-01-01&end=2099-12-31');
+                  var d2 = await r2.json();
+                  if (d2 && d2.records) {
+                    document.getElementById('meas-cached').textContent = d2.records.filter(function(r) { return r.hasMeasurements; }).length;
+                  }
+                } catch(e) {}
+              }
+            } catch(e) {}
+          }, 2000);
+        } else if (data.message) {
+          prog.textContent = data.message;
+          btn.dataset.running = 'false';
+          btn.textContent = '開始補充量測';
+        } else {
+          throw new Error(data.error || '未知錯誤');
+        }
+      } catch (err) {
+        btn.dataset.running = 'false';
+        btn.textContent = '開始補充量測';
+        prog.textContent = '失敗：' + (err.message || '無法連接');
+      }
+    });
+    
+    // Set default dates for sync tab
+    (function() {
+      var today = new Date();
+      var fmt = function(d) { return d.toISOString().slice(0,10); };
+      var sevenAgo = new Date(today); sevenAgo.setDate(sevenAgo.getDate() - 7);
+      document.getElementById('sync-rec-start').value = fmt(sevenAgo);
+      document.getElementById('sync-rec-end').value = fmt(today);
+    })();
   </script>
 </body>
 </html>
