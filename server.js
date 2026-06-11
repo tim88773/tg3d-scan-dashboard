@@ -636,6 +636,22 @@ app.get('/api/sync-status', function(req, res) {
   res.json({ running: !__syncCanceled, totalFetched: __syncTotal });
 });
 
+
+// Debug: check seed.db status
+app.get('/api/debug', function(req, res) {
+  var info = {}
+  var seedPath = path.join(__dirname, 'seed.db');
+  info.seedExists = require('fs').existsSync(seedPath);
+  if (info.seedExists) {
+    info.seedSize = require('fs').statSync(seedPath).size;
+  }
+  try {
+    var cnt = db.prepare('SELECT COUNT(*) as c FROM scan_records').get();
+    info.recordCount = cnt ? cnt.c : -1;
+  } catch(e) { info.recordError = e.message; }
+  res.json(info);
+});
+
 app.listen(PORT, function() {
   console.log('Server running at http://localhost:' + PORT);
   // Restore seed data if DB is empty, then wait for manual sync
