@@ -47,15 +47,6 @@
 
     .tabs { display: flex; gap: 0.25rem; margin-bottom: 1.5rem; }
 
-    .header-actions { display: flex; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; }
-    .btn-sync {
-      padding: 0.4rem 1rem; background: rgba(0,184,148,0.12); border: 1px solid rgba(0,184,148,0.3); border-radius: 8px;
-      color: var(--green); font-weight: 600; font-size: 0.78rem; cursor: pointer;
-      font-family: inherit; transition: background 0.15s, border-color 0.15s;
-    }
-    .btn-sync:hover { background: rgba(0,184,148,0.2); border-color: var(--green); }
-    .btn-sync:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-sync .spinner-sm { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(0,184,148,0.3); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 0.3rem; }
     .sync-section { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
     .sync-section h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--accent-light); }
     .sync-section .field-row { display: flex; gap: 0.5rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 0.75rem; }
@@ -65,9 +56,7 @@
     .sync-section .sync-progress { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.5rem; min-height: 1.5em; }
     .sync-section .sync-progress .highlight { color: var(--green); font-weight: 600; }
     .sync-section .stat-row { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-    .sync-section .stat-row span { color: var(--text); font-weight: 600; }
-    .sync-msg { font-size: 0.72rem; color: var(--text-muted); text-align: center; margin-top: 0.3rem; min-height: 1.2em; }
-    .tab-btn {
+    .sync-section .stat-row span { color: var(--text); font-weight: 600; }    .tab-btn {
       padding: 0.6rem 1.5rem;
       background: transparent;
       border: 1px solid var(--card-border);
@@ -314,15 +303,7 @@
       <p>TG3D Scan 會員資料查詢系統 - 讓各門市查詢掃描數據與會員資料</p>
     </header>
 
-    <div class="header-actions">
-      <div class="field" style="display:flex;align-items:center;gap:0.3rem">
-        <input type="date" id="sync-start" style="padding:0.35rem 0.5rem;background:#12121f;border:1px solid var(--card-border);border-radius:6px;color:var(--text);font-size:0.78rem;outline:none">
-        <span style="color:var(--text-muted);font-size:0.78rem">~</span>
-        <input type="date" id="sync-end" style="padding:0.35rem 0.5rem;background:#12121f;border:1px solid var(--card-border);border-radius:6px;color:var(--text);font-size:0.78rem;outline:none">
-      </div>
-      <button class="btn-sync" id="btn-sync" onclick="doSync()">同步最新資料</button>
-    </div>
-    <div class="sync-msg" id="sync-msg"></div>
+    
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="tab-summary">門市統計</button>
@@ -467,61 +448,6 @@
       el.textContent = msg; el.classList.add('active');
     }
 
-    async function doSync() {
-      const btn = document.getElementById('btn-sync');
-      const msg = document.getElementById('sync-msg');
-      const start = document.getElementById('sync-start').value;
-      const end = document.getElementById('sync-end').value;
-
-      // If sync is running, cancel it
-      if (btn.dataset.running === 'true') {
-        try { await fetch('/api/sync-cancel'); } catch(e) {}
-        btn.dataset.running = 'false';
-        btn.innerHTML = '同步最新資料';
-        msg.textContent = '已停止同步';
-        msg.style.color = 'var(--text-muted)';
-        return;
-      }
-
-      btn.dataset.running = 'true';
-      btn.innerHTML = "<span class='spinner-sm'></span>停止同步";
-      msg.textContent = start && end ? '正在同步 ' + start + ' ~ ' + end + ' 資料...' : '正在執行增量同步...';
-      msg.style.color = 'var(--text-muted)';
-
-      // Poll progress every 1.5s
-      var pollTimer = setInterval(async function() {
-        try {
-          var r = await fetch('/api/sync-status');
-          var s = await r.json();
-          if (s.totalFetched > 0) {
-            msg.textContent = '已同步 ' + s.totalFetched + ' 筆記錄...';
-          }
-        } catch(e) {}
-      }, 1500);
-
-      try {
-        let url = '/api/sync';
-        if (start && end) url += '?start=' + start + '&end=' + end;
-        const resp = await fetch(url);
-        const data = await resp.json();
-        clearInterval(pollTimer);
-        btn.dataset.running = 'false';
-        btn.innerHTML = '同步最新資料';
-        if (data.success) {
-          msg.textContent = data.newRecords > 0 ? '同步完成，新增 ' + data.newRecords + ' 筆記錄' : '同步完成，沒有新資料';
-          msg.style.color = 'var(--green)';
-        } else {
-          msg.textContent = '同步失敗：' + (data.error || '未知錯誤');
-          msg.style.color = 'var(--danger)';
-        }
-      } catch (err) {
-        clearInterval(pollTimer);
-        btn.dataset.running = 'false';
-        btn.innerHTML = '同步最新資料';
-        msg.textContent = '同步失敗：無法連接伺服器';
-        msg.style.color = 'var(--danger)';
-      }
-    }
     // ====== TAB 1: 門市統計 ======
     let lastSummaryData = null;
 
