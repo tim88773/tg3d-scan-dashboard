@@ -4,8 +4,14 @@
     "buildCommand": "npm install"
   },
   "deploy": {
-    "startCommand": "node server.js",
+    "startCommand": "node --expose-gc server.js",
     "healthcheckPath": "/",
-    "restartPolicyType": "on_failure"
+    "restartPolicyType": "on_failure",
+    "volumes": [
+      {
+        "mountPath": "/app/data",
+        "name": "scan-cache-volume"
+      }
+    ]
   }
 }

@@ -3,6 +3,8 @@ const https = require('https');
 const path = require('path');
 const ExcelJS = require('exceljs');
 const db = require('./db_cache');
+var __syncCanceled = false;
+var __syncTotal = 0;
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -207,6 +209,7 @@ async function syncRange(startDate, endDate, maxRecords) {
   let done = false;
 
   while (!done && allRecords.length < maxRecords) {
+    if (__syncCanceled) { console.log('[sync-range] Cancel requested, stopping'); break; }
     let data;
     try {
       data = await fetchScanRecordsPage(100, offset);
@@ -237,6 +240,7 @@ async function syncRange(startDate, endDate, maxRecords) {
     await new Promise(r => setTimeout(r, 200));
   }
 
+  __syncTotal = allRecords.length;
   if (allRecords.length > 0) {
     db.saveScanRecords(allRecords);
     console.log('[sync-range] Cached ' + allRecords.length + ' records');
@@ -455,9 +459,6 @@ app.get('/api/scan-members', async (req, res) => {
       if (max) measureFilters[key + 'Max'] = parseFloat(max);
     }
     const hasMeasureFilters = Object.keys(measureFilters).length > 0;
-
-    // Sync newer scan records first so queries always see latest data
-    try { await syncScanRecords(); } catch(e) {}
     let allRecords = [];
     let candidates = [];
     let totalChecked = 0;
@@ -599,20 +600,75 @@ app.get('/api/scan-members/export', async (req, res) => {
   }
 });
 
+// Manual sync endpoint - supports date range via ?start=&end= params
+app.get('/api/sync', async function(req, res) {
+  try {
+    __syncCanceled = false;
+    __syncTotal = 0;
+    var start = req.query.start;
+    var end = req.query.end;
+    if (start && end) {
+      // Date range sync - fetch all records in the specified period
+      var sd = new Date(start);
+      var ed = new Date(end);
+      ed.setHours(23, 59, 59, 999);
+      var count = await syncRange(sd, ed, 50000);
+      res.json({ success: true, newRecords: count, mode: 'daterange' });
+    } else {
+      // Incremental sync - only fetch newer than latest cached
+      var count = await syncScanRecords();
+      res.json({ success: true, newRecords: count, mode: 'incremental' });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
+// Cancel running sync
+app.get('/api/sync-cancel', function(req, res) {
+  __syncCanceled = true;
+  res.json({ success: true, message: 'Sync canceled' });
+});
+
+// Check sync status
+app.get('/api/sync-status', function(req, res) {
+  res.json({ running: !__syncCanceled, totalFetched: __syncTotal });
+});
+
 app.listen(PORT, function() {
   console.log('Server running at http://localhost:' + PORT);
+  // Restore DB from seed if Volume is empty
+  (function restoreSeed() {
+    var fs = require("fs");
+    var seedPath = path.join(__dirname, 'seed.db');
+    var dbPath = path.join(__dirname, 'data', 'scan_cache.db');
+    if (fs.existsSync(seedPath)) {
+      var latest = db.getLatestCreatedAt();
+      if (!latest) {
+        console.log('[startup] DB empty, restoring from seed.db...');
+        try { db.close(); } catch(e) {}
+        var src = fs.readFileSync(seedPath);
+        fs.writeFileSync(dbPath, src);
+        var Database = require("better-sqlite3");
+        db = new Database(dbPath);
+        console.log('[startup] Seed restored (' + fs.statSync(seedPath).size + ' bytes)');
+      }
+    }
+  })();
 
-  // Background warmup: pre-cache recent 7 days so first user query is fast
-  // Warmup: sync latest + backfill older records on startup
+  // Warmup disabled by default - use sync button to trigger API calls
+  // Only restore from seed if Volume is empty (handled above)
+  console.log("[startup] Warmup disabled. Click sync button to fetch data from API.");
+  //
+  // Original warmup code preserved below for reference:
+  /*
   (async function warmupCache() {
     try {
       console.log("[warmup] Running sync (records + measurements)...");
-      // syncScanRecords handles full/incr sync automatically
       var count = await syncScanRecords();
       console.log("[warmup] Scan records cached:", count, "new records");
       console.log("[warmup] Starting measurement pre-cache...");
-
-      // Background: pre-cache measurements (no memory cache, saves to DB directly)
       setImmediate(async function preCacheMeas() {
         var allRecs = db.getRecordsByDateRange('2000-01-01', '2099-12-31');
         var allTids = allRecs.map(function(r) { return r.tid; });
@@ -654,4 +710,5 @@ app.listen(PORT, function() {
       console.error("[warmup] Error:", err.message);
     }
   })();
+  */
 });
