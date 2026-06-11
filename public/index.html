@@ -423,7 +423,10 @@
         <div class="stat-row" id="meas-stats">
           已緩存: <span id="meas-cached">-</span> 筆  |  待補: <span id="meas-pending">-</span> 筆
         </div>
-        <button class="search-row-btn" id="sync-meas-btn" style="font-size:0.78rem;padding:0.4rem 1rem">開始補充量測</button>
+        <div class="field-row">
+          <div><label>補充筆數</label><input type="number" id="meas-limit" value="50" min="1" max="10000" style="padding:0.4rem 0.6rem;background:#12121f;border:1px solid var(--card-border);border-radius:6px;color:var(--text);font-size:0.8rem;outline:none;width:100px"></div>
+          <button class="search-row-btn" id="sync-meas-btn" style="font-size:0.78rem;padding:0.4rem 1rem">開始補充量測</button>
+        </div>
         <div class="sync-progress" id="sync-meas-progress"></div>
       </div>
     </div>
@@ -868,7 +871,8 @@
       
       // Start sync (background on server, just trigger it)
       try {
-        var resp = await fetch('/api/sync-measurements');
+        var limit = document.getElementById('meas-limit').value || 50;
+        var resp = await fetch('/api/sync-measurements?limit=' + limit);
         var data = await resp.json();
         if (data.started) {
           prog.innerHTML = '正在補充量測... 總共 <span class="highlight">' + data.total + '</span> 筆';

@@ -645,6 +645,11 @@ app.get('/api/sync-measurements', async function(req, res) {
   __measSyncState = { running: true, cancel: false, total: 0, done: 0 };
   try {
     var allRecs = db.getRecordsByDateRange('2000-01-01', '2099-12-31');
+    // Sort newest first
+    allRecs.sort(function(a, b) { return (b.created_at || '').localeCompare(a.created_at || ''); });
+    // Apply limit from query param
+    var limit = parseInt(req.query.limit) || 0;
+    if (limit > 0) allRecs = allRecs.slice(0, limit);
     var allTids = allRecs.map(function(r) { return r.tid; });
     var existing = db.getMeasurementsByTids(allTids);
     var todo = allTids.filter(function(t) { return !existing[t]; });
