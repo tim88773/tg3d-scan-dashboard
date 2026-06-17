@@ -37,7 +37,7 @@
     }
     .container { width: 100%; max-width: 1200px; }
 
-    header { text-align: center; margin-bottom: 1.5rem; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
     header h1 {
       font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em;
       background: linear-gradient(135deg, var(--accent-light), var(--green));
@@ -304,6 +304,11 @@
       .tabs { gap: 0; }
       .tab-btn { flex: 1; text-align: center; padding: 0.5rem 0.75rem; font-size: 0.75rem; }
     }
+    .user-info { display: none; align-items: center; gap: 0.75rem; white-space: nowrap; }
+    .user-info.show { display: flex; }
+    .user-info .name { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+    .user-info .logout-btn { padding: 0.3rem 0.75rem; font-size: 0.72rem; font-weight: 600; border-radius: 6px; background: transparent; border: 1px solid var(--card-border); color: var(--text-muted); cursor: pointer; font-family: inherit; }
+    .user-info .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
     /* ---- Login ---- */
     #login-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; }
     #login-overlay.hidden { display: none; }
@@ -368,6 +373,7 @@
     <header>
       <h1>TG3D Scan 門市掃描儀表板</h1>
       <p>TG3D Scan 會員資料查詢系統 - 讓各門市查詢掃描數據與會員資料</p>
+      <div class="user-info" id="user-info"><span class="name" id="user-name"></span><button class="logout-btn" id="logout-btn">登出</button></div>
     </header>
 
     
@@ -544,7 +550,7 @@
       if (!AUTH_TOKEN) return false;
       try { var r = await fetch('/api/session'); if (!r.ok) { AUTH_TOKEN=''; localStorage.removeItem('auth_token'); return false; } var d = await r.json(); CURRENT_USER = d.user; return true; } catch(e) { return false; }
     }
-    function doLogout() { AUTH_TOKEN=''; CURRENT_USER=null; localStorage.removeItem('auth_token'); location.reload(); }
+    function doLogout() { AUTH_TOKEN=''; CURRENT_USER=null; localStorage.removeItem('auth_token'); document.getElementById('user-info').classList.remove('show'); location.reload(); }
     function applyPermissions() {
       if (!CURRENT_USER) return;
       var perms = CURRENT_USER.permissions || []; var isAdmin = CURRENT_USER.is_admin;
@@ -1149,8 +1155,9 @@
     // Startup
     (async function() {
       var ok = await checkSession();
-      if (ok) { document.getElementById('login-overlay').classList.add('hidden'); applyPermissions(); initApp(); }
+      if (ok) { document.getElementById('login-overlay').classList.add('hidden'); document.getElementById('user-name').textContent=CURRENT_USER.name||CURRENT_USER.username; document.getElementById('user-info').classList.add('show'); applyPermissions(); initApp(); }
     })();
+    document.getElementById('logout-btn').addEventListener('click', doLogout);
   </script>
 </body>
 </html>
