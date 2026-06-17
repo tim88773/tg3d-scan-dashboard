@@ -1,5 +1,6 @@
 const Database = require('better-sqlite3');
 const path = require('path');
+const crypto = require('crypto');
 
 const dbPath = path.join(__dirname, 'data', 'scan_cache.db');
 const fs = require('fs');
@@ -35,7 +36,71 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_scan_records_created_at ON scan_records(created_at);
   CREATE INDEX IF NOT EXISTS idx_scan_records_store ON scan_records(store_name);
   CREATE INDEX IF NOT EXISTS idx_scan_records_user ON scan_records(user_id);
+
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    permissions TEXT NOT NULL DEFAULT '[]',
+    is_admin INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL
+  );
 `);
+
+// ---- Users ----
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+// Seed default admin account
+const adminUsername = '0981069796';
+const adminExists = db.prepare('SELECT id FROM users WHERE username = ?').get(adminUsername);
+if (!adminExists) {
+  db.prepare('INSERT INTO users (name, username, password_hash, permissions, is_admin, created_at) VALUES (?,?,?,?,?,?)')
+    .run('管理員', adminUsername, hashPassword('0981069796'), JSON.stringify(['store_summary','members','sync','access_control']), 1, Date.now());
+}
+
+function getUserByUsername(username) {
+  return db.prepare('SELECT * FROM users WHERE username = ?').get(username) || null;
+}
+
+function getUserById(id) {
+  return db.prepare('SELECT * FROM users WHERE id = ?').get(Number(id)) || null;
+}
+
+function getAllUsers() {
+  return db.prepare('SELECT id, name, username, permissions, is_admin, created_at FROM users ORDER BY id').all();
+}
+
+function createUser(name, username, password, permissions, isAdmin) {
+  const ph = hashPassword(password);
+  return db.prepare('INSERT INTO users (name, username, password_hash, permissions, is_admin, created_at) VALUES (?,?,?,?,?,?)')
+    .run(name, username, ph, JSON.stringify(permissions || []), isAdmin ? 1 : 0, Date.now());
+}
+
+function updateUser(id, name, username, password, permissions, isAdmin) {
+  const user = getUserById(id);
+  if (!user) return false;
+  const ph = password ? hashPassword(password) : user.password_hash;
+  db.prepare('UPDATE users SET name=?, username=?, password_hash=?, permissions=?, is_admin=? WHERE id=?')
+    .run(name, username, ph, JSON.stringify(permissions || []), isAdmin ? 1 : 0, Number(id));
+  return true;
+}
+
+function deleteUser(id) {
+  const user = getUserById(id);
+  if (!user || user.is_admin) return false; // cannot delete admin
+  db.prepare('DELETE FROM users WHERE id = ?').run(Number(id));
+  return true;
+}
+
+function verifyPassword(username, password) {
+  const user = getUserByUsername(username);
+  if (!user) return null;
+  if (user.password_hash !== hashPassword(password)) return null;
+  return { id: user.id, name: user.name, username: user.username, permissions: JSON.parse(user.permissions || '[]'), is_admin: !!user.is_admin };
+}
 
 // ---- Scan Records ----
 
@@ -136,6 +201,12 @@ module.exports = {
   getMeasurementsByTids,
   close,
   reopen,
+  // Users
+  verifyPassword,
+  getUserByUsername,
+  getUserById,
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
 };
-
-

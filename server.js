@@ -3,6 +3,7 @@ const https = require('https');
 const path = require('path');
 const ExcelJS = require('exceljs');
 const db = require('./db_cache');
+const auth = require('./auth');
 var __syncCanceled = false;
 var __syncTotal = 0;
 var __measSyncState = { running: false, cancel: false, total: 0, done: 0 };
@@ -14,6 +15,75 @@ const APIKEY = 'xwsSRQmdxSo198IQgoO0rzDt8Qinmalmq2kt';
 const TG3D_BASE = 'https://api.tg3ds.com';
 
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0 }));
+
+app.use(express.json());
+// ---- Auth ----
+app.post('/api/login', function(req, res) {
+  const { username, password } = req.body || {};
+  if (!username || !password) return res.status(400).json({ error: 'Please enter username and password' });
+  const user = db.verifyPassword(username, password);
+  if (!user) return res.status(401).json({ error: 'Invalid username or password' });
+  const token = auth.generateToken();
+  auth.tokens.set(token, { user, expires: Date.now() + 24 * 60 * 60 * 1000 });
+  res.json({ token, user });
+});
+
+app.get('/api/session', auth.requireAuth, function(req, res) {
+  const user = db.getUserByUsername(req.user.username);
+  if (!user) return res.status(401).json({ error: 'User not found' });
+  res.json({ user: { id: user.id, name: user.name, username: user.username, permissions: JSON.parse(user.permissions || '[]'), is_admin: !!user.is_admin } });
+});
+
+app.post('/api/logout', auth.requireAuth, function(req, res) {
+  const token = req.headers['x-auth-token'];
+  auth.tokens.delete(token);
+  res.json({ success: true });
+});
+
+// ---- User Management ----
+app.get('/api/users', auth.requireAuth, auth.requirePermission('access_control'), function(req, res) {
+  try {
+    const users = db.getAllUsers();
+    const result = users.map(function(u) { return { ...u, permissions: JSON.parse(u.permissions || '[]') }; });
+    res.json(result);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/users', auth.requireAuth, auth.requirePermission('access_control'), function(req, res) {
+  try {
+    const { name, username, password, permissions, is_admin } = req.body || {};
+    if (!name || !username || !password) return res.status(400).json({ error: 'Name, username, and password are required' });
+    const existing = db.getUserByUsername(username);
+    if (existing) return res.status(409).json({ error: 'Username already exists' });
+    db.createUser(name, username, password, permissions || [], !!is_admin);
+    res.json({ success: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put('/api/users/:id', auth.requireAuth, auth.requirePermission('access_control'), function(req, res) {
+  try {
+    const id = Number(req.params.id);
+    const { name, username, password, permissions, is_admin } = req.body || {};
+    if (!name || !username) return res.status(400).json({ error: 'Name and username are required' });
+    const existing = db.getUserByUsername(username);
+    if (existing && existing.id !== id) return res.status(409).json({ error: 'Username already exists' });
+    const ok = db.updateUser(id, name, username, password || null, permissions || [], !!is_admin);
+    if (!ok) return res.status(404).json({ error: 'User not found' });
+    res.json({ success: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete('/api/users/:id', auth.requireAuth, auth.requirePermission('access_control'), function(req, res) {
+  try {
+    const id = Number(req.params.id);
+    const user = db.getUserById(id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.is_admin) return res.status(400).json({ error: 'Cannot delete admin account' });
+    db.deleteUser(id);
+    res.json({ success: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 
 const cache = new Map();
 const CACHE_TTL = 60_000;
@@ -349,7 +419,7 @@ async function scanRecordsByDateRange(startDate, endDate, filters) {
 }
 
 // ---- API 1: Store summary (dedup) ----
-app.get('/api/scan-summary', async (req, res) => {
+app.get('/api/scan-summary', auth.requireAuth, auth.requirePermission('store_summary'), async (req, res) => {
   try {
     const startDate = new Date(req.query.start);
     const endDate = new Date(req.query.end);
@@ -392,7 +462,7 @@ app.get('/api/scan-summary', async (req, res) => {
 });
 
 // ---- API 2: Store summary export ----
-app.get('/api/scan-summary/export', async (req, res) => {
+app.get('/api/scan-summary/export', auth.requireAuth, auth.requirePermission('store_summary'), async (req, res) => {
   try {
     let stores = [];
     if (req.query.data) {
@@ -436,7 +506,7 @@ app.get('/api/scan-summary/export', async (req, res) => {
 });
 
 // ---- API 3: Member search with measurements ----
-app.get('/api/scan-members', async (req, res) => {
+app.get('/api/scan-members', auth.requireAuth, auth.requirePermission('members'), async (req, res) => {
   try {
     const startDate = new Date(req.query.start);
     const endDate = new Date(req.query.end);
@@ -522,7 +592,7 @@ app.get('/api/scan-members', async (req, res) => {
   }
 });
 // ---- API 4: Member export ----
-app.get('/api/scan-members/export', async (req, res) => {
+app.get('/api/scan-members/export', auth.requireAuth, auth.requirePermission('members'), async (req, res) => {
   try {
     var url = 'http://localhost:' + PORT + '/api/scan-members?start=' + req.query.start + '&end=' + req.query.end;
     if (req.query.userId) url += '&userId=' + encodeURIComponent(req.query.userId);
@@ -602,7 +672,7 @@ app.get('/api/scan-members/export', async (req, res) => {
 });
 
 // Manual sync endpoint - supports date range via ?start=&end= params
-app.get('/api/sync', async function(req, res) {
+app.get('/api/sync', auth.requireAuth, auth.requirePermission('sync'), async function(req, res) {
   try {
     __syncCanceled = false;
     __syncTotal = 0;
@@ -627,20 +697,20 @@ app.get('/api/sync', async function(req, res) {
 
 
 // Cancel running sync
-app.get('/api/sync-cancel', function(req, res) {
+app.get('/api/sync-cancel', auth.requireAuth, auth.requirePermission('sync'), function(req, res) {
   __syncCanceled = true;
   res.json({ success: true, message: 'Sync canceled' });
 });
 
 // Check sync status
-app.get('/api/sync-status', function(req, res) {
+app.get('/api/sync-status', auth.requireAuth, auth.requirePermission('sync'), function(req, res) {
   res.json({ running: !__syncCanceled, totalFetched: __syncTotal });
 });
 
 
 
 // Measurement cache sync
-app.get('/api/sync-measurements', async function(req, res) {
+app.get('/api/sync-measurements', auth.requireAuth, auth.requirePermission('sync'), async function(req, res) {
   if (__measSyncState.running) return res.json({ success: false, error: 'Already running' });
   __measSyncState = { running: true, cancel: false, total: 0, done: 0 };
   try {
@@ -690,12 +760,12 @@ app.get('/api/sync-measurements', async function(req, res) {
   }
 });
 
-app.get('/api/sync-measurements-cancel', function(req, res) {
+app.get('/api/sync-measurements-cancel', auth.requireAuth, auth.requirePermission('sync'), function(req, res) {
   __measSyncState.cancel = true;
   res.json({ success: true });
 });
 
-app.get('/api/sync-measurements-status', function(req, res) {
+app.get('/api/sync-measurements-status', auth.requireAuth, auth.requirePermission('sync'), function(req, res) {
   res.json({
     running: __measSyncState.running,
     total: __measSyncState.total,
@@ -704,7 +774,7 @@ app.get('/api/sync-measurements-status', function(req, res) {
   });
 });
 // Debug: check seed.db status
-app.get('/api/debug', function(req, res) {
+app.get('/api/debug', auth.requireAuth, function(req, res) {
   var info = {}
   var seedPath = path.join(__dirname, 'seed.db');
   info.seedExists = require('fs').existsSync(seedPath);

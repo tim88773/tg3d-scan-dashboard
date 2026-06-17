@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
@@ -304,9 +304,66 @@
       .tabs { gap: 0; }
       .tab-btn { flex: 1; text-align: center; padding: 0.5rem 0.75rem; font-size: 0.75rem; }
     }
+    /* ---- Login ---- */
+    #login-overlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; }
+    #login-overlay.hidden { display: none; }
+    .login-card { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 2rem 2.5rem; width: 100%; max-width: 360px; text-align: center; }
+    .login-card h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.25rem; background: linear-gradient(135deg, var(--accent-light), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .login-card .sub { color: var(--text-muted); font-size: 0.78rem; margin-bottom: 1.5rem; }
+    .login-card .field-row { display: flex; flex-direction: column; gap: 0.75rem; }
+    .login-card input { width: 100%; padding: 0.6rem 0.9rem; background: #12121f; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text); font-family: monospace; font-size: 0.9rem; outline: none; }
+    .login-card input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .login-card .login-btn { width: 100%; padding: 0.6rem; background: linear-gradient(135deg, var(--accent), #5a4bd1); border: none; border-radius: 8px; color: #fff; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; }
+    .login-card .login-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow); }
+    .login-card .login-error { color: var(--danger); font-size: 0.78rem; margin-top: 0.75rem; min-height: 1.2em; }
+    .login-card .login-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ---- User Management ---- */
+    .user-form { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
+    .user-form h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent-light); }
+    .user-form .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .user-form label { display: block; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .user-form input, .user-form select { width: 100%; padding: 0.45rem 0.6rem; background: #12121f; border: 1px solid var(--card-border); border-radius: 6px; color: var(--text); font-size: 0.82rem; outline: none; font-family: monospace; }
+    .user-form select { font-family: Inter, sans-serif; }
+    .user-form input:focus, .user-form select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .perm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 0.4rem 0.75rem; }
+    .perm-grid label { display: flex; align-items: center; gap: 0.4rem; cursor: pointer; text-transform: none; font-size: 0.82rem; color: var(--text); letter-spacing: 0; }
+    .perm-grid input[type=checkbox] { width: auto; accent-color: var(--accent); }
+    .user-form .form-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+    .btn-save { padding: 0.45rem 1.25rem; background: linear-gradient(135deg, var(--accent), #5a4bd1); border: none; border-radius: 8px; color: #fff; font-weight: 700; font-size: 0.82rem; cursor: pointer; font-family: inherit; }
+    .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow); }
+    .btn-cancel { padding: 0.45rem 1.25rem; background: transparent; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-muted); font-weight: 600; font-size: 0.82rem; cursor: pointer; font-family: inherit; }
+    .btn-cancel:hover { border-color: var(--accent); color: var(--text); }
+    .btn-sm { padding: 0.25rem 0.6rem; font-size: 0.72rem; font-weight: 600; border-radius: 6px; cursor: pointer; font-family: inherit; border: none; }
+    .btn-sm.edit { background: var(--accent); color: #fff; margin-right: 0.3rem; }
+    .btn-sm.delete { background: var(--danger); color: #fff; }
+    .btn-sm:hover { opacity: 0.85; }
+    .user-table-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); }
+    .user-table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .user-table-wrap th { background: rgba(108, 92, 231, 0.15); color: var(--accent-light); padding: 0.6rem 0.5rem; text-align: left; font-weight: 600; border-bottom: 1px solid var(--card-border); }
+    .user-table-wrap td { padding: 0.5rem; border-bottom: 1px solid rgba(42, 42, 68, 0.5); }
+    .user-table-wrap tr:hover td { background: rgba(108, 92, 231, 0.04); }
+    .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 99px; font-size: 0.68rem; font-weight: 600; margin-right: 0.25rem; margin-bottom: 0.2rem; }
+    .badge.admin { background: rgba(0,184,148,0.15); color: var(--green); }
+    .badge.perm { background: rgba(108,92,231,0.12); color: var(--accent-light); }
+    .user-form-msg { font-size: 0.78rem; margin-top: 0.5rem; min-height: 1.2em; }
+    .user-form-msg.success { color: var(--green); }
+    .user-form-msg.error { color: var(--danger); }
   </style>
 </head>
 <body>
+  <div id="login-overlay">
+    <div class="login-card">
+      <h2>TG3D Scan 管理後台</h2>
+      <p class="sub">請登入以繼續使用</p>
+      <div class="field-row">
+        <input type="text" id="login-username" placeholder="帳號">
+        <input type="password" id="login-password" placeholder="密碼">
+        <button class="login-btn" id="login-btn">登入</button>
+      </div>
+      <div class="login-error" id="login-error"></div>
+    </div>
+  </div>
   <div class="container">
     <header>
       <h1>TG3D Scan 門市掃描儀表板</h1>
@@ -319,6 +376,7 @@
       <button class="tab-btn active" data-tab="tab-summary">門市統計</button>
       <button class="tab-btn" data-tab="tab-members">會員查詢</button>
       <button class="tab-btn" data-tab="tab-sync">同步資料</button>
+      <button class="tab-btn" data-tab="tab-users">控制權限</button>
     </div>
 
     <!-- ====== TAB 1 ====== -->
@@ -431,9 +489,73 @@
       </div>
     </div>
     </div>
+
+    <!-- ====== TAB 4 ====== -->
+    <div class="tab-content" id="tab-users">
+      <div class="user-form" id="user-form-panel">
+        <h3 id="user-form-title">新增使用者</h3>
+        <div class="form-grid">
+          <div><label>姓名</label><input type="text" id="u-name" placeholder="使用者姓名"></div>
+          <div><label>帳號</label><input type="text" id="u-username" placeholder="登入帳號"></div>
+          <div><label>密碼 <span style="font-size:0.65rem;color:var(--text-muted)">(編輯時留白不修改)</span></label><input type="password" id="u-password" placeholder="密碼"></div>
+          <div><label>管理員權限</label><select id="u-admin"><option value="0">一般使用者</option><option value="1">管理員</option></select></div>
+        </div>
+        <div>
+          <label>可使用項目</label>
+          <div class="perm-grid">
+            <label><input type="checkbox" id="perm-store_summary" checked> 店舖統計</label>
+            <label><input type="checkbox" id="perm-members" checked> 會員查詢</label>
+            <label><input type="checkbox" id="perm-sync" checked> 同步資料</label>
+            <label><input type="checkbox" id="perm-access_control"> 控制權限</label>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-save" id="u-save-btn">新增</button>
+          <button class="btn-cancel" id="u-cancel-btn" style="display:none">取消</button>
+        </div>
+        <div class="user-form-msg" id="user-form-msg"></div>
+      </div>
+      <div class="user-table-wrap">
+        <table>
+          <thead><tr><th>姓名</th><th>帳號</th><th>權限</th><th>可使用項目</th><th style="width:100px">操作</th></tr></thead>
+          <tbody id="user-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">載入中...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
   <script>
+    // ====== AUTH ======
+    var AUTH_TOKEN = localStorage.getItem('auth_token') || '';
+    var CURRENT_USER = null;
+    (function() {
+      var _fetch = window.fetch;
+      window.fetch = function(url, opts) {
+        opts = opts || {}; opts.headers = opts.headers || {};
+        if (AUTH_TOKEN) opts.headers['x-auth-token'] = AUTH_TOKEN;
+        if (opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData)) {
+          opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(opts.body);
+        }
+        return _fetch(url, opts);
+      };
+    })();
+    async function checkSession() {
+      if (!AUTH_TOKEN) return false;
+      try { var r = await fetch('/api/session'); if (!r.ok) { AUTH_TOKEN=''; localStorage.removeItem('auth_token'); return false; } var d = await r.json(); CURRENT_USER = d.user; return true; } catch(e) { return false; }
+    }
+    function doLogout() { AUTH_TOKEN=''; CURRENT_USER=null; localStorage.removeItem('auth_token'); location.reload(); }
+    function applyPermissions() {
+      if (!CURRENT_USER) return;
+      var perms = CURRENT_USER.permissions || []; var isAdmin = CURRENT_USER.is_admin;
+      var tabMap = {'tab-summary':'store_summary','tab-members':'members','tab-sync':'sync','tab-users':'access_control'};
+      document.querySelectorAll('.tab-btn').forEach(function(t) {
+        var k = tabMap[t.getAttribute('data-tab')];
+        if (k && !isAdmin && perms.indexOf(k)===-1) t.style.display='none';
+      });
+      var a = document.querySelector('.tab-btn.active');
+      if (a && a.style.display==='none') { var v = document.querySelector('.tab-btn:not([style*="display: none"])'); if(v) v.click(); }
+    }
     (function setDefaults() {
       const today = new Date();
       const sevenAgo = new Date(today); sevenAgo.setDate(sevenAgo.getDate() - 6);
@@ -774,7 +896,7 @@
     });
 
     // Auto load on page load
-    setTimeout(() => doStoreSearch(), 500);
+    // initApp handles startup now
 
     function unlockSync() {
       var pwd = document.getElementById("sync-password").value;
@@ -925,6 +1047,109 @@
       var sevenAgo = new Date(today); sevenAgo.setDate(sevenAgo.getDate() - 7);
       document.getElementById('sync-rec-start').value = fmt(sevenAgo);
       document.getElementById('sync-rec-end').value = fmt(today);
+    })();
+
+    // ====== USER MANAGEMENT ======
+    var editingUserId = null;
+    var PERM_KEYS = ['store_summary','members','sync','access_control'];
+    var PERM_LABELS = {'store_summary':'店舖統計','members':'會員查詢','sync':'同步資料','access_control':'控制權限'};
+    function resetUserForm() {
+      editingUserId = null;
+      document.getElementById('user-form-title').textContent = '新增使用者';
+      document.getElementById('u-save-btn').textContent = '新增';
+      document.getElementById('u-cancel-btn').style.display = 'none';
+      document.getElementById('u-name').value = '';
+      document.getElementById('u-username').value = '';
+      document.getElementById('u-password').value = '';
+      document.getElementById('u-admin').value = '0';
+      PERM_KEYS.forEach(function(k) { document.getElementById('perm-'+k).checked = (k!=='access_control'); });
+      document.getElementById('user-form-msg').textContent = '';
+      document.getElementById('user-form-msg').className = 'user-form-msg';
+    }
+    function editUser(user) {
+      editingUserId = user.id;
+      document.getElementById('user-form-title').textContent = '編輯使用者';
+      document.getElementById('u-save-btn').textContent = '儲存';
+      document.getElementById('u-cancel-btn').style.display = '';
+      document.getElementById('u-name').value = user.name;
+      document.getElementById('u-username').value = user.username;
+      document.getElementById('u-password').value = '';
+      document.getElementById('u-admin').value = user.is_admin?'1':'0';
+      PERM_KEYS.forEach(function(k) { document.getElementById('perm-'+k).checked = user.permissions.indexOf(k)!==-1; });
+      document.getElementById('user-form-msg').textContent = '';
+      document.getElementById('user-form-msg').className = 'user-form-msg';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+    async function saveUser() {
+      var name = document.getElementById('u-name').value.trim();
+      var username = document.getElementById('u-username').value.trim();
+      var password = document.getElementById('u-password').value;
+      var isAdmin = document.getElementById('u-admin').value==='1';
+      var perms = []; PERM_KEYS.forEach(function(k) { if(document.getElementById('perm-'+k).checked) perms.push(k); });
+      if (!name || !username || (!editingUserId && !password)) { document.getElementById('user-form-msg').textContent='請填寫所有必填欄位'; document.getElementById('user-form-msg').className='user-form-msg error'; return; }
+      var url = editingUserId ? '/api/users/'+editingUserId : '/api/users';
+      try {
+        var r = await fetch(url, { method: editingUserId?'PUT':'POST', body:{name:name,username:username,password:password,permissions:perms,is_admin:isAdmin} });
+        var d = await r.json();
+        if (!r.ok) throw new Error(d.error);
+        resetUserForm(); loadUsers();
+        document.getElementById('user-form-msg').textContent = editingUserId?'已更新':'已新增';
+        document.getElementById('user-form-msg').className = 'user-form-msg success';
+      } catch(e) { document.getElementById('user-form-msg').textContent=e.message; document.getElementById('user-form-msg').className='user-form-msg error'; }
+    }
+    async function deleteUser(id) {
+      if (!confirm('確定要刪除此使用者？')) return;
+      try { var r=await fetch('/api/users/'+id,{method:'DELETE'}); var d=await r.json(); if(!r.ok) throw new Error(d.error); loadUsers(); } catch(e) { alert(e.message); }
+    }
+    async function loadUsers() {
+      var tb = document.getElementById('user-tbody');
+      tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">載入中...</td></tr>';
+      try {
+        var r = await fetch('/api/users'); var users = await r.json();
+        if (!r.ok) throw new Error(users.error);
+        tb.innerHTML = '';
+        if (!users.length) { tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">尚無使用者</td></tr>'; return; }
+        users.forEach(function(u) {
+          var tr = document.createElement('tr');
+          var bs = PERM_KEYS.filter(function(k){return u.permissions.indexOf(k)!==-1}).map(function(k){return '<span class="badge perm">'+PERM_LABELS[k]+'</span>';}).join('');
+          if (u.is_admin) bs = '<span class="badge admin">管理員</span> '+bs;
+          tr.innerHTML = '<td>'+esc(u.name)+'</td><td style="font-family:monospace">'+esc(u.username)+'</td><td>'+(u.is_admin?'管理員':'一般')+'</td><td>'+bs+'</td><td>'+
+            '<button class="btn-sm edit" onclick="editUser('+JSON.stringify(u).replace(/'/g,'&#39;')+')">編輯</button>'+
+            (u.is_admin?'':'<button class="btn-sm delete" onclick="deleteUser('+u.id+')">刪除</button>')+'</td>';
+          tb.appendChild(tr);
+        });
+      } catch(e) { tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:2rem">載入失敗: '+esc(e.message)+'</td></tr>'; }
+    }
+    // Hook tab switching to auto-load users
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { if(btn.getAttribute('data-tab')==='tab-users') setTimeout(loadUsers,100); });
+    });
+    // User form handlers
+    document.getElementById('u-save-btn').addEventListener('click', saveUser);
+    document.getElementById('u-cancel-btn').addEventListener('click', resetUserForm);
+    // ====== INIT ======
+    function initApp() { setTimeout(function() { try { doStoreSearch(); } catch(e) {} }, 500); }
+    document.getElementById('login-btn').addEventListener('click', async function() {
+      var u = document.getElementById('login-username').value.trim();
+      var p = document.getElementById('login-password').value;
+      var e = document.getElementById('login-error'); var b = document.getElementById('login-btn');
+      if (!u||!p) { e.textContent='請輸入帳號密碼'; return; }
+      b.disabled=true; b.textContent='登入中...'; e.textContent='';
+      try {
+        var r = await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+        var d = await r.json();
+        if (!r.ok) { e.textContent=d.error||'登入失敗'; b.disabled=false; b.textContent='登入'; return; }
+        AUTH_TOKEN=d.token; CURRENT_USER=d.user;
+        localStorage.setItem('auth_token',AUTH_TOKEN);
+        document.getElementById('login-overlay').classList.add('hidden');
+        applyPermissions(); initApp();
+      } catch(ex) { e.textContent='連線失敗，請重試'; b.disabled=false; b.textContent='登入'; }
+    });
+    document.getElementById('login-password').addEventListener('keydown', function(ev) { if(ev.key==='Enter') document.getElementById('login-btn').click(); });
+    // Startup
+    (async function() {
+      var ok = await checkSession();
+      if (ok) { document.getElementById('login-overlay').classList.add('hidden'); applyPermissions(); initApp(); }
     })();
   </script>
 </body>
