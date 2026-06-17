@@ -1147,12 +1147,12 @@
         if (!r.ok) { e.textContent=d.error||'登入失敗'; b.disabled=false; b.textContent='登入'; return; }
         AUTH_TOKEN=d.token; CURRENT_USER=d.user;
         localStorage.setItem('auth_token',AUTH_TOKEN);
+        document.getElementById('user-name').textContent=d.user.name||d.user.username;
+        document.getElementById('user-info').classList.add('show');
         document.getElementById('login-overlay').classList.add('hidden');
         applyPermissions(); initApp();
       } catch(ex) { e.textContent='連線失敗，請重試'; b.disabled=false; b.textContent='登入'; }
     });
-    document.getElementById('login-password').addEventListener('keydown', function(ev) { if(ev.key==='Enter') document.getElementById('login-btn').click(); });
-    // Startup
     (async function() {
       var ok = await checkSession();
       if (ok) { document.getElementById('login-overlay').classList.add('hidden'); document.getElementById('user-name').textContent=CURRENT_USER.name||CURRENT_USER.username; document.getElementById('user-info').classList.add('show'); applyPermissions(); initApp(); }
