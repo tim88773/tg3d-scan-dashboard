@@ -468,7 +468,7 @@ app.get('/api/scan-summary/export', auth.requireAuth, auth.requirePermission('st
     if (req.query.data) {
       stores = JSON.parse(req.query.data);
     } else {
-      const resp = await fetch('http://localhost:' + PORT + '/api/scan-summary?start=' + req.query.start + '&end=' + req.query.end);
+      const resp = await fetch('http://localhost:' + PORT + '/api/scan-summary?start=' + req.query.start + '&end=' + req.query.end, {headers:{'x-auth-token': req.headers['x-auth-token'] || ''}});
       const summary = await resp.json();
       stores = summary.stores || [];
     }
@@ -604,7 +604,7 @@ app.get('/api/scan-members/export', auth.requireAuth, auth.requirePermission('me
       if (max) url += '&' + key + 'Max=' + max;
     }
 
-    const resp = await fetch(url);
+    const resp = await fetch(url, {headers:{'x-auth-token': req.headers['x-auth-token'] || ''}});
     const data = await resp.json();
     const records = data.records || [];
 
