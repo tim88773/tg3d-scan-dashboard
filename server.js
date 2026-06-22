@@ -154,11 +154,17 @@ async function fetchMergedMeasurements(tid) {
   if (!poseA) return poseI;
   if (!poseI) return poseA;
 
-  // Start with pose=A as base (most fields come from here)
-  const merged = { ...poseA };
-  // Override chest/underbust with pose=I, fallback to pose=A
-  for (const field of CHEST_UNDERBUST_FIELDS) {
-    merged[field] = poseI[field] != null ? poseI[field] : (poseA[field] != null ? poseA[field] : null);
+  // Full merge: all fields from both poses, keep chest/underbust from pose I
+  const merged = {};
+  if (poseI) Object.assign(merged, poseI);
+  if (poseA) {
+    for (const key of Object.keys(poseA)) {
+      if (CHEST_UNDERBUST_FIELDS.includes(key) && poseI && poseI[key] != null) {
+        merged[key] = poseI[key];
+      } else {
+        merged[key] = poseA[key];
+      }
+    }
   }
   return merged;
 }
@@ -616,8 +622,15 @@ app.get('/api/scan-members/export', auth.requireAuth, auth.requirePermission('me
     wb.creator = 'TG Scan Dashboard';
 
     // Determine measurement columns from first record with measurements
+    const isFullExport = req.query.full === 'true';
     const firstWithMeas = records.find(function(r) { return r.measurements; });
-    const measureKeys = firstWithMeas ? Object.keys(firstWithMeas.measurements).sort() : [];
+    var measureKeys = [];
+    if (isFullExport && firstWithMeas) {
+      measureKeys = Object.keys(firstWithMeas.measurements).sort();
+    } else if (firstWithMeas) {
+      var wanted = Object.keys(MEASURE_LABELS);
+      measureKeys = Object.keys(firstWithMeas.measurements).filter(function(k) { return wanted.indexOf(k) !== -1; }).sort();
+    }
 
     // Build column definitions matching the web table
     const colDefs = [
@@ -738,11 +751,15 @@ app.get('/api/sync-measurements', auth.requireAuth, auth.requirePermission('sync
         await new Promise(function(r) { setTimeout(r, 1000); });
         var poseI = await fetchMeasurements(pid, 'I');
         if (poseA || poseI) {
-          var merged = poseA ? { ...poseA } : {};
-          if (poseI) {
-            for (var fi = 0; fi < CHEST_UNDERBUST_FIELDS.length; fi++) {
-              var f = CHEST_UNDERBUST_FIELDS[fi];
-              merged[f] = poseI[f] != null ? poseI[f] : (merged[f] != null ? merged[f] : null);
+          var merged = {};
+          if (poseI) Object.assign(merged, poseI);
+          if (poseA) {
+            for (var key of Object.keys(poseA)) {
+              if (CHEST_UNDERBUST_FIELDS.indexOf(key) !== -1 && poseI && poseI[key] != null) {
+                merged[key] = poseI[key];
+              } else {
+                merged[key] = poseA[key];
+              }
             }
           }
           var save = {}; save[pid] = merged;

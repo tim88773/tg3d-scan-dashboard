@@ -354,6 +354,8 @@
     .user-form-msg { font-size: 0.78rem; margin-top: 0.5rem; min-height: 1.2em; }
     .user-form-msg.success { color: var(--green); }
     .user-form-msg.error { color: var(--danger); }
+    .export-opt { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+    .export-opt input[type=checkbox] { width: auto; accent-color: var(--accent); cursor: pointer; }
   </style>
 </head>
 <body>
@@ -863,6 +865,8 @@
       const store = document.getElementById('m-store').value.trim();
 
       let url = `/api/scan-members/export?start=${start}&end=${end}`;
+      var isFull = document.getElementById('m-export-full').checked;
+      if (isFull) url += '&full=true';
       if (userId) url += `&userId=${encodeURIComponent(userId)}`;
       if (store) url += `&store=${encodeURIComponent(store)}`;
 
