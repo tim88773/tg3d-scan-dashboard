@@ -626,10 +626,22 @@ app.get('/api/scan-members/export', auth.requireAuth, auth.requirePermission('me
     const firstWithMeas = records.find(function(r) { return r.measurements; });
     var measureKeys = [];
     if (isFullExport && firstWithMeas) {
-      measureKeys = Object.keys(firstWithMeas.measurements).sort();
+      var allKeys = Object.keys(firstWithMeas.measurements).sort();
+      measureKeys = [];
+      allKeys.forEach(function(k) {
+        var label = MEASURE_LABELS[k] || k;
+        var suffix = CHEST_UNDERBUST_FIELDS.indexOf(k) !== -1 ? ' (I)' : ' (A)';
+        measureKeys.push({ key: k, label: label + suffix });
+      });
     } else if (firstWithMeas) {
       var wanted = Object.keys(MEASURE_LABELS);
-      measureKeys = Object.keys(firstWithMeas.measurements).filter(function(k) { return wanted.indexOf(k) !== -1; }).sort();
+      var filtered = Object.keys(firstWithMeas.measurements).filter(function(k) { return wanted.indexOf(k) !== -1; }).sort();
+      measureKeys = [];
+      filtered.forEach(function(k) {
+        var label = MEASURE_LABELS[k] || k;
+        var suffix = CHEST_UNDERBUST_FIELDS.indexOf(k) !== -1 ? ' (I)' : ' (A)';
+        measureKeys.push({ key: k, label: label + suffix });
+      });
     }
 
     // Build column definitions matching the web table
@@ -642,8 +654,8 @@ app.get('/api/scan-members/export', auth.requireAuth, auth.requirePermission('me
       { header: '掃描器', key: 'scanner', width: 18 },
     ];
     // Add measurement columns with Chinese labels
-    measureKeys.forEach(function(k) {
-      colDefs.push({ header: MEASURE_LABELS[k] || k, key: k, width: 16 });
+    measureKeys.forEach(function(mk) {
+      colDefs.push({ header: mk.label, key: mk.key, width: 16 });
     });
 
     const ws = wb.addWorksheet('members');
