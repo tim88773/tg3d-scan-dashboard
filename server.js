@@ -677,9 +677,9 @@ app.get('/api/scan-members/export', auth.requireAuth, auth.requirePermission('me
       };
       // Add measurement values
       if (r.measurements) {
-        measureKeys.forEach(function(k) {
-          var v = r.measurements[k];
-          row[k] = v != null ? (typeof v === 'number' ? +v.toFixed(1) : v) : '';
+        measureKeys.forEach(function(mk) {
+          var v = r.measurements[mk.key];
+          row[mk.key] = v != null ? (typeof v === 'number' ? +v.toFixed(1) : v) : '';
         });
       }
       ws.addRow(row);
