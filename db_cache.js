@@ -201,6 +201,10 @@ function getMeasurementsByTids(tids) {
   return map;
 }
 
+function clearAllMeasurements() {
+  db.prepare('DELETE FROM measurements').run();
+}
+
 function close() {
   db.close();
 }
@@ -218,6 +222,7 @@ module.exports = {
   getLatestCreatedAt,
   saveMeasurements,
   getMeasurementsByTids,
+  clearAllMeasurements,
   close,
   reopen,
   // Users

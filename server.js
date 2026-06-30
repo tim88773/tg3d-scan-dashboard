@@ -747,6 +747,11 @@ app.get('/api/sync-measurements', auth.requireAuth, auth.requirePermission('sync
     if (limit > 0) allRecs = allRecs.slice(0, limit);
     var allTids = allRecs.map(function(r) { return r.tid; });
     var existing = db.getMeasurementsByTids(allTids);
+    // Force re-sync: clear all cached measurements so both poses are saved fresh
+    if (req.query.force === 'true') {
+      db.clearAllMeasurements();
+      existing = {};
+    }
     var todo = allTids.filter(function(t) { return !existing[t]; });
     __measSyncState.total = todo.length;
     if (todo.length === 0) {
