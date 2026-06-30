@@ -746,9 +746,6 @@ app.get('/api/sync-measurements', auth.requireAuth, auth.requirePermission('sync
     var allRecs = db.getRecordsByDateRange(start, end);
     // Sort newest first
     allRecs.sort(function(a, b) { return (b.created_at || '').localeCompare(a.created_at || ''); });
-    // Apply limit from query param
-    var limit = parseInt(req.query.limit) || 0;
-    if (limit > 0) allRecs = allRecs.slice(0, limit);
     var allTids = allRecs.map(function(r) { return r.tid; });
     var existing = db.getMeasurementsByTids(allTids);
     // Force re-sync: clear all cached measurements so both poses are saved fresh
@@ -757,6 +754,9 @@ app.get('/api/sync-measurements', auth.requireAuth, auth.requirePermission('sync
       existing = {};
     }
     var todo = allTids.filter(function(t) { return !existing[t]; });
+    // Apply limit to pending records only (not pre-filtered)
+    var limit = parseInt(req.query.limit) || 0;
+    if (limit > 0) todo = todo.slice(0, limit);
     __measSyncState.total = todo.length;
     if (todo.length === 0) {
       __measSyncState.running = false;
