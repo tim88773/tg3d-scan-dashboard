@@ -165,7 +165,7 @@ function saveMeasurements(measurementsMap) {
   const now = Date.now();
   const rows = Object.entries(measurementsMap).map(([tid, data]) => ({
     tid,
-    dataJson: JSON.stringify(data),
+    dataJson: JSON.stringify({ poseA: data.poseA || null, poseI: data.poseI || null }),
     fetchedAt: now,
   }));
   if (rows.length > 0) insertManyMeasurements(rows);
@@ -177,7 +177,26 @@ function getMeasurementsByTids(tids) {
   const rows = db.prepare(`SELECT tid, data_json FROM measurements WHERE tid IN (${placeholders})`).all(...tids);
   const map = {};
   for (const row of rows) {
-    map[row.tid] = JSON.parse(row.data_json);
+    var raw = JSON.parse(row.data_json);
+    // New format: { poseA: ..., poseI: ... } - merge for display
+    if (raw && (raw.poseA || raw.poseI)) {
+      var merged = {};
+      if (raw.poseI) Object.assign(merged, raw.poseI);
+      if (raw.poseA) {
+        var chestFields = ['Chest Circumference', 'F Under Bust Circumference B'];
+        for (var key of Object.keys(raw.poseA)) {
+          if (chestFields.indexOf(key) !== -1 && raw.poseI && raw.poseI[key] != null) {
+            merged[key] = raw.poseI[key];
+          } else {
+            merged[key] = raw.poseA[key];
+          }
+        }
+      }
+      map[row.tid] = merged;
+    } else {
+      // Old format: directly stored merged data
+      map[row.tid] = raw;
+    }
   }
   return map;
 }

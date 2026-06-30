@@ -763,18 +763,9 @@ app.get('/api/sync-measurements', auth.requireAuth, auth.requirePermission('sync
         await new Promise(function(r) { setTimeout(r, 1000); });
         var poseI = await fetchMeasurements(pid, 'I');
         if (poseA || poseI) {
-          var merged = {};
-          if (poseI) Object.assign(merged, poseI);
-          if (poseA) {
-            for (var key of Object.keys(poseA)) {
-              if (CHEST_UNDERBUST_FIELDS.indexOf(key) !== -1 && poseI && poseI[key] != null) {
-                merged[key] = poseI[key];
-              } else {
-                merged[key] = poseA[key];
-              }
-            }
-          }
-          var save = {}; save[pid] = merged;
+          // Save both pose A and pose I data separately
+          var save = {}; save[pid] = { poseA: poseA, poseI: poseI };
+          // (merge logic is now handled in getMeasurementsByTids for display)
           db.saveMeasurements(save);
         }
         __measSyncState.done = i + 1;
