@@ -820,6 +820,15 @@ app.get('/api/debug', auth.requireAuth, function(req, res) {
   res.json(info);
 });
 
+// Download scan_cache.db as a backup file
+app.get('/api/db-download', auth.requireAuth, auth.requirePermission('sync'), function(req, res) {
+  var dbPath = path.join(__dirname, 'data', 'scan_cache.db');
+  var fn = 'scan_cache_backup_' + new Date().toISOString().slice(0,10) + '.db';
+  res.setHeader('Content-Type', 'application/octet-stream');
+  res.setHeader('Content-Disposition', 'attachment; filename="' + fn + '"');
+  require('fs').createReadStream(dbPath).pipe(res);
+});
+
 app.listen(PORT, function() {
   console.log('Server running at http://localhost:' + PORT);
   // Restore seed data if DB is empty, then wait for manual sync
