@@ -492,6 +492,8 @@
         </div>
         <div class="field-row">
           <div><label>補充筆數</label><input type="number" id="meas-limit" value="50" min="1" max="10000" style="padding:0.4rem 0.6rem;background:#12121f;border:1px solid var(--card-border);border-radius:6px;color:var(--text);font-size:0.8rem;outline:none;width:100px"></div>
+          <div><label>起始日期</label><input type="date" id="meas-start"></div>
+          <div><label>結束日期</label><input type="date" id="meas-end"></div>
           <button class="search-row-btn" id="sync-meas-btn" style="font-size:0.78rem;padding:0.4rem 1rem">開始補充量測</button>
         </div>
         <div class="sync-progress" id="sync-meas-progress"></div>
@@ -1001,11 +1003,16 @@
       btn.dataset.running = 'true';
       btn.textContent = '停止補充';
       prog.textContent = '正在起動同步...';
-      
+
       // Start sync (background on server, just trigger it)
       try {
         var limit = document.getElementById('meas-limit').value || 50;
-        var resp = await fetch('/api/sync-measurements?limit=' + limit);
+        var start = document.getElementById('meas-start').value;
+        var end = document.getElementById('meas-end').value;
+        var params = 'limit=' + limit;
+        if (start) params += '&start=' + start;
+        if (end) params += '&end=' + end;
+        var resp = await fetch('/api/sync-measurements?' + params);
         var data = await resp.json();
         if (data.started) {
           prog.innerHTML = '正在補充量測... 總共 <span class="highlight">' + data.total + '</span> 筆';
