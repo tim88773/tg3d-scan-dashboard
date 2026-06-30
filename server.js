@@ -736,6 +736,7 @@ app.get('/api/sync-status', auth.requireAuth, auth.requirePermission('sync'), fu
 
 // Measurement cache sync
 app.get('/api/sync-measurements', auth.requireAuth, auth.requirePermission('sync'), async function(req, res) {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
   if (__measSyncState.running) return res.json({ success: false, error: 'Already running' });
   __measSyncState = { running: true, cancel: false, total: 0, done: 0 };
   try {
