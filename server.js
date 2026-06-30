@@ -740,7 +740,10 @@ app.get('/api/sync-measurements', auth.requireAuth, auth.requirePermission('sync
   if (__measSyncState.running) return res.json({ success: false, error: 'Already running' });
   __measSyncState = { running: true, cancel: false, total: 0, done: 0 };
   try {
-    var allRecs = db.getRecordsByDateRange('2000-01-01', '2099-12-31');
+    // Date range from query params (default: all)
+    var start = req.query.start || '2000-01-01';
+    var end = req.query.end || '2099-12-31';
+    var allRecs = db.getRecordsByDateRange(start, end);
     // Sort newest first
     allRecs.sort(function(a, b) { return (b.created_at || '').localeCompare(a.created_at || ''); });
     // Apply limit from query param
