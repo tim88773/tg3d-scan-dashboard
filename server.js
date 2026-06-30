@@ -742,7 +742,7 @@ app.get('/api/sync-measurements', auth.requireAuth, auth.requirePermission('sync
   try {
     // Date range from query params (default: all)
     var start = req.query.start || '2000-01-01';
-    var end = req.query.end || '2099-12-31';
+    var end = (req.query.end || '2099-12-31') + 'T23:59:59.999Z';
     var allRecs = db.getRecordsByDateRange(start, end);
     // Sort newest first
     allRecs.sort(function(a, b) { return (b.created_at || '').localeCompare(a.created_at || ''); });
