@@ -431,11 +431,6 @@
           <label>門市名稱</label>
           <input type="text" id="m-store" placeholder="輸入門市名稱">
         </div>
-        <div class="field wide">
-          <label>標籤</label>
-          <input type="text" id="m-tag" placeholder="輸入標籤關鍵字">
-          <div class="member-id-hint">例如：VIP、新會員、退貨等</div>
-        </div>
         <div class="field full">
           <div class="collapse-toggle collapsed" onclick="this.classList.toggle('collapsed');var b=this.nextElementSibling;if(b)b.classList.toggle('collapsed')"><span class="arrow">▼</span> 體圍過濾（點擊展開/收合）</div>
           <div class='collapse-body collapsed'>
@@ -455,6 +450,14 @@
             <div class="range-row"><span class="range-label">小腿圍(右)</span><input type="number" class="rmin" id="m-calfRMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-calfRMax" placeholder="最大值"></div>
             <div class="range-row"><span class="range-label">頸肩至乳尖(左)</span><input type="number" class="rmin" id="m-nspLMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-nspLMax" placeholder="最大值"></div>
             <div class="range-row"><span class="range-label">頸肩至乳尖(右)</span><input type="number" class="rmin" id="m-nspRMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-nspRMax" placeholder="最大值"></div>
+          </div>
+        </div>
+        <div class="field full">
+          <div class="collapse-toggle collapsed" onclick="this.classList.toggle('collapsed');var b=this.nextElementSibling;if(b)b.classList.toggle('collapsed')"><span class="arrow">▼</span> 標籤（點擊展開/收合）</div>
+          <div class="collapse-body collapsed">
+            <label>標籤關鍵字</label>
+            <input type="text" id="m-tag" placeholder="輸入標籤關鍵字" style="width:100%;padding:0.5rem 0.75rem;background:#12121f;border:1px solid var(--card-border);border-radius:8px;color:var(--text);font-family:&apos;JetBrains Mono&apos;,monospace;font-size:0.85rem;outline:none">
+            <div style="color:var(--text-muted);font-size:0.7rem;margin-top:0.3rem">例如：VIP、新會員、退貨等</div>
           </div>
         </div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:flex-end">
@@ -767,6 +770,7 @@
 
       const userId = document.getElementById('m-userId').value.trim();
       const store = document.getElementById('m-store').value.trim();
+      const tag = document.getElementById('m-tag').value.trim();
 
       hideAll('m');
       document.getElementById('m-loading').classList.add('active');
@@ -899,6 +903,7 @@
       const end = document.getElementById('m-end').value;
       const userId = document.getElementById('m-userId').value.trim();
       const store = document.getElementById('m-store').value.trim();
+      const tag = document.getElementById('m-tag').value.trim();
 
       let url = `/api/scan-members/export?start=${start}&end=${end}`;
       var isFull = document.getElementById('m-export-full').checked;
