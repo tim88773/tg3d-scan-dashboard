@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const https = require('https');
 const path = require('path');
 const ExcelJS = require('exceljs');
@@ -527,6 +527,7 @@ app.get('/api/scan-members', auth.requireAuth, auth.requirePermission('members')
     const filters = {};
     if (req.query.userId) filters.userId = req.query.userId;
     if (req.query.store) filters.store = req.query.store;
+    if (req.query.tag) filters.tag = req.query.tag;
 
     const measureFilters = {};
     for (const key of Object.keys(MEASURE_FILTERS)) {
@@ -555,6 +556,12 @@ app.get('/api/scan-members', auth.requireAuth, auth.requirePermission('members')
       if (filters.store) {
         const sn = (rec.scanner?.store?.name || '').toLowerCase();
         if (!sn.includes(filters.store.toLowerCase())) continue;
+      if (filters.tag) {
+        const q = filters.tag.toLowerCase();
+        const tags = rec.tag_list || [];
+        const match = tags.some(function(t) { return t.toLowerCase().includes(q); });
+        if (!match) continue;
+      }
       }
       candidates.push(rec);
       if (candidates.length >= MAX_API_RECORDS) break;
@@ -603,6 +610,7 @@ app.get('/api/scan-members/export', auth.requireAuth, auth.requirePermission('me
     var url = 'http://localhost:' + PORT + '/api/scan-members?start=' + req.query.start + '&end=' + req.query.end;
     if (req.query.userId) url += '&userId=' + encodeURIComponent(req.query.userId);
     if (req.query.store) url += '&store=' + encodeURIComponent(req.query.store);
+    if (req.query.tag) url += '&tag=' + encodeURIComponent(req.query.tag);
     for (const key of Object.keys(MEASURE_FILTERS)) {
       const min = req.query[key + 'Min'];
       const max = req.query[key + 'Max'];

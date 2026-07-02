@@ -431,6 +431,11 @@
           <label>門市名稱</label>
           <input type="text" id="m-store" placeholder="輸入門市名稱">
         </div>
+        <div class="field wide">
+          <label>標籤</label>
+          <input type="text" id="m-tag" placeholder="輸入標籤關鍵字">
+          <div class="member-id-hint">例如：VIP、新會員、退貨等</div>
+        </div>
         <div class="field full">
           <div class="collapse-toggle collapsed" onclick="this.classList.toggle('collapsed');var b=this.nextElementSibling;if(b)b.classList.toggle('collapsed')"><span class="arrow">▼</span> 體圍過濾（點擊展開/收合）</div>
           <div class='collapse-body collapsed'>
@@ -773,6 +778,8 @@
         let url = `/api/scan-members?start=${start}&end=${end}`;
         if (userId) url += `&userId=${encodeURIComponent(userId)}`;
         if (store) url += `&store=${encodeURIComponent(store)}`;
+        const tag = document.getElementById('m-tag').value.trim();
+        if (tag) url += `&tag=${encodeURIComponent(tag)}`;
 
         // 體圍過濾
         const rangeFields = ['chest','underbust','thinWaist','belly','highHip','lowHip','thighL','thighR','armL','armR','calfL','calfR','nspL','nspR'];
@@ -898,6 +905,7 @@
       if (isFull) url += '&full=true';
       if (userId) url += `&userId=${encodeURIComponent(userId)}`;
       if (store) url += `&store=${encodeURIComponent(store)}`;
+      if (tag) url += `&tag=${encodeURIComponent(tag)}`;
 
       const rangeFields = ['chest','underbust','thinWaist','belly','highHip','lowHip','thighL','thighR','armL','armR','calfL','calfR','nspL','nspR'];
       rangeFields.forEach(k => {
@@ -928,7 +936,7 @@
         .catch(err => showError('m', err.message));
     });
 
-    ['m-start','m-end','m-userId','m-store'].forEach(id => {
+    ['m-start','m-end','m-userId','m-store','m-tag'].forEach(id => {
       document.getElementById(id).addEventListener('keydown', e => {
         if (e.key === 'Enter') doMemberSearch();
       });
