@@ -354,7 +354,19 @@
     .user-form-msg { font-size: 0.78rem; margin-top: 0.5rem; min-height: 1.2em; }
     .user-form-msg.success { color: var(--green); }
     .user-form-msg.error { color: var(--danger); }
-    .export-opt { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+    .collapse-toggle collapsed { cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--accent-light); font-weight: 600; padding: 0.25rem 0; }
+    .collapse-toggle collapsed:hover { opacity: 0.8; }
+    .collapse-toggle collapsed .arrow { display: inline-block; transition: transform 0.2s; font-size: 0.6rem; }
+    .collapse-toggle collapsed.collapsed .arrow { transform: rotate(-90deg); }
+    .collapse-body { overflow: hidden; transition: max-height 0.25s ease; max-height: 2000px; }
+    .collapse-body.collapsed { max-height: 0; }
+    .tag-cell { position: relative; }
+    .tag-cell .tag-preview { cursor: pointer; color: var(--accent-light); font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+    .tag-cell .tag-preview:hover { text-decoration: underline; }
+    .tag-cell .tag-full { display: none; position: absolute; z-index: 10; background: var(--card); border: 1px solid var(--card-border); border-radius: 8px; padding: 0.6rem; min-width: 200px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .tag-cell .tag-full.show { display: block; }
+    .tag-cell .tag-full .badge { cursor: default; }
+        .export-opt { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
     .export-opt input[type=checkbox] { width: auto; accent-color: var(--accent); cursor: pointer; }
   </style>
 </head>
@@ -420,6 +432,8 @@
           <input type="text" id="m-store" placeholder="輸入門市名稱">
         </div>
         <div class="field full">
+          <div class="collapse-toggle collapsed" onclick="this.classList.toggle('collapsed');var b=this.nextElementSibling;if(b)b.classList.toggle('collapsed')"><span class="arrow">▼</span> 體圍過濾（點擊展開/收合）</div>
+          <div class='collapse-body collapsed'>
           <label>體圍過濾（單位：cm，留空則不篩選）</label>
           <div class="measure-range-grid">
             <div class="range-row"><span class="range-label">胸圍</span><input type="number" class="rmin" id="m-chestMin" placeholder="最小值"><span class="range-sep">~</span><input type="number" class="rmax" id="m-chestMax" placeholder="最大值"></div>
@@ -439,6 +453,7 @@
           </div>
         </div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:flex-end">
+          </div>
           <button class="search-row-btn" id="m-search">查詢</button>
           <button class="btn-export" id="m-export" style="display:none">匯出 Excel</button>
           <label class="export-opt"><input type="checkbox" id="m-export-full"> 匯出完整資料</label>
@@ -814,6 +829,17 @@
             fn: v => v ? new Date(v).toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '' },
           { label: '精準度', key: 'accuracyScore',
             fn: v => v != null ? v + '%' : '' },
+          { label: '標籤', key: 'tagList',
+            fn: (v, row) => {
+              var tags = row.tagList || [];
+              if (!tags.length) return '';
+              var h = '<div class="tag-cell">';
+              h += '<span class="tag-preview" onclick="var f=this.parentNode.querySelector(\'.tag-full\');if(f)f.classList.toggle(\'show\')';
+              h += '">' + tags.length + ' 個標籤 ▾</span>';
+              h += '<div class="tag-full">' + tags.map(function(t) { return '<span class="badge perm">' + esc(t) + '</span>'; }).join(' ') + '</div>';
+              h += '</div>';
+              return h;
+            } },
         ];
 
         if (hasMeas) {
@@ -1132,12 +1158,23 @@
           var bs = PERM_KEYS.filter(function(k){return u.permissions.indexOf(k)!==-1}).map(function(k){return '<span class="badge perm">'+PERM_LABELS[k]+'</span>';}).join('');
           if (u.is_admin) bs = '<span class="badge admin">管理員</span> '+bs;
           tr.innerHTML = '<td>'+esc(u.name)+'</td><td style="font-family:monospace">'+esc(u.username)+'</td><td>'+(u.is_admin?'管理員':'一般')+'</td><td>'+bs+'</td><td>'+
-            '<button class="btn-sm edit" onclick="editUser('+JSON.stringify(u).replace(/'/g,'&#39;')+')">編輯</button>'+
+            '<button class="btn-sm edit" data-id="'+u.id+'">編輯</button>'+
             (u.is_admin?'':'<button class="btn-sm delete" onclick="deleteUser('+u.id+')">刪除</button>')+'</td>';
           tb.appendChild(tr);
         });
       } catch(e) { tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:2rem">載入失敗: '+esc(e.message)+'</td></tr>'; }
     }
+      // Edit button click via delegation (avoids JSON encoding issues)
+      tb.addEventListener('click', function(ev) {
+        var btn = ev.target.closest('.btn-sm.edit');
+        if (!btn) return;
+        var id = Number(btn.getAttribute('data-id'));
+        var users = JSON.parse(tb.getAttribute('data-users') || '[]');
+        var u = users.find(function(uu) { return uu.id === id; });
+        if (u) editUser(u);
+      });
+      tb.setAttribute('data-users', JSON.stringify(users));
+
     // Hook tab switching to auto-load users
     document.querySelectorAll('.tab-btn').forEach(function(btn) {
       btn.addEventListener('click', function() { if(btn.getAttribute('data-tab')==='tab-users') setTimeout(loadUsers,100); });
