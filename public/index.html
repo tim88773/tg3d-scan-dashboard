@@ -354,10 +354,10 @@
     .user-form-msg { font-size: 0.78rem; margin-top: 0.5rem; min-height: 1.2em; }
     .user-form-msg.success { color: var(--green); }
     .user-form-msg.error { color: var(--danger); }
-    .collapse-toggle collapsed { cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--accent-light); font-weight: 600; padding: 0.25rem 0; }
-    .collapse-toggle collapsed:hover { opacity: 0.8; }
-    .collapse-toggle collapsed .arrow { display: inline-block; transition: transform 0.2s; font-size: 0.6rem; }
-    .collapse-toggle collapsed.collapsed .arrow { transform: rotate(-90deg); }
+    .collapse-toggle.collapsed { cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--accent-light); font-weight: 600; padding: 0.25rem 0; }
+    .collapse-toggle.collapsed:hover { opacity: 0.8; }
+    .collapse-toggle.collapsed .arrow { display: inline-block; transition: transform 0.2s; font-size: 0.6rem; }
+    .collapse-toggle.collapsed .arrow { transform: rotate(-90deg); }
     .collapse-body { overflow: hidden; transition: max-height 0.25s ease; max-height: 2000px; }
     .collapse-body.collapsed { max-height: 0; }
     .tag-cell { position: relative; }
@@ -1163,7 +1163,6 @@
           tb.appendChild(tr);
         });
       } catch(e) { tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--danger);padding:2rem">載入失敗: '+esc(e.message)+'</td></tr>'; }
-    }
       // Edit button click via delegation (avoids JSON encoding issues)
       tb.addEventListener('click', function(ev) {
         var btn = ev.target.closest('.btn-sm.edit');
@@ -1174,6 +1173,7 @@
         if (u) editUser(u);
       });
       tb.setAttribute('data-users', JSON.stringify(users));
+    }
 
     // Hook tab switching to auto-load users
     document.querySelectorAll('.tab-btn').forEach(function(btn) {
