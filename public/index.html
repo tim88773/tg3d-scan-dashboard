@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
@@ -1280,7 +1280,7 @@ async function doRegionSearch(){
       html+="<div class=\"store-card\" style=\"margin-bottom:0.4rem;padding:0.75rem 1rem\">"+
         "<div style=\"font-weight:700;font-size:1rem;color:var(--accent-light);min-width:8ch\">"+esc(mgr.manager)+"</div>"+
         "<div style=\"flex:1;font-size:0.82rem;color:var(--text-muted)\">"+mgr.stores.length+" 間門市</div>"+
-        "<div style=\"text-align:right\"><span style=\"font-family:JetBrains Mono,monospace;font-size:1.1rem;font-weight:700;color:var(--green)\">"+mgr.uniqueVisits+"</span><span style=\"font-size:0.75rem;color:var(--text-muted);margin-left:0.3rem\">人次</span></div>"+
+        "<div style=\"text-align:right\"><span style=\"font-family:JetBrains Mono,monospace;font-size:1.1rem;font-weight:700;color:var(--green)\">"+mgr.uniqueVisits+"</span><span style=\"font-size:0.75rem;color:var(--text-muted);margin-left:0.3rem\">人次</span><span style=\"font-size:0.7rem;color:var(--text-muted);margin-left:0.4rem\">("+Math.round(mgr.uniqueVisits/mgr.stores.length)+"/間)</span></div>"+
       "</div>";
       html+="<div style=\"margin:0 0 0.8rem 1rem;display:flex;flex-wrap:wrap;gap:0.3rem\">";
       mgr.stores.forEach(function(s){
