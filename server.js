@@ -556,12 +556,18 @@ app.get('/api/scan-members', auth.requireAuth, auth.requirePermission('members')
       if (filters.store) {
         const sn = (rec.scanner?.store?.name || '').toLowerCase();
         if (!sn.includes(filters.store.toLowerCase())) continue;
-      if (filters.tag) {
-        const q = filters.tag.toLowerCase();
-        const tags = rec.tag_list || [];
-        const match = tags.some(function(t) { return t.toLowerCase().includes(q); });
-        if (!match) continue;
       }
+      if (filters.tag) {
+        // Support comma-separated multiple tags, exact match
+        var q = filters.tag.split(',').map(function(s) { return s.trim().toLowerCase(); }).filter(Boolean);
+        if (q.length === 0) continue;
+        var tags = rec.tag_list || [];
+        // Support both array (from JSON.parse) and string (from seed data)
+        if (typeof tags === 'string') { try { tags = JSON.parse(tags); } catch(e) { tags = tags.split(',').map(function(t){return t.trim();}); } }
+        var match = q.every(function(searchTag) {
+          return tags.some(function(t) { return t.toLowerCase().trim() === searchTag; });
+        });
+        if (!match) continue;
       }
       candidates.push(rec);
       if (candidates.length >= MAX_API_RECORDS) break;
@@ -585,7 +591,7 @@ app.get('/api/scan-members', auth.requireAuth, auth.requirePermission('members')
         scanner: rec.scanner?.name || '',
         accuracyScore: rec.accuracy_score,
         realName: rec.real_name || '',
-        tagList: rec.tag_list || [],
+        tagList: (function(){ var t = rec.tag_list || []; if (typeof t === 'string') { try { t = JSON.parse(t); } catch(e) { t = t.split(',').map(function(s){return s.trim();}).filter(Boolean); } } return t; })(),
         measurements: measurements,
         hasMeasurements: !!measurements,
       });
