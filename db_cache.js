@@ -48,6 +48,17 @@ db.exec(`
   );
 `);
 
+// Ensure region_mappings table exists
+db.exec(`
+  CREATE TABLE IF NOT EXISTS region_mappings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    manager_name TEXT NOT NULL,
+    store_name TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    UNIQUE(manager_name, store_name)
+  );
+`);
+
 // ---- Users ----
 function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex');
@@ -58,7 +69,7 @@ const adminUsername = '0981069796';
 const adminExists = db.prepare('SELECT id FROM users WHERE username = ?').get(adminUsername);
 if (!adminExists) {
   db.prepare('INSERT INTO users (name, username, password_hash, permissions, is_admin, created_at) VALUES (?,?,?,?,?,?)')
-    .run('管理員', adminUsername, hashPassword('0981069796'), JSON.stringify(['store_summary','members','sync','access_control']), 1, Date.now());
+    .run('管理员', adminUsername, hashPassword('0981069796'), JSON.stringify(['store_summary','members','sync','access_control','region']), 1, Date.now());
 }
 
 function getUserByUsername(username) {
@@ -205,6 +216,47 @@ function clearAllMeasurements() {
   db.prepare('DELETE FROM measurements').run();
 }
 
+// ---- Region Mappings ----
+
+function getAllRegionMappings() {
+  return db.prepare('SELECT * FROM region_mappings ORDER BY manager_name, store_name').all();
+}
+
+function addRegionMapping(managerName, storeName) {
+  try {
+    db.prepare('INSERT INTO region_mappings (manager_name, store_name, created_at) VALUES (?, ?, ?)')
+      .run(managerName.trim(), storeName.trim(), Date.now());
+    return true;
+  } catch (e) {
+    if (e.message && e.message.includes('UNIQUE')) return false;
+    throw e;
+  }
+}
+
+function deleteRegionMapping(id) {
+  db.prepare('DELETE FROM region_mappings WHERE id = ?').run(Number(id));
+}
+
+function getStoreManagerMap() {
+  // Returns { store_name -> manager_name } lookup
+  const rows = db.prepare('SELECT store_name, manager_name FROM region_mappings').all();
+  const map = {};
+  for (const row of rows) {
+    map[row.store_name] = row.manager_name;
+  }
+  return map;
+}
+
+function getAllManagers() {
+  return db.prepare('SELECT DISTINCT manager_name FROM region_mappings ORDER BY manager_name').all();
+}
+
+function getMappingsByManager(managerName) {
+  return db.prepare('SELECT * FROM region_mappings WHERE manager_name = ? ORDER BY store_name').all(managerName);
+}
+
+// ---- Close / Reopen ----
+
 function close() {
   db.close();
 }
@@ -233,4 +285,11 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  // Region Mappings
+  getAllRegionMappings,
+  addRegionMapping,
+  deleteRegionMapping,
+  getStoreManagerMap,
+  getAllManagers,
+  getMappingsByManager,
 };

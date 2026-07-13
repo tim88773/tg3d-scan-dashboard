@@ -837,6 +837,118 @@ app.get('/api/db-download', auth.requireAuth, auth.requirePermission('sync'), fu
   require('fs').createReadStream(dbPath).pipe(res);
 });
 
+
+// ---- Region Mappings ----
+
+app.get('/api/region-mappings', auth.requireAuth, auth.requirePermission('region'), function(req, res) {
+  try {
+    var mappings = db.getAllRegionMappings();
+    res.json(mappings);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/region-mappings', auth.requireAuth, auth.requirePermission('region'), function(req, res) {
+  try {
+    var manager_name = req.body.manager_name;
+    var store_name = req.body.store_name;
+    if (!manager_name || !store_name) return res.status(400).json({ error: '请填写负责人名称与门市名称' });
+    var ok = db.addRegionMapping(manager_name, store_name);
+    if (!ok) return res.status(409).json({ error: '该负责人与门市对应已存在' });
+    res.json({ success: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete('/api/region-mappings/:id', auth.requireAuth, auth.requirePermission('region'), function(req, res) {
+  try {
+    db.deleteRegionMapping(req.params.id);
+    res.json({ success: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// ---- Region Statistics ----
+
+app.get('/api/region-stats', auth.requireAuth, auth.requirePermission('region'), async function(req, res) {
+  try {
+    var start = req.query.start;
+    var end = req.query.end;
+    if (!start || !end) return res.status(400).json({ error: '请选择日期范围' });
+    var storeManagerMap = db.getStoreManagerMap();
+    var records = db.getRecordsByDateRange(start, end + 'T23:59:59.999Z');
+    var managerData = {};
+    var unassignedRecords = 0;
+    var unassignedUnique = new Set();
+    for (var i = 0; i < records.length; i++) {
+      var rec = JSON.parse(records[i].raw_json);
+      var storeName = rec.scanner?.store?.name || '(unknown)';
+      var managerName = storeManagerMap[storeName] || null;
+      var dayKey = rec.created_at.slice(0, 10) + '_' + rec.user_id;
+      if (managerName) {
+        if (!managerData[managerName]) managerData[managerName] = { manager: managerName, stores: {}, totalRecords: 0, uniqueVisits: new Set() };
+        var md = managerData[managerName];
+        md.totalRecords++;
+        md.uniqueVisits.add(dayKey);
+        if (!md.stores[storeName]) md.stores[storeName] = { store: storeName, count: 0, visits: new Set() };
+        md.stores[storeName].count++;
+        md.stores[storeName].visits.add(dayKey);
+      } else {
+        unassignedRecords++;
+        unassignedUnique.add(dayKey);
+      }
+    }
+    var result = [];
+    var keys = Object.keys(managerData).sort();
+    for (var j = 0; j < keys.length; j++) {
+      var md = managerData[keys[j]];
+      var storeList = Object.keys(md.stores).sort().map(function(sk) {
+        var sd = md.stores[sk];
+        return { store: sd.store, scanRecords: sd.count, uniqueVisits: sd.visits.size };
+      });
+      result.push({ manager: md.manager, totalRecords: md.totalRecords, uniqueVisits: md.uniqueVisits.size, stores: storeList });
+    }
+    res.json({ start: start, end: end, managers: result, totalRecords: records.length, unassignedRecords: unassignedRecords, unassignedUniqueVisits: unassignedUnique.size });
+  } catch(e) {
+    console.error('Region stats error:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ---- Region Stats Export ----
+
+app.get('/api/region-stats/export', auth.requireAuth, auth.requirePermission('region'), async function(req, res) {
+  try {
+    var resp = await fetch('http://localhost:' + PORT + '/api/region-stats?start=' + req.query.start + '&end=' + req.query.end, {headers:{'x-auth-token': req.headers['x-auth-token']}});
+    var data = await resp.json();
+    var managers = data.managers || [];
+    if (managers.length === 0 && data.unassignedRecords === 0) return res.status(404).json({ error: 'No data' });
+    var wb = new ExcelJS.Workbook();
+    wb.creator = 'TG Scan Dashboard';
+    var ws = wb.addWorksheet('region_stats');
+    ws.columns = [{header:'负责人',key:'manager',width:16},{header:'门市',key:'store',width:20},{header:'扫描次数',key:'records',width:12},{header:'不重复到访',key:'visits',width:14}];
+    var hRow = ws.getRow(1);
+    hRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+    hRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF6C5CE7' } };
+    hRow.alignment = { horizontal: 'center', vertical: 'middle' };
+    for (var i = 0; i < managers.length; i++) {
+      var mgr = managers[i];
+      for (var s = 0; s < mgr.stores.length; s++) {
+        ws.addRow({ manager: mgr.manager, store: mgr.stores[s].store, records: mgr.stores[s].scanRecords, visits: mgr.stores[s].uniqueVisits });
+      }
+      ws.addRow({ manager: mgr.manager + ' 小计', store: '', records: mgr.totalRecords, visits: mgr.uniqueVisits });
+      ws.lastRow.font = { bold: true };
+      ws.addRow({});
+    }
+    if (data.unassignedRecords > 0) ws.addRow({ manager: '未设定负责人', store: '', records: data.unassignedRecords, visits: data.unassignedUniqueVisits });
+    var fn = encodeURIComponent('region_stats_' + req.query.start + '_' + req.query.end + '.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + fn);
+    await wb.xlsx.write(res);
+    res.end();
+  } catch(e) {
+    console.error('Region export error:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.listen(PORT, function() {
   console.log('Server running at http://localhost:' + PORT);
   // Restore seed data if DB is empty, then wait for manual sync

@@ -397,6 +397,8 @@
       <button class="tab-btn" data-tab="tab-members">會員查詢</button>
       <button class="tab-btn" data-tab="tab-sync">同步資料</button>
       <button class="tab-btn" data-tab="tab-users">控制權限</button>
+      <button class="tab-btn" data-tab="tab-region">區域統計</button>
+      <button class="tab-btn" data-tab="tab-region-setup">區域對應設置</button>
     </div>
 
     <!-- ====== TAB 1 ====== -->
@@ -541,6 +543,7 @@
             <label><input type="checkbox" id="perm-members" checked> 會員查詢</label>
             <label><input type="checkbox" id="perm-sync" checked> 同步資料</label>
             <label><input type="checkbox" id="perm-access_control"> 控制權限</label>
+            <label><input type="checkbox" id="perm-region"> 區域管理</label>
           </div>
         </div>
         <div class="form-actions">
@@ -553,6 +556,48 @@
         <table>
           <thead><tr><th>姓名</th><th>帳號</th><th>權限</th><th>可使用項目</th><th style="width:100px">操作</th></tr></thead>
           <tbody id="user-tbody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">載入中...</td></tr></tbody>
+    <div class="tab-content" id="tab-region-setup">
+      <div class="search-card" style="flex-direction:column;align-items:stretch">
+        <h3 style="font-size:0.95rem;font-weight:600;color:var(--accent-light);margin-bottom:0.5rem">負責人與門市對應設定</h3>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:flex-end">
+          <div class="field" style="flex:1;min-width:150px">
+            <label>負責人名稱</label>
+            <input type="text" id="rg-manager" placeholder="例：林俊廷" style="width:100%;padding:0.5rem 0.75rem;background:#12121f;border:1px solid var(--card-border);border-radius:8px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+          <div class="field" style="flex:1;min-width:150px">
+            <label>門市名稱</label>
+            <input type="text" id="rg-store" placeholder="例：明誠店" style="width:100%;padding:0.5rem 0.75rem;background:#12121f;border:1px solid var(--card-border);border-radius:8px;color:var(--text);font-size:0.85rem;outline:none">
+          </div>
+          <button class="search-row-btn" id="rg-add-btn">新增對應</button>
+        </div>
+        <div id="rg-msg" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;min-height:1.2em"></div>
+      </div>
+      <div class="table-wrap" style="margin-top:1rem">
+        <table>
+          <thead><tr><th>負責人</th><th>門市</th><th>建立時間</th><th style="width:80px">操作</th></tr></thead>
+          <tbody id="rg-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tab-content" id="tab-region">
+      <div class="search-card">
+        <div class="field">
+          <label>開始日期</label>
+          <input type="date" id="r-start">
+        </div>
+        <div class="field">
+          <label>結束日期</label>
+          <input type="date" id="r-end">
+        </div>
+        <button class="search-row-btn" id="r-search">查詢</button>
+        <button class="btn-export" id="r-export" style="display:none">匯出 Excel</button>
+      </div>
+      <div class="error-msg" id="r-error"></div>
+      <div class="summary-bar" id="r-summary"></div>
+      <div class="loading" id="r-loading"><div class="spinner"></div><p>載入中...</p></div>
+      <div id="r-results"></div>
+      <div class="empty-msg" id="r-empty"><p>請選擇日期範圍後查詢</p></div>
+    </div>
         </table>
       </div>
     </div>
@@ -1108,8 +1153,8 @@
 
     // ====== USER MANAGEMENT ======
     var editingUserId = null;
-    var PERM_KEYS = ['store_summary','members','sync','access_control'];
-    var PERM_LABELS = {'store_summary':'店舖統計','members':'會員查詢','sync':'同步資料','access_control':'控制權限'};
+    var PERM_KEYS = ['store_summary','members','sync','access_control','region'];
+    var PERM_LABELS = {'store_summary':'店舖統計','members':'會員查詢','sync':'同步資料','access_control':'控制權限','region':'區域管理'};
     function resetUserForm() {
       editingUserId = null;
       document.getElementById('user-form-title').textContent = '新增使用者';
@@ -1224,3 +1269,117 @@
 </body>
 </html>
 
+
+// ====== REGION SETUP ======
+async function loadRegionMappings() {
+  var tb=document.getElementById("rg-tbody");
+  tb.innerHTML="<tr><td colspan=\"4\" style=\"text-align:center;color:var(--text-muted);padding:2rem\">載入中...</td></tr>";
+  try {
+    var r=await fetch("/api/region-mappings");
+    var data=await r.json();
+    if(!r.ok) throw new Error(data.error);
+    tb.innerHTML="";
+    if(!data.length){tb.innerHTML="<tr><td colspan=\"4\" style=\"text-align:center;color:var(--text-muted);padding:2rem\">尚無設定，請新增負責人與門市對應</td></tr>";return;}
+    data.forEach(function(m){
+      var tr=document.createElement("tr");
+      var dt=m.created_at?new Date(m.created_at).toLocaleString("zh-TW"):"";
+      tr.innerHTML="<td>"+esc(m.manager_name)+"</td><td>"+esc(m.store_name)+"</td><td style=\"font-size:0.78rem;color:var(--text-muted)\">"+dt+"</td>"+
+        "<td><button class=\"btn-sm delete\" onclick=\"deleteRegionMapping("+m.id+")\" >刪除</button></td>";
+      tb.appendChild(tr);
+    });
+  } catch(e){tb.innerHTML="<tr><td colspan=\"4\" style=\"text-align:center;color:var(--danger);padding:2rem\">載入失敗: "+esc(e.message)+"</td></tr>";}
+}
+
+async function deleteRegionMapping(id){
+  if(!confirm("確定要刪除此對應？")) return;
+  try{var r=await fetch("/api/region-mappings/"+id,{method:"DELETE"});var d=await r.json();if(!r.ok)throw new Error(d.error);loadRegionMappings();}
+  catch(e){alert(e.message);}
+}
+
+document.getElementById("rg-add-btn").addEventListener("click",async function(){
+  var mgr=document.getElementById("rg-manager").value.trim();
+  var store=document.getElementById("rg-store").value.trim();
+  var msg=document.getElementById("rg-msg");
+  if(!mgr||!store){msg.textContent="請填寫負責人名稱與門市名稱";msg.style.color="var(--danger)";return;}
+  try{
+    var r=await fetch("/api/region-mappings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({manager_name:mgr,store_name:store})});
+    var d=await r.json();
+    if(!r.ok) throw new Error(d.error);
+    document.getElementById("rg-manager").value="";
+    document.getElementById("rg-store").value="";
+    msg.textContent="已新增："+mgr+" → "+store;
+    msg.style.color="var(--green)";
+    loadRegionMappings();
+  } catch(e){msg.textContent=e.message;msg.style.color="var(--danger)";}
+});
+
+// ====== REGION STATS ======
+async function doRegionSearch(){
+  var start=document.getElementById("r-start").value;
+  var end=document.getElementById("r-end").value;
+  if(!start||!end){document.getElementById("r-error").textContent="請選擇日期範圍";document.getElementById("r-error").classList.add("active");return;}
+  document.getElementById("r-error").classList.remove("active");
+  document.getElementById("r-loading").classList.add("active");
+  document.getElementById("r-results").innerHTML="";
+  document.getElementById("r-empty").classList.remove("active");
+  document.getElementById("r-summary").classList.remove("active");
+  try{
+    var r=await fetch("/api/region-stats?start="+start+"&end="+end);
+    var data=await r.json();
+    document.getElementById("r-loading").classList.remove("active");
+    if(!r.ok)throw new Error(data.error);
+    if(!data.managers||data.managers.length===0){
+      document.getElementById("r-empty").textContent="此區間無資料";
+      document.getElementById("r-empty").classList.add("active");
+      return;
+    }
+    document.getElementById("r-export").style.display="";
+    var summaryEl=document.getElementById("r-summary");
+    summaryEl.innerHTML="<div><span class=\"total\">負責人 <span>"+data.managers.length+"</span> 位，總掃描 <span>"+data.totalRecords+"</span> 筆</div>"+
+      (data.unassignedRecords>0?"<div class=\"detail\">未設定負責人: "+data.unassignedRecords+" 筆 ("+data.unassignedUniqueVisits+" 人次)</div>":"");
+    summaryEl.classList.add("active");
+    var html="";
+    data.managers.forEach(function(mgr){
+      html+="<div class=\"store-card\" style=\"margin-bottom:0.4rem;padding:0.75rem 1rem\">"+
+        "<div style=\"font-weight:700;font-size:1rem;color:var(--accent-light);min-width:8ch\">"+esc(mgr.manager)+"</div>"+
+        "<div style=\"flex:1;font-size:0.82rem;color:var(--text-muted)\">"+mgr.stores.length+" 間門市</div>"+
+        "<div style=\"text-align:right\"><span style=\"font-family:JetBrains Mono,monospace;font-size:1.1rem;font-weight:700;color:var(--green)\">"+mgr.uniqueVisits+"</span><span style=\"font-size:0.75rem;color:var(--text-muted);margin-left:0.3rem\">人次</span></div>"+
+      "</div>";
+      html+="<div style=\"margin:0 0 0.8rem 1rem;display:flex;flex-wrap:wrap;gap:0.3rem\">";
+      mgr.stores.forEach(function(s){
+        html+="<div style=\"background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:0.35rem 0.7rem;font-size:0.78rem\">"+
+          "<span style=\"font-weight:600\">"+esc(s.store)+"</span> "+
+          "<span style=\"color:var(--green);font-family:JetBrains Mono,monospace\">"+s.uniqueVisits+"</span><span style=\"color:var(--text-muted);font-size:0.7rem\">人次</span>"+
+          " <span style=\"color:var(--text-muted);font-size:0.7rem\">("+s.scanRecords+"筆)</span>"+
+        "</div>";
+      });
+      html+="</div>";
+    });
+    document.getElementById("r-results").innerHTML=html;
+  } catch(e){
+    document.getElementById("r-loading").classList.remove("active");
+    document.getElementById("r-error").textContent=e.message;
+    document.getElementById("r-error").classList.add("active");
+  }
+}
+
+document.getElementById("r-search").addEventListener("click",doRegionSearch);
+
+document.getElementById("r-export").addEventListener("click",function(){
+  var start=document.getElementById("r-start").value;
+  var end=document.getElementById("r-end").value;
+  var url="/api/region-stats/export?start="+start+"&end="+end;
+  fetch(url).then(function(r){if(!r.ok)throw new Error("匯出失敗");return r.blob();}).then(function(blob){
+    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="region_stats_"+start+"_"+end+".xlsx";
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
+  }).catch(function(e){document.getElementById("r-error").textContent=e.message;document.getElementById("r-error").classList.add("active");});
+});
+
+(function(){var d=new Date();var f=function(x){return x.toISOString().slice(0,10)};var s=new Date(d);s.setDate(s.getDate()-30);
+  document.getElementById("r-start").value=f(s);document.getElementById("r-end").value=f(d);})();
+
+document.querySelectorAll(".tab-btn").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    if(btn.getAttribute("data-tab")==="tab-region-setup") setTimeout(loadRegionMappings,100);
+  });
+});
