@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
@@ -1300,50 +1300,8 @@ async function doRegionSearch(){
   }
 }
 
-// Use DOMContentLoaded to bind all region UI events after DOM is ready
+// Region Stats: set default dates on DOM ready
 document.addEventListener('DOMContentLoaded', function() {
-  // Region Setup: add mapping button
-  var addBtn = document.getElementById('rg-add-btn');
-  if (addBtn) {
-    addBtn.addEventListener('click', async function(){
-      var mgr=document.getElementById('rg-manager').value.trim();
-      var store=document.getElementById('rg-store').value.trim();
-      var msg=document.getElementById('rg-msg');
-      if(!mgr||!store){msg.textContent='請填寫負責人名稱與門市名稱';msg.style.color='var(--danger)';return;}
-      try{
-        var r=await fetch('/api/region-mappings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({manager_name:mgr,store_name:store})});
-        var d=await r.json();
-        if(!r.ok) throw new Error(d.error);
-        document.getElementById('rg-manager').value='';
-        document.getElementById('rg-store').value='';
-        msg.textContent='已新增：'+mgr+' → '+store;
-        msg.style.color='var(--green)';
-        loadRegionMappings();
-      } catch(e){msg.textContent=e.message;msg.style.color='var(--danger)';}
-    });
-  }
-
-  // Region Stats: search button
-  var rSearch = document.getElementById('r-search');
-  if (rSearch) {
-    rSearch.addEventListener('click', doRegionSearch);
-  }
-
-  // Region Stats: export button
-  var rExport = document.getElementById('r-export');
-  if (rExport) {
-    rExport.addEventListener('click', function(){
-      var start=document.getElementById('r-start').value;
-      var end=document.getElementById('r-end').value;
-      var url='/api/region-stats/export?start='+start+'&end='+end;
-      fetch(url).then(function(r){if(!r.ok)throw new Error('匯出失敗');return r.blob();}).then(function(blob){
-        var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='region_stats_'+start+'_'+end+'.xlsx';
-        document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
-      }).catch(function(e){document.getElementById('r-error').textContent=e.message;document.getElementById('r-error').classList.add('active');});
-    });
-  }
-
-  // Region Stats: set default dates
   var rs = document.getElementById('r-start');
   var re = document.getElementById('r-end');
   if (rs && re) {
@@ -1352,6 +1310,34 @@ document.addEventListener('DOMContentLoaded', function() {
     re.value = d.toISOString().slice(0,10);
   }
 });
+
+// Helper functions for inline onclick handlers
+async function _addRegionMapping() {
+  var mgr=document.getElementById('rg-manager').value.trim();
+  var store=document.getElementById('rg-store').value.trim();
+  var msg=document.getElementById('rg-msg');
+  if(!mgr||!store){msg.textContent='請填寫負責人名稱與門市名稱';msg.style.color='var(--danger)';return;}
+  try{
+    var r=await fetch('/api/region-mappings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({manager_name:mgr,store_name:store})});
+    var d=await r.json();
+    if(!r.ok) throw new Error(d.error);
+    document.getElementById('rg-manager').value='';
+    document.getElementById('rg-store').value='';
+    msg.textContent='已新增：'+mgr+' → '+store;
+    msg.style.color='var(--green)';
+    loadRegionMappings();
+  } catch(e){msg.textContent=e.message;msg.style.color='var(--danger)';}
+}
+
+function _exportRegionStats() {
+  var start=document.getElementById('r-start').value;
+  var end=document.getElementById('r-end').value;
+  var url='/api/region-stats/export?start='+start+'&end='+end;
+  fetch(url).then(function(r){if(!r.ok)throw new Error('匯出失敗');return r.blob();}).then(function(blob){
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='region_stats_'+start+'_'+end+'.xlsx';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
+  }).catch(function(e){document.getElementById('r-error').textContent=e.message;document.getElementById('r-error').classList.add('active');});
+}
 
 // Tab click: load region mappings when switching to setup tab
 document.querySelectorAll('.tab-btn').forEach(function(btn){
@@ -1373,7 +1359,7 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
             <label>門市名稱</label>
             <input type="text" id="rg-store" placeholder="例：明誠店" style="width:100%;padding:0.5rem 0.75rem;background:#12121f;border:1px solid var(--card-border);border-radius:8px;color:var(--text);font-size:0.85rem;outline:none">
           </div>
-          <button class="search-row-btn" id="rg-add-btn">新增對應</button>
+          <button class="search-row-btn" id="rg-add-btn" onclick="_addRegionMapping()">新增對應</button>
         </div>
         <div id="rg-msg" style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;min-height:1.2em"></div>
       </div>
@@ -1394,8 +1380,8 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
           <label>結束日期</label>
           <input type="date" id="r-end">
         </div>
-        <button class="search-row-btn" id="r-search">查詢</button>
-        <button class="btn-export" id="r-export" style="display:none">匯出 Excel</button>
+        <button class="search-row-btn" id="r-search" onclick="doRegionSearch()">查詢</button>
+        <button class="btn-export" id="r-export" style="display:none" onclick="_exportRegionStats()">匯出 Excel</button>
       </div>
       <div class="error-msg" id="r-error"></div>
       <div class="summary-bar" id="r-summary"></div>
