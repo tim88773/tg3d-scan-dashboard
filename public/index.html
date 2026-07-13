@@ -1250,7 +1250,8 @@ async function deleteRegionMapping(id){
   catch(e){alert(e.message);}
 }
 
-document.getElementById("rg-add-btn").addEventListener("click",async function(){
+(function(){ function _initR(){ 
+var _b=document.getElementById("rg-add-btn");if(_b)_b.addEventListener("click",async function(){
   var mgr=document.getElementById("rg-manager").value.trim();
   var store=document.getElementById("rg-store").value.trim();
   var msg=document.getElementById("rg-msg");
@@ -1317,9 +1318,9 @@ async function doRegionSearch(){
   }
 }
 
-document.getElementById("r-search").addEventListener("click",doRegionSearch);
+var _s=document.getElementById("r-search");if(_s)_s.addEventListener("click",doRegionSearch);
 
-document.getElementById("r-export").addEventListener("click",function(){
+var _e=document.getElementById("r-export");if(_e)_e.addEventListener("click",function(){
   var start=document.getElementById("r-start").value;
   var end=document.getElementById("r-end").value;
   var url="/api/region-stats/export?start="+start+"&end="+end;
@@ -1329,8 +1330,14 @@ document.getElementById("r-export").addEventListener("click",function(){
   }).catch(function(e){document.getElementById("r-error").textContent=e.message;document.getElementById("r-error").classList.add("active");});
 });
 
-(function(){var d=new Date();var f=function(x){return x.toISOString().slice(0,10)};var s=new Date(d);s.setDate(s.getDate()-30);
-  document.getElementById("r-start").value=f(s);document.getElementById("r-end").value=f(d);})();
+(function(){
+  var d=new Date();
+  var _rs=document.getElementById("r-start");var _re=document.getElementById("r-end");
+  if(_rs&&_re){_rs.value=new Date(d.getTime()-30*86400000).toISOString().slice(0,10);_re.value=d.toISOString().slice(0,10);}
+})();
+} // end _initR
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_initR)}else{_initR()}
+})();
 
 document.querySelectorAll(".tab-btn").forEach(function(btn){
   btn.addEventListener("click",function(){
