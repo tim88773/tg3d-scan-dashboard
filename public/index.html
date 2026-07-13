@@ -1224,7 +1224,7 @@
     })();
     document.getElementById('logout-btn').addEventListener('click', doLogout);
   
-  // ====== REGION SETUP ======
+    // ====== REGION SETUP ======
 async function loadRegionMappings() {
   var tb=document.getElementById("rg-tbody");
   tb.innerHTML="<tr><td colspan=\"4\" style=\"text-align:center;color:var(--text-muted);padding:2rem\">載入中...</td></tr>";
@@ -1249,24 +1249,6 @@ async function deleteRegionMapping(id){
   try{var r=await fetch("/api/region-mappings/"+id,{method:"DELETE"});var d=await r.json();if(!r.ok)throw new Error(d.error);loadRegionMappings();}
   catch(e){alert(e.message);}
 }
-
-(function(){ function _initR(){ 
-var _b=document.getElementById("rg-add-btn");if(_b)_b.addEventListener("click",async function(){
-  var mgr=document.getElementById("rg-manager").value.trim();
-  var store=document.getElementById("rg-store").value.trim();
-  var msg=document.getElementById("rg-msg");
-  if(!mgr||!store){msg.textContent="請填寫負責人名稱與門市名稱";msg.style.color="var(--danger)";return;}
-  try{
-    var r=await fetch("/api/region-mappings",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({manager_name:mgr,store_name:store})});
-    var d=await r.json();
-    if(!r.ok) throw new Error(d.error);
-    document.getElementById("rg-manager").value="";
-    document.getElementById("rg-store").value="";
-    msg.textContent="已新增："+mgr+" → "+store;
-    msg.style.color="var(--green)";
-    loadRegionMappings();
-  } catch(e){msg.textContent=e.message;msg.style.color="var(--danger)";}
-});
 
 // ====== REGION STATS ======
 async function doRegionSearch(){
@@ -1318,33 +1300,65 @@ async function doRegionSearch(){
   }
 }
 
-var _s=document.getElementById("r-search");if(_s)_s.addEventListener("click",doRegionSearch);
+// Use DOMContentLoaded to bind all region UI events after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  // Region Setup: add mapping button
+  var addBtn = document.getElementById('rg-add-btn');
+  if (addBtn) {
+    addBtn.addEventListener('click', async function(){
+      var mgr=document.getElementById('rg-manager').value.trim();
+      var store=document.getElementById('rg-store').value.trim();
+      var msg=document.getElementById('rg-msg');
+      if(!mgr||!store){msg.textContent='請填寫負責人名稱與門市名稱';msg.style.color='var(--danger)';return;}
+      try{
+        var r=await fetch('/api/region-mappings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({manager_name:mgr,store_name:store})});
+        var d=await r.json();
+        if(!r.ok) throw new Error(d.error);
+        document.getElementById('rg-manager').value='';
+        document.getElementById('rg-store').value='';
+        msg.textContent='已新增：'+mgr+' → '+store;
+        msg.style.color='var(--green)';
+        loadRegionMappings();
+      } catch(e){msg.textContent=e.message;msg.style.color='var(--danger)';}
+    });
+  }
 
-var _e=document.getElementById("r-export");if(_e)_e.addEventListener("click",function(){
-  var start=document.getElementById("r-start").value;
-  var end=document.getElementById("r-end").value;
-  var url="/api/region-stats/export?start="+start+"&end="+end;
-  fetch(url).then(function(r){if(!r.ok)throw new Error("匯出失敗");return r.blob();}).then(function(blob){
-    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="region_stats_"+start+"_"+end+".xlsx";
-    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
-  }).catch(function(e){document.getElementById("r-error").textContent=e.message;document.getElementById("r-error").classList.add("active");});
+  // Region Stats: search button
+  var rSearch = document.getElementById('r-search');
+  if (rSearch) {
+    rSearch.addEventListener('click', doRegionSearch);
+  }
+
+  // Region Stats: export button
+  var rExport = document.getElementById('r-export');
+  if (rExport) {
+    rExport.addEventListener('click', function(){
+      var start=document.getElementById('r-start').value;
+      var end=document.getElementById('r-end').value;
+      var url='/api/region-stats/export?start='+start+'&end='+end;
+      fetch(url).then(function(r){if(!r.ok)throw new Error('匯出失敗');return r.blob();}).then(function(blob){
+        var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='region_stats_'+start+'_'+end+'.xlsx';
+        document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
+      }).catch(function(e){document.getElementById('r-error').textContent=e.message;document.getElementById('r-error').classList.add('active');});
+    });
+  }
+
+  // Region Stats: set default dates
+  var rs = document.getElementById('r-start');
+  var re = document.getElementById('r-end');
+  if (rs && re) {
+    var d = new Date();
+    rs.value = new Date(d.getTime() - 30*86400000).toISOString().slice(0,10);
+    re.value = d.toISOString().slice(0,10);
+  }
 });
 
-(function(){
-  var d=new Date();
-  var _rs=document.getElementById("r-start");var _re=document.getElementById("r-end");
-  if(_rs&&_re){_rs.value=new Date(d.getTime()-30*86400000).toISOString().slice(0,10);_re.value=d.toISOString().slice(0,10);}
-})();
-} // end _initR
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_initR)}else{_initR()}
-})();
-
-document.querySelectorAll(".tab-btn").forEach(function(btn){
-  btn.addEventListener("click",function(){
-    if(btn.getAttribute("data-tab")==="tab-region-setup") setTimeout(loadRegionMappings,100);
+// Tab click: load region mappings when switching to setup tab
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    if(btn.getAttribute('data-tab')==='tab-region-setup') setTimeout(loadRegionMappings,100);
   });
 });
-
 </script>
 
     <div class="tab-content" id="tab-region-setup">
