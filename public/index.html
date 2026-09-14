@@ -906,6 +906,30 @@
       const min = 67.5 + index * 2.5;
       return { min: min, max: min + 5 };
     });
+    const SIZE_CODE_COLUMNS = [
+      { bandSize: 30, startChestIndex: 0, startCup: 'A', endChestIndex: 17 },
+      { bandSize: 32, startChestIndex: 2, startCup: 'A', endChestIndex: 19 },
+      { bandSize: 34, startChestIndex: 4, startCup: 'A', endChestIndex: 20 },
+      { bandSize: 36, startChestIndex: 6, startCup: 'A', endChestIndex: 21 },
+      { bandSize: 38, startChestIndex: 8, startCup: 'A', endChestIndex: 22 },
+      { bandSize: 40, startChestIndex: 10, startCup: 'A', endChestIndex: 23 },
+      { bandSize: 42, startChestIndex: 13, startCup: 'B', endChestIndex: 24 },
+      { bandSize: 44, startChestIndex: 16, startCup: 'C', endChestIndex: 25 },
+      { bandSize: 46, startChestIndex: 19, startCup: 'D', endChestIndex: 26 },
+      { bandSize: 48, startChestIndex: 22, startCup: 'E', endChestIndex: 27 },
+      { bandSize: 50, startChestIndex: 24, startCup: 'E', endChestIndex: 28 },
+      { bandSize: 52, startChestIndex: 26, startCup: 'E', endChestIndex: 29 },
+    ];
+    const SIZE_CUP_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    function sizeCodeForCell(chestIndex, underbustIndex) {
+      const column = SIZE_CODE_COLUMNS[underbustIndex];
+      if (!column || chestIndex < column.startChestIndex || chestIndex > column.endChestIndex) return '';
+      // The source sheet has one non-sequential code in the 52 band.
+      if (chestIndex === 27 && underbustIndex === 11) return '52I';
+      const cupIndex = column.startCup.charCodeAt(0) - 65 + chestIndex - column.startChestIndex;
+      return column.bandSize + SIZE_CUP_LETTERS.charAt(cupIndex);
+    }
 
     function sizeNumber(value) {
       return Number.isInteger(value) ? String(value) : value.toFixed(1);
@@ -1170,8 +1194,10 @@
         tableHtml += '<tr><th class="row-label">胸圍<br>' + sizeRangeLabel(chestBin) + '</th>';
         SIZE_UNDERBUST_BINS.forEach(function(underbustBin, underbustIndex) {
           const count = result.matrix[chestIndex][underbustIndex];
-          const title = '胸圍 ' + sizeRangeLabel(chestBin) + ' cm / 胸下圍 ' + underbustBin.bandSize + ' (' + sizeRangeLabel(underbustBin) + ' cm): ' + count + ' 人';
-          tableHtml += '<td class="cell' + (count > 0 ? ' has-value' : '') + '" style="background:' + sizeCellColor(count, result.matrixMax) + '" title="' + title + '">' + (count || '') + '</td>';
+          const sizeCode = sizeCodeForCell(chestIndex, underbustIndex);
+          const cellText = sizeCode ? count + '/' + sizeCode : (count || '');
+          const title = '胸圍 ' + sizeRangeLabel(chestBin) + ' cm / 胸下圍 ' + underbustBin.bandSize + ' (' + sizeRangeLabel(underbustBin) + ' cm)' + (sizeCode ? ' / ' + sizeCode : '') + ': ' + count + ' 人';
+          tableHtml += '<td class="cell' + (count > 0 ? ' has-value' : '') + '" style="background:' + sizeCellColor(count, result.matrixMax) + '" title="' + title + '">' + cellText + '</td>';
         });
         tableHtml += '<td class="total-cell">' + result.rowTotals[chestIndex] + '</td></tr>';
       });
