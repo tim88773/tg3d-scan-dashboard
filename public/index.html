@@ -45,7 +45,7 @@
     }
     header p { color: var(--text-muted); margin-top: 0.3rem; font-size: 0.85rem; }
 
-    .tabs { display: flex; gap: 0.25rem; margin-bottom: 1.5rem; }
+    .tabs { display: flex; gap: 0.25rem; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 2px; }
 
     .sync-section { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
     .sync-section h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--accent-light); }
@@ -302,7 +302,13 @@
       .store-card .count-num { min-width: auto; }
       .summary-bar { flex-direction: column; align-items: flex-start; }
       .tabs { gap: 0; }
-      .tab-btn { flex: 1; text-align: center; padding: 0.5rem 0.75rem; font-size: 0.75rem; }
+      .tabs { gap: 0; justify-content: flex-start; }
+      .size-source-card { flex-direction: column; align-items: stretch; }
+      .size-source-actions { justify-content: stretch; }
+      .size-source-actions button { flex: 1; }
+      .size-stats { grid-template-columns: 1fr; }
+      .size-bar-row { grid-template-columns: 112px minmax(80px, 1fr) 42px; gap: 0.4rem; }
+      .tab-btn { flex: 0 0 auto; min-width: 92px; text-align: center; padding: 0.5rem 0.75rem; font-size: 0.75rem; }
     }
     .user-info { display: none; align-items: center; gap: 0.75rem; white-space: nowrap; }
     .user-info.show { display: flex; }
@@ -368,6 +374,78 @@
     .tag-cell .tag-full .badge { cursor: default; }
         .export-opt { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
     .export-opt input[type=checkbox] { width: auto; accent-color: var(--accent); cursor: pointer; }
+    .btn-size {
+      padding: 0.5rem 1.2rem;
+      background: rgba(108, 92, 231, 0.12);
+      border: 1px solid var(--accent-light); border-radius: 8px;
+      color: var(--accent-light); font-weight: 700; font-size: 0.8rem;
+      cursor: pointer; font-family: inherit;
+    }
+    .btn-size:hover { background: rgba(108, 92, 231, 0.22); }
+
+    .size-source-card {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+      background: linear-gradient(135deg, rgba(108, 92, 231, 0.16), rgba(0, 184, 148, 0.08));
+      border: 1px solid var(--card-border); border-radius: var(--radius); padding: 1.2rem 1.35rem; margin-bottom: 1rem;
+    }
+    .size-source-card h2 { font-size: 1.15rem; margin-bottom: 0.25rem; }
+    .size-source-card p { color: var(--text-muted); font-size: 0.78rem; line-height: 1.5; }
+    .size-source-card .eyebrow { color: var(--green); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+    .size-source-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn-secondary {
+      padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--card-border); border-radius: 8px;
+      color: var(--text); font-weight: 600; font-size: 0.8rem; cursor: pointer; font-family: inherit; white-space: nowrap;
+    }
+    .btn-secondary:hover { border-color: var(--accent-light); color: var(--accent-light); }
+
+    .size-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+    .size-stat { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 0.9rem 1rem; min-width: 0; }
+    .size-stat .label { color: var(--text-muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
+    .size-stat .value { color: var(--text); font-size: 1.2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; overflow-wrap: anywhere; }
+    .size-stat .value.green { color: var(--green); }
+    .size-stat .value.small { font-size: 0.85rem; line-height: 1.35; }
+
+    .size-panel { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
+    .size-panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.85rem; }
+    .size-panel-head h3 { font-size: 0.95rem; }
+    .size-panel-head p { color: var(--text-muted); font-size: 0.72rem; margin-top: 0.25rem; }
+    .size-legend { display: flex; align-items: center; gap: 0.4rem; color: var(--text-muted); font-size: 0.68rem; white-space: nowrap; }
+    .size-legend .ramp { width: 76px; height: 8px; border-radius: 99px; background: linear-gradient(90deg, rgba(108,92,231,0.2), var(--accent), var(--green)); }
+
+    .size-heatmap-wrap { overflow: auto; border: 1px solid rgba(42, 42, 68, 0.7); border-radius: 12px; background: #12121f; }
+    .size-heatmap { border-collapse: separate; border-spacing: 4px; width: max-content; min-width: 100%; }
+    .size-heatmap th, .size-heatmap td { text-align: center; vertical-align: middle; }
+    .size-heatmap th { color: var(--text-muted); font-size: 0.65rem; font-weight: 700; line-height: 1.25; white-space: nowrap; }
+    .size-heatmap .axis-corner { color: var(--accent-light); min-width: 92px; padding: 0.45rem; }
+    .size-heatmap .band-size { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
+    .size-heatmap .underbust-range { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; }
+    .size-heatmap .row-label { position: sticky; left: 0; z-index: 2; background: #171728; border: 1px solid var(--card-border); border-radius: 8px; min-width: 84px; padding: 0.45rem 0.55rem; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; text-align: left; }
+    .size-heatmap .cell {
+      min-width: 52px; height: 42px; border: 1px solid rgba(255,255,255,0.035); border-radius: 8px;
+      color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .size-heatmap .cell.has-value { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.45); }
+    .size-heatmap .cell:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.35); }
+    .size-heatmap .total-cell { min-width: 62px; min-height: 42px; background: rgba(0,184,148,0.08); border: 1px solid rgba(0,184,148,0.22); border-radius: 8px; color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700; }
+
+    .size-grid-2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1rem; }
+    .size-bars { display: grid; gap: 0.55rem; }
+    .size-bar-row { display: grid; grid-template-columns: 128px minmax(100px, 1fr) 52px; align-items: center; gap: 0.6rem; }
+    .size-bar-label { color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; }
+    .size-bar-track { height: 9px; background: #12121f; border-radius: 99px; overflow: hidden; }
+    .size-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--green)); }
+    .size-bar-count { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700; text-align: right; }
+    .size-top-list { display: grid; gap: 0.55rem; }
+    .size-top-item { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; padding: 0.65rem 0.75rem; background: #12121f; border: 1px solid rgba(42,42,68,0.8); border-radius: 9px; }
+    .size-top-item .zone { color: var(--text); font-size: 0.72rem; line-height: 1.4; }
+    .size-top-item .count { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: 800; white-space: nowrap; }
+    .size-note { color: var(--text-muted); font-size: 0.7rem; line-height: 1.55; padding: 0 0.2rem 0.5rem; }
+
+    @media (max-width: 900px) {
+      .size-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .size-grid-2 { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -396,6 +474,7 @@
       <button class="tab-btn active" data-tab="tab-summary">門市統計</button>
       <button class="tab-btn" data-tab="tab-region">區域統計</button>
       <button class="tab-btn" data-tab="tab-members">會員查詢</button>
+      <button class="tab-btn" data-tab="tab-sizes">會員尺寸表</button>
       <button class="tab-btn" data-tab="tab-sync">同步資料</button>
       <button class="tab-btn" data-tab="tab-users">控制權限</button>
       <button class="tab-btn" data-tab="tab-region-setup">區域對應設置</button>
@@ -466,6 +545,7 @@
           </div>
           <button class="search-row-btn" id="m-search">查詢</button>
           <button class="btn-export" id="m-export" style="display:none">匯出 Excel</button>
+          <button class="btn-size" id="m-size-btn" style="display:none">查看會員尺寸表</button>
           <label class="export-opt"><input type="checkbox" id="m-export-full"> 匯出完整資料</label>
         </div>
       </div>
@@ -487,6 +567,57 @@
       </div>
     </div>
     <!-- ====== TAB 3: SYNC ====== -->
+    <!-- ====== TAB: 會員尺寸表 ====== -->
+    <div class="tab-content" id="tab-sizes">
+      <div class="size-source-card">
+        <div>
+          <div class="eyebrow">尺寸分布報表</div>
+          <h2>會員尺寸表</h2>
+          <p id="sz-source">請先到會員查詢設定日期、門市、體圍或標籤條件，完成查詢後即可產生尺寸分布。</p>
+        </div>
+        <div class="size-source-actions">
+          <button class="btn-secondary" id="sz-go-member">回會員查詢調整條件</button>
+        </div>
+      </div>
+
+      <div class="empty-msg active" id="sz-empty">
+        <p>目前沒有可用的會員查詢結果。請先完成一次會員查詢。</p>
+      </div>
+
+      <div id="sz-report" style="display:none">
+        <div class="size-stats">
+          <div class="size-stat"><div class="label">查詢結果</div><div class="value" id="sz-record-count">0</div></div>
+          <div class="size-stat"><div class="label">有效尺寸</div><div class="value green" id="sz-valid-count">0</div></div>
+          <div class="size-stat"><div class="label">胸下圍區間</div><div class="value small" id="sz-band-range">-</div></div>
+          <div class="size-stat"><div class="label">最高熱區</div><div class="value small" id="sz-top-zone">-</div></div>
+        </div>
+
+        <div class="size-panel">
+          <div class="size-panel-head">
+            <div>
+              <h3>胸圍 × 胸下圍人數圖</h3>
+              <p>顏色越接近綠色代表符合該尺寸區間的會員越多。</p>
+            </div>
+            <div class="size-legend"><span>低</span><span class="ramp"></span><span>高</span></div>
+          </div>
+          <div class="size-heatmap-wrap"><table class="size-heatmap" id="sz-heatmap"></table></div>
+        </div>
+
+        <div class="size-grid-2">
+          <div class="size-panel">
+            <div class="size-panel-head"><div><h3>胸下圍人數分布</h3><p>同一胸下圍區間的會員數。</p></div></div>
+            <div class="size-bars" id="sz-underbust-bars"></div>
+          </div>
+          <div class="size-panel">
+            <div class="size-panel-head"><div><h3>熱門尺寸區間</h3><p>依人數排序的交叉區間。</p></div></div>
+            <div class="size-top-list" id="sz-top-zones"></div>
+          </div>
+        </div>
+
+        <p class="size-note">胸下圍以 5 cm 為一組；胸圍以 2.5 cm 為間隔、5 cm 為滑動範圍，因此胸圍區間會有重疊，數列合計不能直接視為總人數。</p>
+      </div>
+    </div>
+
     <div class="tab-content" id="tab-sync">
 
       <div class="sync-lock" id="sync-lock">
@@ -585,7 +716,7 @@
     function applyPermissions() {
       if (!CURRENT_USER) return;
       var perms = CURRENT_USER.permissions || []; var isAdmin = CURRENT_USER.is_admin;
-      var tabMap = {'tab-summary':'store_summary','tab-members':'members','tab-sync':'sync','tab-users':'access_control'};
+      var tabMap = {'tab-summary':'store_summary','tab-members':'members','tab-sizes':'members','tab-sync':'sync','tab-users':'access_control'};
       document.querySelectorAll('.tab-btn').forEach(function(t) {
         var k = tabMap[t.getAttribute('data-tab')];
         if (k && !isAdmin && perms.indexOf(k)===-1) t.style.display='none';
@@ -765,6 +896,35 @@
       'Right NSP to Apex Length': '\u9838\u80a9\u81f3\u4e73\u5c16(\u53f3)',
     };
 
+    const SIZE_CHEST_KEY = 'Chest Circumference';
+    const SIZE_UNDERBUST_KEY = 'F Under Bust Circumference B';
+    const SIZE_UNDERBUST_BINS = Array.from({ length: 12 }, function(_, index) {
+      const min = 62.5 + index * 5;
+      return { bandSize: 30 + index * 2, min: min, max: min + 5 };
+    });
+    const SIZE_CHEST_BINS = Array.from({ length: 30 }, function(_, index) {
+      const min = 67.5 + index * 2.5;
+      return { min: min, max: min + 5 };
+    });
+
+    function sizeNumber(value) {
+      return Number.isInteger(value) ? String(value) : value.toFixed(1);
+    }
+
+    function sizeRangeLabel(bin) {
+      return sizeNumber(bin.min) + '-' + sizeNumber(bin.max);
+    }
+
+    function sizeCellColor(count, maxCount) {
+      if (!count || !maxCount) return 'rgba(108, 92, 231, 0.04)';
+      const ratio = Math.pow(count / maxCount, 0.55);
+      const red = Math.round(108 - 108 * ratio);
+      const green = Math.round(92 + 92 * ratio);
+      const blue = Math.round(231 - 83 * ratio);
+      const alpha = 0.16 + ratio * 0.78;
+      return 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha.toFixed(3) + ')';
+    }
+
     async function doMemberSearch() {
       const start = document.getElementById('m-start').value;
       const end = document.getElementById('m-end').value;
@@ -780,6 +940,7 @@
       document.getElementById('m-loading-text').textContent = '載入會員量測數據中，請稍後...';
       document.getElementById('m-search').disabled = true;
       document.getElementById('m-export').style.display = 'none';
+      document.getElementById('m-size-btn').style.display = 'none';
 
       try {
         let url = `/api/scan-members?start=${start}&end=${end}`;
@@ -806,6 +967,7 @@
 
         lastMemberData = data;
         const { records, includeMeasurements } = data;
+        renderMemberSizeReport(data);
 
         document.getElementById('m-summary').classList.add('active');
         document.getElementById('m-total').textContent = records.length;
@@ -818,6 +980,7 @@
 
         renderMemberTable(records, includeMeasurements);
         document.getElementById('m-export').style.display = 'inline-block';
+        document.getElementById('m-size-btn').style.display = 'inline-block';
       } catch (err) {
         document.getElementById('m-loading').classList.remove('active');
         document.getElementById('m-search').disabled = false;
@@ -899,8 +1062,154 @@
     }
 
     document.getElementById('m-search').addEventListener('click', doMemberSearch);
+    function computeMemberSizeReport(data) {
+      const records = data && data.records ? data.records : [];
+      const matrix = SIZE_CHEST_BINS.map(function() { return SIZE_UNDERBUST_BINS.map(function() { return 0; }); });
+      const underbustCounts = SIZE_UNDERBUST_BINS.map(function() { return 0; });
+      let validCount = 0;
+
+      records.forEach(function(record) {
+        const measurements = record.measurements;
+        if (!measurements) return;
+
+        const chestRaw = measurements[SIZE_CHEST_KEY];
+        const underbustRaw = measurements[SIZE_UNDERBUST_KEY];
+        if (chestRaw == null || chestRaw === '' || underbustRaw == null || underbustRaw === '') return;
+
+        const chest = Number(chestRaw);
+        const underbust = Number(underbustRaw);
+        if (!Number.isFinite(chest) || !Number.isFinite(underbust)) return;
+
+        const underbustIndex = SIZE_UNDERBUST_BINS.findIndex(function(bin) {
+          return underbust >= bin.min && underbust < bin.max;
+        });
+        if (underbustIndex === -1) return;
+
+        validCount++;
+        underbustCounts[underbustIndex]++;
+
+        SIZE_CHEST_BINS.forEach(function(bin, chestIndex) {
+          if (chest >= bin.min && chest < bin.max) matrix[chestIndex][underbustIndex]++;
+        });
+      });
+
+      const rowTotals = matrix.map(function(row) {
+        return row.reduce(function(sum, count) { return sum + count; }, 0);
+      });
+      const columnTotals = SIZE_UNDERBUST_BINS.map(function(_, columnIndex) {
+        return matrix.reduce(function(sum, row) { return sum + row[columnIndex]; }, 0);
+      });
+      const topZones = [];
+      matrix.forEach(function(row, chestIndex) {
+        row.forEach(function(count, underbustIndex) {
+          if (count > 0) topZones.push({ count: count, chestIndex: chestIndex, underbustIndex: underbustIndex });
+        });
+      });
+      topZones.sort(function(a, b) { return b.count - a.count; });
+
+      return {
+        matrix: matrix,
+        rowTotals: rowTotals,
+        columnTotals: columnTotals,
+        underbustCounts: underbustCounts,
+        topZones: topZones,
+        validCount: validCount,
+        matrixMax: matrix.reduce(function(max, row) {
+          return Math.max(max, Math.max.apply(null, row));
+        }, 0),
+        matrixTotal: rowTotals.reduce(function(sum, count) { return sum + count; }, 0),
+      };
+    }
+
+    function renderMemberSizeReport(data) {
+      const empty = document.getElementById('sz-empty');
+      const report = document.getElementById('sz-report');
+      const source = document.getElementById('sz-source');
+      const result = computeMemberSizeReport(data);
+
+      if (!data) {
+        source.textContent = '請先到會員查詢設定日期、門市、體圍或標籤條件，完成查詢後即可產生尺寸分布。';
+        empty.innerHTML = '<p>目前沒有可用的會員查詢結果。請先完成一次會員查詢。</p>';
+        empty.classList.add('active');
+        report.style.display = 'none';
+        return;
+      }
+
+      source.textContent = data.start + ' ~ ' + data.end + '｜' + (data.records || []).length + ' 筆會員查詢結果';
+      if (result.validCount === 0 || result.matrixTotal === 0) {
+        empty.innerHTML = '<p>最近一次查詢結果沒有落在尺寸表區間內的有效胸圍與胸下圍資料。</p>';
+        empty.classList.add('active');
+        report.style.display = 'none';
+        return;
+      }
+
+      empty.classList.remove('active');
+      report.style.display = 'block';
+      document.getElementById('sz-record-count').textContent = (data.records || []).length;
+      document.getElementById('sz-valid-count').textContent = result.validCount;
+      document.getElementById('sz-band-range').textContent = '30-52｜62.5-122.5 cm';
+
+      const topZone = result.topZones[0];
+      if (topZone) {
+        const chest = SIZE_CHEST_BINS[topZone.chestIndex];
+        const underbust = SIZE_UNDERBUST_BINS[topZone.underbustIndex];
+        document.getElementById('sz-top-zone').textContent = '胸圍 ' + sizeRangeLabel(chest) + '｜胸下圍 ' + underbust.bandSize + '（' + sizeRangeLabel(underbust) + '）｜' + topZone.count + ' 人';
+      }
+
+      let tableHtml = '<thead><tr><th class="axis-corner" rowspan="2">胸圍<br>＼<br>胸下圍</th>';
+      SIZE_UNDERBUST_BINS.forEach(function(bin) {
+        tableHtml += '<th class="band-size">' + bin.bandSize + '</th>';
+      });
+      tableHtml += '<th class="total-cell" rowspan="2">列合計</th></tr><tr>';
+      SIZE_UNDERBUST_BINS.forEach(function(bin) {
+        tableHtml += '<th class="underbust-range">' + sizeRangeLabel(bin) + '</th>';
+      });
+      tableHtml += '</tr></thead><tbody>';
+
+      SIZE_CHEST_BINS.forEach(function(chestBin, chestIndex) {
+        tableHtml += '<tr><th class="row-label">胸圍<br>' + sizeRangeLabel(chestBin) + '</th>';
+        SIZE_UNDERBUST_BINS.forEach(function(underbustBin, underbustIndex) {
+          const count = result.matrix[chestIndex][underbustIndex];
+          const title = '胸圍 ' + sizeRangeLabel(chestBin) + ' cm / 胸下圍 ' + underbustBin.bandSize + ' (' + sizeRangeLabel(underbustBin) + ' cm): ' + count + ' 人';
+          tableHtml += '<td class="cell' + (count > 0 ? ' has-value' : '') + '" style="background:' + sizeCellColor(count, result.matrixMax) + '" title="' + title + '">' + (count || '') + '</td>';
+        });
+        tableHtml += '<td class="total-cell">' + result.rowTotals[chestIndex] + '</td></tr>';
+      });
+
+      tableHtml += '</tbody><tfoot><tr><th class="row-label">欄合計</th>';
+      result.columnTotals.forEach(function(count) { tableHtml += '<td class="total-cell">' + count + '</td>'; });
+      tableHtml += '<td class="total-cell">' + result.matrixTotal + '</td></tr></tfoot>';
+      document.getElementById('sz-heatmap').innerHTML = tableHtml;
+
+      const maxUnderbustCount = Math.max.apply(null, result.underbustCounts);
+      document.getElementById('sz-underbust-bars').innerHTML = SIZE_UNDERBUST_BINS.map(function(bin, index) {
+        const count = result.underbustCounts[index];
+        const width = maxUnderbustCount ? (count / maxUnderbustCount) * 100 : 0;
+        return '<div class="size-bar-row"><div class="size-bar-label">' + bin.bandSize + '｜' + sizeRangeLabel(bin) + '</div><div class="size-bar-track"><div class="size-bar-fill" style="width:' + width.toFixed(2) + '%"></div></div><div class="size-bar-count">' + count + '</div></div>';
+      }).join('');
+
+      document.getElementById('sz-top-zones').innerHTML = result.topZones.slice(0, 5).map(function(zone) {
+        const chest = SIZE_CHEST_BINS[zone.chestIndex];
+        const underbust = SIZE_UNDERBUST_BINS[zone.underbustIndex];
+        return '<div class="size-top-item"><div class="zone">胸圍 ' + sizeRangeLabel(chest) + '<br>胸下圍 ' + underbust.bandSize + '（' + sizeRangeLabel(underbust) + '）</div><div class="count">' + zone.count + ' 人</div></div>';
+      }).join('');
+    }
 
     document.getElementById('m-export').addEventListener('click', () => {
+    document.getElementById('m-size-btn').addEventListener('click', function() {
+      document.querySelector('.tab-btn[data-tab="tab-sizes"]').click();
+    });
+
+    document.getElementById('sz-go-member').addEventListener('click', function() {
+      document.querySelector('.tab-btn[data-tab="tab-members"]').click();
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (btn.getAttribute('data-tab') === 'tab-sizes') setTimeout(function() { renderMemberSizeReport(lastMemberData); }, 0);
+      });
+    });
+
       if (!lastMemberData) return;
       const start = document.getElementById('m-start').value;
       const end = document.getElementById('m-end').value;
