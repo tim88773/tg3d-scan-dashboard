@@ -672,6 +672,7 @@
           <div class="perm-grid">
             <label><input type="checkbox" id="perm-store_summary" checked> 店舖統計</label>
             <label><input type="checkbox" id="perm-members" checked> 會員查詢</label>
+            <label><input type="checkbox" id="perm-member_sizes" checked> 會員尺寸表</label>
             <label><input type="checkbox" id="perm-sync" checked> 同步資料</label>
             <label><input type="checkbox" id="perm-access_control"> 控制權限</label>
             <label><input type="checkbox" id="perm-region"> 區域管理</label>
@@ -716,7 +717,7 @@
     function applyPermissions() {
       if (!CURRENT_USER) return;
       var perms = CURRENT_USER.permissions || []; var isAdmin = CURRENT_USER.is_admin;
-      var tabMap = {'tab-summary':'store_summary','tab-members':'members','tab-sizes':'members','tab-sync':'sync','tab-users':'access_control'};
+      var tabMap = {'tab-summary':'store_summary','tab-members':'members','tab-sizes':'member_sizes','tab-sync':'sync','tab-users':'access_control'};
       document.querySelectorAll('.tab-btn').forEach(function(t) {
         var k = tabMap[t.getAttribute('data-tab')];
         if (k && !isAdmin && perms.indexOf(k)===-1) t.style.display='none';
@@ -1004,7 +1005,9 @@
 
         renderMemberTable(records, includeMeasurements);
         document.getElementById('m-export').style.display = 'inline-block';
-        document.getElementById('m-size-btn').style.display = 'inline-block';
+        if (CURRENT_USER && (CURRENT_USER.is_admin || (CURRENT_USER.permissions || []).includes('member_sizes'))) {
+          document.getElementById('m-size-btn').style.display = 'inline-block';
+        }
       } catch (err) {
         document.getElementById('m-loading').classList.remove('active');
         document.getElementById('m-search').disabled = false;
@@ -1446,8 +1449,8 @@
 
     // ====== USER MANAGEMENT ======
     var editingUserId = null;
-    var PERM_KEYS = ['store_summary','members','sync','access_control','region'];
-    var PERM_LABELS = {'store_summary':'店舖統計','members':'會員查詢','sync':'同步資料','access_control':'控制權限','region':'區域管理'};
+    var PERM_KEYS = ['store_summary','members','member_sizes','sync','access_control','region'];
+    var PERM_LABELS = {'store_summary':'店舖統計','members':'會員查詢','member_sizes':'會員尺寸表','sync':'同步資料','access_control':'控制權限','region':'區域管理'};
     function resetUserForm() {
       editingUserId = null;
       document.getElementById('user-form-title').textContent = '新增使用者';
